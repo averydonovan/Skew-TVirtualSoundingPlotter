@@ -1,0 +1,7 @@
+/target/
+/data/
+/*.gbx9
+/*.ncx3
+/*.grb2
+*.ini
+.DS_Store
