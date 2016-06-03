@@ -16,15 +16,17 @@
  */
 package com.mccollinsmith.donovan.skewtmultitool;
 
+import static com.mccollinsmith.donovan.skewtmultitool.SkewTMultiTool.statusConsole;
+import java.io.IOException;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.Variable;
-import ucar.nc2.Dimension;
-import ucar.nc2.NCdumpW;
+//import ucar.nc2.Dimension;
+//import ucar.nc2.NCdumpW;
 import ucar.nc2.dt.*;
 import ucar.unidata.geoloc.LatLonPoint;
 import ucar.ma2.*;
-import java.lang.Math;
+//import java.lang.Math;
 
 /**
  *
@@ -33,7 +35,6 @@ import java.lang.Math;
 public class ModelDataFile {
 
     private static NetcdfFile gribFile = null;
-    private static GridDataset gribGDS = null;
 
     private static float[] isoLevels = null;
     private static double[][] lons = null;
@@ -57,46 +58,162 @@ public class ModelDataFile {
     private static int maxY = 0;
     private static int maxLevel = 0;
 
-    public ModelDataFile(String gribFileName) {
-        try {
-            gribFile = NetcdfDataset.openDataset(gribFileName);
-            gribGDS = ucar.nc2.dt.grid.GridDataset.open(gribFileName);
-        } catch (java.io.IOException ex) {
-            System.out.println(ex);
-        }
+    public ModelDataFile() {
+        // Do nothing
+    }
 
+    public ModelDataFile(String gribFileName) throws IOException {
+        open(gribFileName);
+    }
+
+    public boolean open(String gribFileName) throws IOException {
+        GridDataset gribGDS = null;
         String varName = "Temperature_isobaric";
 
-        Variable gribVar = gribFile.findVariable(varName);
+        try {
+            gribGDS = ucar.nc2.dt.grid.GridDataset.open(gribFileName);
+        } catch (IOException ex) {
+            statusConsole.println(ex);
+            throw ex;
+        }
+
         GridDatatype gribVarGDT = gribGDS.findGridByShortName(varName);
         GridCoordSystem varGCS = gribVarGDT.getCoordinateSystem();
+        try {
+            gribGDS.close();
+        } catch (IOException ex) {
+            statusConsole.println(ex);
+            throw ex;
+        }
+
+        try {
+            gribFile = NetcdfDataset.openDataset(gribFileName);
+        } catch (IOException ex) {
+            statusConsole.println(ex);
+            throw ex;
+        }
+
+        Variable gribVar = gribFile.findVariable(varName);
 
         Array gribVarData = null;
         try {
             gribVarData = gribVar.read();
-        } catch (java.io.IOException ex) {
-            System.out.println(ex);
+        } catch (IOException ex) {
+            statusConsole.println(ex);
+            throw ex;
         }
 
-        if (gribVarData != null) {
-            int[] varShape = gribVarData.getShape();
-            maxX = varShape[varShape.length - 1];
-            maxY = varShape[varShape.length - 2];
-            maxLevel = varShape[varShape.length - 3];
+        if (gribVarData == null) {
+            IOException ex = new IOException("Unusable file");
+            statusConsole.println(ex);
+            throw ex;
+        }
 
-            System.out.println("Getting longitudes and latitudes...");
-            doGetLonLats(varGCS);
-            System.out.println("Getting isobaric levels...");
-            doGetLevels();
-            System.out.println("Getting temperatures and calculating dewpoints...");
-            doGetTemps();
-            System.out.println("Getting surface variables...");
-            doGetSfcVars();
-            System.out.println("Calculating LCLs...");
-            doGetLcl();
-            System.out.println("Calculating Total-Totals, K-Index, and SWEAT...");
-            doGetTKS();
-            System.out.println("Done!");
+        int[] varShape = gribVarData.getShape();
+        maxX = varShape[varShape.length - 1];
+        maxY = varShape[varShape.length - 2];
+        maxLevel = varShape[varShape.length - 3];
+
+        //statusConsole.println("Getting longitudes and latitudes...");
+        doGetLonLats(varGCS);
+        //statusConsole.println("Getting isobaric levels...");
+        doGetLevels();
+        //statusConsole.println("Getting temperatures and calculating dewpoints...");
+        doGetTemps();
+        //statusConsole.println("Getting surface variables...");
+        doGetSfcVars();
+        //statusConsole.println("Calculating LCLs...");
+        doGetLcl();
+        //statusConsole.println("Calculating Total-Totals, K-Index, and SWEAT...");
+        doGetTKS();
+        //statusConsole.println("Done!");
+        
+        return true;
+    }
+
+    public boolean close() throws IOException {
+        try {
+            gribFile.close();
+            return true;
+        } catch (IOException ex) {
+            statusConsole.println(ex);
+            throw ex;
+        }
+    }
+
+    public int getIndexFromLevel(float isoLevel) {
+        return (int) Math.round(((isoLevel - 10000) / 100) / 25);
+    }
+
+    public double getLat(int coordX, int coordY) {
+        if (coordX < maxX && coordY < maxY) {
+            return lats[coordX][coordY];
+        } else {
+            return 0;
+        }
+    }
+
+    public double getLon(int coordX, int coordY) {
+        if (coordX < maxX && coordY < maxY) {
+            return lons[coordX][coordY];
+        } else {
+            return 0;
+        }
+    }
+
+    public float getLevel(int coordLvl) {
+        if (coordLvl < maxLevel) {
+            return isoLevels[coordLvl];
+        } else {
+            return 0;
+        }
+    }
+
+    public float getTempIso(int coordLvl, int coordX, int coordY) {
+        if (coordLvl < maxLevel && coordX < maxX && coordY < maxY) {
+            return tempIso[coordLvl][coordX][coordY];
+        } else {
+            return 0;
+        }
+    }
+
+    public float getTemp2m(int coordX, int coordY) {
+        if (coordX < maxX && coordY < maxY) {
+            return temp2m[coordX][coordY];
+        } else {
+            return 0;
+        }
+    }
+
+    public float getDewpIso(int coordLvl, int coordX, int coordY) {
+        if (coordLvl < maxLevel && coordX < maxX && coordY < maxY) {
+            return dewpIso[coordLvl][coordX][coordY];
+        } else {
+            return 0;
+        }
+    }
+
+    public float getDewp2m(int coordX, int coordY) {
+        if (coordX < maxX && coordY < maxY) {
+            return dewp2m[coordX][coordY];
+        } else {
+            return 0;
+        }
+    }
+
+    public float getLCLPres(int coordX, int coordY) {
+        if (coordX < maxX && coordY < maxY) {
+            return lclPres[coordX][coordY];
+        } else {
+            return 0;
+        }
+    }
+
+    public float getLCLTemp(int coordX, int coordY) {
+        if (coordX < maxX && coordY < maxY) {
+            return lclTemp[coordX][coordY];
+        } else {
+            return 0;
         }
     }
 
@@ -469,81 +586,5 @@ public class ModelDataFile {
 
         result = sweat1 + sweat2 + sweat3 + sweat4 + sweat5;
         return (float) result;
-    }
-
-    public int getIndexFromLevel(float isoLevel) {
-        return (int) Math.round(((isoLevel - 10000) / 100) / 25);
-    }
-
-    public double getLat(int coordX, int coordY) {
-        if (coordX < maxX && coordY < maxY) {
-            return lats[coordX][coordY];
-        } else {
-            return 0;
-        }
-    }
-
-    public double getLon(int coordX, int coordY) {
-        if (coordX < maxX && coordY < maxY) {
-            return lons[coordX][coordY];
-        } else {
-            return 0;
-        }
-    }
-
-    public float getLevel(int coordLvl) {
-        if (coordLvl < maxLevel) {
-            return isoLevels[coordLvl];
-        } else {
-            return 0;
-        }
-    }
-
-    public float getTempIso(int coordLvl, int coordX, int coordY) {
-        if (coordLvl < maxLevel && coordX < maxX && coordY < maxY) {
-            return tempIso[coordLvl][coordX][coordY];
-        } else {
-            return 0;
-        }
-    }
-
-    public float getTemp2m(int coordX, int coordY) {
-        if (coordX < maxX && coordY < maxY) {
-            return temp2m[coordX][coordY];
-        } else {
-            return 0;
-        }
-    }
-
-    public float getDewpIso(int coordLvl, int coordX, int coordY) {
-        if (coordLvl < maxLevel && coordX < maxX && coordY < maxY) {
-            return dewpIso[coordLvl][coordX][coordY];
-        } else {
-            return 0;
-        }
-    }
-
-    public float getDewp2m(int coordX, int coordY) {
-        if (coordX < maxX && coordY < maxY) {
-            return dewp2m[coordX][coordY];
-        } else {
-            return 0;
-        }
-    }
-
-    public float getLCLPres(int coordX, int coordY) {
-        if (coordX < maxX && coordY < maxY) {
-            return lclPres[coordX][coordY];
-        } else {
-            return 0;
-        }
-    }
-
-    public float getLCLTemp(int coordX, int coordY) {
-        if (coordX < maxX && coordY < maxY) {
-            return lclTemp[coordX][coordY];
-        } else {
-            return 0;
-        }
     }
 }
