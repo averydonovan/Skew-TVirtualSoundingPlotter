@@ -17,7 +17,6 @@
 package com.mccollinsmith.donovan.skewtmultitool.utils;
 
 import java.io.IOException;
-import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 import org.slf4j.Logger;
@@ -25,12 +24,9 @@ import org.slf4j.LoggerFactory;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.Variable;
-//import ucar.nc2.Dimension;
-//import ucar.nc2.NCdumpW;
 import ucar.nc2.dt.*;
 import ucar.unidata.geoloc.LatLonPoint;
 import ucar.ma2.*;
-//import java.lang.Math;
 
 /**
  * Loads GRIB files, reads in longitudes and latitudes of data points, and
