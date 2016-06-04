@@ -16,112 +16,36 @@
  */
 package com.mccollinsmith.donovan.skewtmultitool;
 
-import com.mccollinsmith.donovan.skewtmultitool.ui.StatusConsole;
-import java.io.IOException;
+import com.mccollinsmith.donovan.skewtmultitool.controllers.STMTController;
 
 import javafx.application.Application;
-import javafx.event.ActionEvent;
-import javafx.geometry.Insets;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import static javafx.application.Application.launch;
-import javafx.stage.WindowEvent;
 
 /**
+ * Main class for application. Loads main window from FXML file.
  *
  * @author Donovan Smith <donovan@mccollinsmith.com>
  */
 public class SkewTMultiTool extends Application {
 
-    public static StatusConsole statusConsole = null;
+    private static final Logger LOG
+            = LoggerFactory.getLogger(SkewTMultiTool.class.getName());
 
     @Override
-    public void start(Stage primaryStage) {
-        primaryStage.setOnShown((WindowEvent event) -> {
-                    execOnShown();
-                });
+    public void start(Stage primaryStage) throws Exception {
+        Parent root = FXMLLoader.load(getClass().getResource("/fxml/STMT.fxml"));
 
-        Button btnLoadFile = new Button();
-        btnLoadFile.setText("Load GRIB");
-        btnLoadFile.setOnAction((ActionEvent event) -> {
-            statusConsole.println("Loading GRIB file...");
-            doBtnLoadFile();
-        });
-        
-        statusConsole = new StatusConsole();
-        statusConsole.setPrefRowCount(8);
-        statusConsole.setPrefColumnCount(80);
-        statusConsole.setStyle("-fx-font-family: monospace;");
+        Scene scene = new Scene(root, 800, 600);
 
-        HBox hbMainToolbar = new HBox();
-        hbMainToolbar.setPadding(new Insets(5, 5, 5, 5));
-        hbMainToolbar.setSpacing(5);
-        hbMainToolbar.getChildren().addAll(btnLoadFile);
-
-        HBox hbStatus = new HBox();
-        hbStatus.setPadding(new Insets(5, 5, 5, 5));
-        hbStatus.setSpacing(5);
-        hbStatus.getChildren().addAll(statusConsole);
-
-        BorderPane borderPane = new BorderPane();
-        borderPane.setTop(hbMainToolbar);
-        borderPane.setBottom(hbStatus);
-
-        Scene scene = new Scene(borderPane, 800, 600);
-
-        primaryStage.setTitle("Skew-T MultiTool");
+        primaryStage.titleProperty().bind(STMTController.windowTitle);
         primaryStage.setScene(scene);
         primaryStage.show();
-    }
-
-    private void execOnShown() {
-        statusConsole.println("Skew-T MultiTool");
-        statusConsole.println("Copyright 2016 Donovan Smith");
-        statusConsole.println();
-        statusConsole.println("This software is licensed under the GNU General Public License version 3.");
-        statusConsole.println("This software comes with ABSOLUTELY NO WARRANTY!");
-        statusConsole.println();
-
-        //ModelDataDb db = new ModelDataDb();
-        //if (db.isConnected() == true) {
-        //    System.out.println("Connected to database.");
-        //}
-        //db.close()
-    }
-    
-    private void doBtnLoadFile() {
-        String gribFileName = "rap_252_20160524_0000_000.grb2";
-
-        ModelDataFile gribFile = null;
-        try {
-            gribFile = new ModelDataFile(gribFileName);
-        } catch (IOException ex) {
-            statusConsole.println("Unable to open GRIB file.");
-        }
-
-        if (gribFile != null) {
-            int coordX = 150;
-            int coordY = 113;
-            statusConsole.println(gribFile.getLon(coordX, coordY));
-            statusConsole.println(gribFile.getLat(coordX, coordY));
-            statusConsole.println(gribFile.getLevel(36));
-            statusConsole.println(gribFile.getTempIso(36, coordX, coordY));
-            statusConsole.println(gribFile.getTemp2m(coordX, coordY));
-            statusConsole.println(gribFile.getDewpIso(36, coordX, coordY));
-            statusConsole.println(gribFile.getDewp2m(coordX, coordY));
-            statusConsole.println((int) gribFile.getLCLPres(coordX, coordY));
-            statusConsole.println(gribFile.getLCLTemp(coordX, coordY));
-            statusConsole.println();
-
-            try {
-                gribFile.close();
-            } catch (IOException ex) {
-                statusConsole.println("Unable to close GRIB file.");
-            }
-        }
     }
 
     public static void main(String args[]) {

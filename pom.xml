@@ -39,16 +39,21 @@
         </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-jdk14</artifactId>
+            <artifactId>slf4j-api</artifactId>
             <version>1.7.21</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-classic</artifactId>
+            <version>1.1.7</version>
+        </dependency>
+        <!--<dependency>
             <groupId>de.erichseifert.gral</groupId>
             <artifactId>gral-core</artifactId>
             <version>0.11</version>
             <scope>compile</scope>
-        </dependency>
+        </dependency>-->
     </dependencies>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -58,45 +63,6 @@
     <name>SkewTMultiTool</name>
     <build>
         <plugins>
-            <!-- Build an executable JAR -->
-            <!--<plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-jar-plugin</artifactId>
-                <version>3.0.0</version>
-                <configuration>
-                    <archive>
-                        <manifest>
-                            <addClasspath>true</addClasspath>
-                            <classpathPrefix></classpathPrefix>
-                            <mainClass>com.mccollinsmith.donovan.gribtodb.GRIBtoDB</mainClass>
-                        </manifest>
-                    </archive>
-                </configuration>
-            </plugin>-->
-            <!--<plugin>
-                <artifactId>maven-assembly-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>make-assembly</id>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>single</goal>
-                        </goals>
-                    </execution>
-                </executions>
-                <configuration>
-                    <descriptorRefs>
-                        <descriptorRef>jar-with-dependencies</descriptorRef>
-                    </descriptorRefs>
-                    <archive>
-                        <manifest>
-                            <addClasspath>true</addClasspath>
-                            <classpathPrefix>lib/</classpathPrefix>
-                            <mainClass>com.mccollinsmith.donovan.gribtodb.GRIBtoDB</mainClass>
-                        </manifest>
-                    </archive>
-                </configuration>
-            </plugin>-->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-shade-plugin</artifactId>
@@ -134,18 +100,6 @@
                                 <exclude>**</exclude>
                             </excludes>
                         </filter>
-                        <!--<filter>
-                            <artifact>com.google.*:*</artifact>
-                            <excludes>
-                                <exclude>**</exclude>
-                            </excludes>
-                        </filter>-->
-                        <!--<filter>
-                            <artifact>edu.ucar:netcdf4</artifact>
-                            <includes>
-                                <include>**</include>
-                            </includes>
-                        </filter>-->
                     </filters>
                     <transformers>
                         <transformer 
