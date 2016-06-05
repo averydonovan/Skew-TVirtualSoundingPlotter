@@ -35,7 +35,7 @@ public class AtmosThermoMath {
      *
      * @return TT index
      */
-    public float calcTotalTotals(float temp500, float temp850,
+    public static float calcTotalTotals(float temp500, float temp850,
             float dewp500, float dewp850) {
         double totVt = temp850 - temp500;
         double totCt = dewp850 - dewp500;
@@ -54,7 +54,7 @@ public class AtmosThermoMath {
      *
      * @return K-index
      */
-    public float calcKIndex(float temp500, float temp700, float temp850,
+    public static float calcKIndex(float temp500, float temp700, float temp850,
             float dewp700, float dewp850) {
         double result = Math.abs(temp850 - temp500) + (dewp850 - (temp700 - dewp700));
         return (float) result;
@@ -69,7 +69,7 @@ public class AtmosThermoMath {
      *
      * @return dew point in K
      */
-    public float calcDewp(float temp, float pres, float rh) {
+    public static float calcDewp(float temp, float pres, float rh) {
         rh = rh / 100;
         double result = tmr(w(temp, pres) * rh, pres);
         return (float) result;
@@ -84,7 +84,7 @@ public class AtmosThermoMath {
      *
      * @return LCL as float[2]; [0] = pressure in Pa, [1] = temperature in K
      */
-    public float[] calcLCL(float temp, float dewp, float pres) {
+    public static float[] calcLCL(float temp, float dewp, float pres) {
         double stepSize = 100;
         double pt = pot_temp(temp, pres);
         double w_0 = w(dewp, pres);
@@ -115,7 +115,7 @@ public class AtmosThermoMath {
      *
      * @return SWEAT index
      */
-    public float calcSweat(float totalTotals, float dewp850,
+    public static float calcSweat(float totalTotals, float dewp850,
             float uGrd500, float vGrd500, float uGrd850, float vGrd850) {
         double[] wind500 = calcWindFromVec(uGrd500, vGrd500);
         double[] wind850 = calcWindFromVec(uGrd850, vGrd850);
@@ -157,7 +157,7 @@ public class AtmosThermoMath {
      * Internal-use functions. Not that all return doubles to reduce rounding
      * errors, although externally accessible functions return floats.
      */
-    private double[] calcWindFromVec(double uGrd, double vGrd) {
+    private static double[] calcWindFromVec(double uGrd, double vGrd) {
         double windSpeed = Math.sqrt(Math.pow(uGrd, 2.0) + Math.pow(vGrd, 2.0));
         double windDir = Math.atan2(vGrd, uGrd);
         double[] results = {windSpeed, windDir};
@@ -165,13 +165,13 @@ public class AtmosThermoMath {
     }
 
     // Potential temperature in K from temp in K, pressure in Pa
-    private double pot_temp(double temp, double pres) {
+    private static double pot_temp(double temp, double pres) {
         double result = temp * Math.pow(pres / 100000.0, -2.0 / 7);
         return result;
     }
 
     // Temperature of air in K from potential temperature in K, pressure in Pa
-    private double from_pot_temp(double pot_temp, double pres) {
+    private static double from_pot_temp(double pot_temp, double pres) {
         double result = pot_temp * Math.pow(pres / 100000.0, 2.0 / 7);
         return result;
     }
@@ -181,7 +181,7 @@ public class AtmosThermoMath {
      * http://cimss.ssec.wisc.edu/camex3/archive/quicklooks/skewt.pro
      */
     // Temperature of air (K) at a given mixing ratio (g/kg) and pressure (Pa)
-    private double tmr(double w, double p) {
+    private static double tmr(double w, double p) {
         p = p / 100; //Convert Pa to hPa
         double x = Math.log10(w * p / (622.0 + w));
         double result = Math.pow(10, 0.0498646455 * x + 2.4082965) - 7.07475
@@ -190,7 +190,7 @@ public class AtmosThermoMath {
     }
 
     // Saturated mixing ratio in g/kg from temp in K, pres in Pa
-    private double w(double temp, double pres) {
+    private static double w(double temp, double pres) {
         double result = 0;
 
         pres = pres / 100; // Convert Pa to hPa
@@ -203,7 +203,7 @@ public class AtmosThermoMath {
     }
 
     // Saturated pressure in Pa from temp in K
-    private double esat(double temp) {
+    private static double esat(double temp) {
         temp -= 273.15;
         double result = 6.1078 * Math.exp((17.2693882 * temp) / (temp + 237.3));
         result = result * 100; // Convert hPa to Pa

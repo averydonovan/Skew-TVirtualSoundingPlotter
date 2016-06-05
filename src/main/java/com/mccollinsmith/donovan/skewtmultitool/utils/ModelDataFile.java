@@ -91,8 +91,6 @@ public class ModelDataFile {
     private boolean modelIsGFS3 = false;
     private boolean modelIsGFS4 = false;
 
-    private AtmosThermoMath atMath = new AtmosThermoMath();
-
     /**
      * Create new instance. Need to call {@link #open(java.lang.String) open}
      * before attempting to access any methods.
@@ -280,7 +278,7 @@ public class ModelDataFile {
         float temp = getTempIso(coordX, coordY, coordLvl);
         float rh = getValFromVar(varNameRHIso, coordX, coordY, coordLvl, 4);
         float pres = getLevelFromIndex(coordLvl);
-        float result = atMath.calcDewp(temp, pres, rh);
+        float result = AtmosThermoMath.calcDewp(temp, pres, rh);
         return result;
     }
 
@@ -353,7 +351,7 @@ public class ModelDataFile {
         float curDewp2m = getDewp2m(coordX, coordY);
         float curPresSfc = getPresSfc(coordX, coordY);
 
-        float[] result = atMath.calcLCL(curTemp2m, curDewp2m, curPresSfc);
+        float[] result = AtmosThermoMath.calcLCL(curTemp2m, curDewp2m, curPresSfc);
 
         return result;
     }
@@ -447,11 +445,11 @@ public class ModelDataFile {
                     vGrd850 = gribVarDataVGrd.getFloat(idx850);
 
                     totalTotals[coordX][coordY]
-                            = atMath.calcTotalTotals(temp500, temp850, dewp500, dewp850);
+                            = AtmosThermoMath.calcTotalTotals(temp500, temp850, dewp500, dewp850);
                     kIndex[coordX][coordY]
-                            = atMath.calcKIndex(temp500, temp700, temp850,
+                            = AtmosThermoMath.calcKIndex(temp500, temp700, temp850,
                                     dewp500, dewp850);
-                    sweat[coordX][coordY] = atMath.calcSweat(totalTotals[coordX][coordY],
+                    sweat[coordX][coordY] = AtmosThermoMath.calcSweat(totalTotals[coordX][coordY],
                             dewp850, uGrd500, vGrd500, uGrd850, vGrd850);
                 }
             }
