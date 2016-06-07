@@ -23,19 +23,17 @@ import java.net.URL;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ResourceBundle;
-import javafx.beans.property.BooleanProperty;
-import javafx.beans.property.SimpleBooleanProperty;
-import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.property.StringProperty;
+import javafx.beans.property.*;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.Alert;
+import javafx.scene.control.*;
 import javafx.scene.control.Alert.AlertType;
-import javafx.scene.control.MenuItem;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import javafx.stage.FileChooser.ExtensionFilter;
+import javafx.util.converter.NumberStringConverter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -57,11 +55,40 @@ public class STMTController implements Initializable {
             = new SimpleStringProperty("Skew-T MultiTool");
     public BooleanProperty isNoFileOpen = new SimpleBooleanProperty(true);
 
-    // GUI widgets that are accessed from this controller
-    @FXML
-    public MenuItem menuFileClose;
+    /*
+     * GUI widgets that are accessed from this controller
+     */
     @FXML
     public AnchorPane anchorPane;
+    // Menu
+    @FXML
+    public MenuItem menuFileClose;
+    // Data selection pane
+    @FXML
+    public VBox vbDataSelect;
+    @FXML
+    public TextField tfLonSearch;
+    @FXML
+    public TextField tfLatSearch;
+    @FXML
+    public Button btnLonLatSearch;
+    @FXML
+    public TextField tfLonFound;
+    @FXML
+    public TextField tfLatFound;
+    @FXML
+    public ComboBox cbVariable;
+    @FXML
+    public ComboBox cbLevel;
+    // Data view tab
+    @FXML
+    public TableColumn tcVariable;
+    @FXML
+    public TableColumn tcLevel;
+    @FXML
+    public TableColumn tcValue;
+    @FXML
+    public TableColumn tcUnits;
 
     /**
      * Initializes the controller class.
@@ -73,6 +100,7 @@ public class STMTController implements Initializable {
     public void initialize(URL url, ResourceBundle rb) {
         // TODO
         menuFileClose.disableProperty().bind(isNoFileOpen);
+        vbDataSelect.disableProperty().bind(isNoFileOpen);
     }
 
     public void doAppendWindowTitle(String newTitle) {
@@ -130,7 +158,7 @@ public class STMTController implements Initializable {
             int coordX = coords[0];
             int coordY = coords[1];
             // Look at 1000hPa level
-            int coordLvl = modelDataFile.getIndexFromLevel(1000*100);
+            int coordLvl = modelDataFile.getIndexFromLevel(1000 * 100);
             LOG.debug("LonLat  {}", modelDataFile.getLonLatFromXYCoords(coordX, coordY));
             LOG.debug("Level   {}", modelDataFile.getLevelFromIndex(coordLvl));
             LOG.debug("TempIso {}", modelDataFile.getTempIso(coordX, coordY, coordLvl));
@@ -158,6 +186,31 @@ public class STMTController implements Initializable {
             alert.setHeaderText("Unable to close GRIB file");
             alert.showAndWait();
         }
+    }
+
+    @FXML
+    protected void doLonLatSearch(ActionEvent event) {
+        double searchLon = Double.parseDouble(tfLonSearch.getText());
+        double searchLat = Double.parseDouble(tfLatSearch.getText());
+        int[] coords = modelDataFile.getXYCoordsFromLonLat(searchLon, searchLat);
+        int coordX = coords[0];
+        int coordY = coords[1];
+        double[] foundLonLat = modelDataFile.getLonLatFromXYCoords(coordX, coordY);
+        tfLonFound.setText(String.format("%.6f", foundLonLat[0]));
+        tfLatFound.setText(String.format("%.6f", foundLonLat[1]));
+        // Look at 1000hPa level
+        int coordLvl = modelDataFile.getIndexFromLevel(1000 * 100);
+        LOG.debug("LonLat  {}", modelDataFile.getLonLatFromXYCoords(coordX, coordY));
+        LOG.debug("Level   {}", modelDataFile.getLevelFromIndex(coordLvl));
+        LOG.debug("TempIso {}", modelDataFile.getTempIso(coordX, coordY, coordLvl));
+        LOG.debug("Temp2m  {}", modelDataFile.getTemp2m(coordX, coordY));
+        LOG.debug("DewpIso {}", modelDataFile.getDewpIso(coordX, coordY, coordLvl));
+        LOG.debug("Dewp2m  {}", modelDataFile.getDewp2m(coordX, coordY));
+        LOG.debug("LCL     {}", modelDataFile.getLCL(coordX, coordY));
+        LOG.debug("CAPE    {}", modelDataFile.getCAPE(coordX, coordY));
+        LOG.debug("CIN     {}", modelDataFile.getCIN(coordX, coordY));
+        LOG.debug("LFTX    {}", modelDataFile.getLFTX(coordX, coordY));
+        LOG.debug("MSL     {}", modelDataFile.getMSL(coordX, coordY));
     }
 
     @FXML
