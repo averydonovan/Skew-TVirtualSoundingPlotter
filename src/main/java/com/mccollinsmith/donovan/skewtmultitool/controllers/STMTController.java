@@ -22,18 +22,23 @@ import java.io.IOException;
 import java.net.URL;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Properties;
 import java.util.ResourceBundle;
 import javafx.beans.property.*;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.control.Alert.AlertType;
+import javafx.scene.input.KeyCombination;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import javafx.stage.FileChooser.ExtensionFilter;
-import javafx.util.converter.NumberStringConverter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -59,36 +64,48 @@ public class STMTController implements Initializable {
      * GUI widgets that are accessed from this controller
      */
     @FXML
-    public AnchorPane anchorPane;
+    private AnchorPane anchorPane;
     // Menu
     @FXML
-    public MenuItem menuFileClose;
+    private MenuBar menuBar;
+    @FXML
+    private MenuItem menuFileOpen;
+    @FXML
+    private MenuItem menuFileClose;
+    @FXML
+    private MenuItem menuFileExit;
     // Data selection pane
     @FXML
-    public VBox vbDataSelect;
+    private AnchorPane apDataTab;
     @FXML
-    public TextField tfLonSearch;
+    private VBox vbDataSelect;
     @FXML
-    public TextField tfLatSearch;
+    private TextField tfLonSearch;
     @FXML
-    public Button btnLonLatSearch;
+    private TextField tfLatSearch;
     @FXML
-    public TextField tfLonFound;
+    private Button btnLonLatSearch;
     @FXML
-    public TextField tfLatFound;
+    private TextField tfLonFound;
     @FXML
-    public ComboBox cbVariable;
+    private TextField tfLatFound;
     @FXML
-    public ComboBox cbLevel;
+    private ComboBox cbVariable;
+    @FXML
+    private ComboBox cbLevel;
     // Data view tab
     @FXML
-    public TableColumn tcVariable;
+    private TableView<DataEntry> tblData;
     @FXML
-    public TableColumn tcLevel;
+    private TableColumn<DataEntry, String> tcVariable;
     @FXML
-    public TableColumn tcValue;
+    private TableColumn<DataEntry, String> tcLevel;
     @FXML
-    public TableColumn tcUnits;
+    private TableColumn<DataEntry, String> tcValue;
+    @FXML
+    private TableColumn<DataEntry, String> tcUnits;
+
+    private ObservableList<DataEntry> dataList;
 
     /**
      * Initializes the controller class.
@@ -98,9 +115,26 @@ public class STMTController implements Initializable {
      */
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        // TODO
+        if (System.getProperty("os.name").contains("OS X")) {
+            System.setProperty("com.apple.mrj.application.apple.menu.about.name", "Skew-T MultiTool");
+            menuBar.setUseSystemMenuBar(true);
+            menuFileOpen.setAccelerator(KeyCombination.keyCombination("Meta+O"));
+            menuFileClose.setAccelerator(KeyCombination.keyCombination("Meta+W"));
+            menuFileExit.setAccelerator(KeyCombination.keyCombination("Meta+Q"));
+        }
+
         menuFileClose.disableProperty().bind(isNoFileOpen);
         vbDataSelect.disableProperty().bind(isNoFileOpen);
+
+        dataList = FXCollections.observableArrayList();
+
+        tcVariable.setCellValueFactory(cellData -> cellData.getValue().varNameProperty());
+        tcLevel.setCellValueFactory(cellData -> cellData.getValue().levelNameProperty());
+        tcValue.setCellValueFactory(cellData -> cellData.getValue().entryValueProperty());
+        tcUnits.setCellValueFactory(cellData -> cellData.getValue().entryUnitsProperty());
+
+        tblData.setItems(dataList);
+        //tblData.setPrefSize(apDataTab.getWidth(), apDataTab.getHeight());
     }
 
     public void doAppendWindowTitle(String newTitle) {
@@ -150,27 +184,16 @@ public class STMTController implements Initializable {
             return;
         }
 
-        if (modelDataFile != null) {
-            // Texas State Capitol coords to test
-            double lon = -97.740379;
-            double lat = 30.274632;
-            int[] coords = modelDataFile.getXYCoordsFromLonLat(lon, lat);
-            int coordX = coords[0];
-            int coordY = coords[1];
-            // Look at 1000hPa level
-            int coordLvl = modelDataFile.getIndexFromLevel(1000 * 100);
-            LOG.debug("LonLat  {}", modelDataFile.getLonLatFromXYCoords(coordX, coordY));
-            LOG.debug("Level   {}", modelDataFile.getLevelFromIndex(coordLvl));
-            LOG.debug("TempIso {}", modelDataFile.getTempIso(coordX, coordY, coordLvl));
-            LOG.debug("Temp2m  {}", modelDataFile.getTemp2m(coordX, coordY));
-            LOG.debug("DewpIso {}", modelDataFile.getDewpIso(coordX, coordY, coordLvl));
-            LOG.debug("Dewp2m  {}", modelDataFile.getDewp2m(coordX, coordY));
-            LOG.debug("LCL     {}", modelDataFile.getLCL(coordX, coordY));
-            LOG.debug("CAPE    {}", modelDataFile.getCAPE(coordX, coordY));
-            LOG.debug("CIN     {}", modelDataFile.getCIN(coordX, coordY));
-            LOG.debug("LFTX    {}", modelDataFile.getLFTX(coordX, coordY));
-            LOG.debug("MSL     {}", modelDataFile.getMSL(coordX, coordY));
-        }
+        // Texas State Capitol coords to test
+        double lon = -97.740379;
+        double lat = 30.274632;
+
+        List<DataEntry> newData = new ArrayList<DataEntry>();
+        dataList = FXCollections.observableArrayList(newData);
+        tblData.setItems(dataList);
+        tblData.setPrefSize(apDataTab.getWidth(), apDataTab.getHeight());
+        tfLonFound.setText("0.0");
+        tfLatFound.setText("0.0");
     }
 
     @FXML
@@ -190,6 +213,61 @@ public class STMTController implements Initializable {
 
     @FXML
     protected void doLonLatSearch(ActionEvent event) {
+        doUpdateData();
+    }
+
+    @FXML
+    protected void doHelpAbout(ActionEvent event) {
+        try {
+            Properties versionProps = new Properties();
+            versionProps.load(getClass().getClassLoader().getResourceAsStream("version.properties"));
+
+            String propName = versionProps.getProperty("name");
+            String propVers = versionProps.getProperty("version");
+            String propAuthor = versionProps.getProperty("author");
+            String propYearStart = versionProps.getProperty("year.start");
+            String propYearEnd = versionProps.getProperty("year.lastmodified");
+            String propLicense = versionProps.getProperty("license");
+            String propURL = versionProps.getProperty("url");
+            String propYears = "";
+            if (propYearStart.equals(propYearEnd)) {
+                propYears = propYearStart;
+            } else {
+                propYears = propYearStart + "-" + propYearEnd;
+            }
+
+            Alert alert = new Alert(AlertType.INFORMATION);
+            alert.setTitle("About");
+            alert.setHeaderText(propName + " v" + propVers);
+            alert.setContentText("Copright " + propYears + " " + propAuthor + "\n\n"
+                    + "Licensed under the " + propLicense + ".");
+            alert.showAndWait();
+        } catch (IOException ex) {
+            LOG.error("Failed to load version properties file.");
+        }
+    }
+
+    @FXML
+    protected void doExit(ActionEvent event) {
+        LOG.debug("Exiting application.");
+        if (isNoFileOpen.get() == false) {
+            try {
+                modelDataFile.close();
+            } catch (IOException ex) {
+                LOG.error("Unable to close GRIB file!");
+            }
+        }
+        System.exit(0);
+    }
+    
+    @FXML
+    protected void eventWindowResized(ActionEvent event) {
+        
+    }
+
+    public void doUpdateData() {
+        List<DataEntry> newData = new ArrayList<DataEntry>();
+
         double searchLon = Double.parseDouble(tfLonSearch.getText());
         double searchLat = Double.parseDouble(tfLatSearch.getText());
         int[] coords = modelDataFile.getXYCoordsFromLonLat(searchLon, searchLat);
@@ -198,31 +276,110 @@ public class STMTController implements Initializable {
         double[] foundLonLat = modelDataFile.getLonLatFromXYCoords(coordX, coordY);
         tfLonFound.setText(String.format("%.6f", foundLonLat[0]));
         tfLatFound.setText(String.format("%.6f", foundLonLat[1]));
-        // Look at 1000hPa level
-        int coordLvl = modelDataFile.getIndexFromLevel(1000 * 100);
-        LOG.debug("LonLat  {}", modelDataFile.getLonLatFromXYCoords(coordX, coordY));
-        LOG.debug("Level   {}", modelDataFile.getLevelFromIndex(coordLvl));
-        LOG.debug("TempIso {}", modelDataFile.getTempIso(coordX, coordY, coordLvl));
-        LOG.debug("Temp2m  {}", modelDataFile.getTemp2m(coordX, coordY));
-        LOG.debug("DewpIso {}", modelDataFile.getDewpIso(coordX, coordY, coordLvl));
-        LOG.debug("Dewp2m  {}", modelDataFile.getDewp2m(coordX, coordY));
-        LOG.debug("LCL     {}", modelDataFile.getLCL(coordX, coordY));
-        LOG.debug("CAPE    {}", modelDataFile.getCAPE(coordX, coordY));
-        LOG.debug("CIN     {}", modelDataFile.getCIN(coordX, coordY));
-        LOG.debug("LFTX    {}", modelDataFile.getLFTX(coordX, coordY));
-        LOG.debug("MSL     {}", modelDataFile.getMSL(coordX, coordY));
-    }
 
-    @FXML
-    protected void doExit(ActionEvent event) {
-        LOG.debug("Exiting application.");
-        if (isNoFileOpen.get()) {
-            try {
-                modelDataFile.close();
-            } catch (IOException ex) {
-                LOG.error("Unable to close GRIB file!");
+        for (int coordLvl = 0; coordLvl < 50; coordLvl++) {
+            float curLevel = modelDataFile.getLevelFromIndex(coordLvl);
+            if ((int) curLevel != -1) {
+                newData.add(new DataEntry("Temperature",
+                        String.format("%dhPa", (int) curLevel / 100),
+                        String.format("%f", modelDataFile.getTempIso(coordX, coordY, coordLvl)),
+                        "K"));
             }
         }
-        System.exit(0);
+        newData.add(new DataEntry("Temperature",
+                "2m above ground",
+                String.format("%f", modelDataFile.getTemp2m(coordX, coordY)),
+                "K"));
+
+        for (int coordLvl = 0; coordLvl < 50; coordLvl++) {
+            float curLevel = modelDataFile.getLevelFromIndex(coordLvl);
+            if ((int) curLevel != -1) {
+                newData.add(new DataEntry("Dew Point",
+                        String.format("%dhPa", (int) curLevel / 100),
+                        String.format("%f", modelDataFile.getDewpIso(coordX, coordY, coordLvl)),
+                        "K"));
+            }
+        }
+        newData.add(new DataEntry("Dew Point",
+                "2m above ground",
+                String.format("%f", modelDataFile.getDewp2m(coordX, coordY)),
+                "K"));
+
+        newData.add(new DataEntry("Mean Sea Level Pressure",
+                "Surface",
+                String.format("%d", (int) modelDataFile.getMSL(coordX, coordY) / 100),
+                "hPa"));
+
+        newData.add(new DataEntry("Lifted Condensation Level",
+                "Surface",
+                String.format("%d", (int) modelDataFile.getLCL(coordX, coordY)[0] / 100),
+                "hPa"));
+
+        newData.add(new DataEntry("Convective Available Potential Energy",
+                "Surface",
+                String.format("%d", (int) modelDataFile.getCAPE(coordX, coordY)),
+                "J/kg"));
+
+        newData.add(new DataEntry("Convective Inhibition",
+                "Surface",
+                String.format("%d", (int) modelDataFile.getCIN(coordX, coordY)),
+                "J/kg"));
+
+        newData.add(new DataEntry("Lifted Index",
+                "Surface",
+                String.format("%.2f", modelDataFile.getLFTX(coordX, coordY)),
+                "K"));
+
+        dataList = FXCollections.observableArrayList(newData);
+        tblData.setItems(dataList);
+        tblData.setPrefSize(apDataTab.getWidth(), apDataTab.getHeight());
+        //tblData.getColumns().addAll(tcVariable, tcLevel, tcValue, tcUnits);
+    }
+
+    public static class DataEntry {
+
+        private final SimpleStringProperty varName;
+        private final SimpleStringProperty levelName;
+        private final SimpleStringProperty entryValue;
+        private final SimpleStringProperty entryUnits;
+
+        public DataEntry(String vName, String lName, String eValue, String eUnits) {
+            this.varName = new SimpleStringProperty(vName);
+            this.levelName = new SimpleStringProperty(lName);
+            this.entryValue = new SimpleStringProperty(eValue);
+            this.entryUnits = new SimpleStringProperty(eUnits);
+        }
+
+        public String getVarName() {
+            return this.varName.get();
+        }
+
+        public String getLevelName() {
+            return this.levelName.get();
+        }
+
+        public String getEntryValue() {
+            return this.entryValue.get();
+        }
+
+        public String getEntryUnits() {
+            return this.entryUnits.get();
+        }
+
+        public StringProperty varNameProperty() {
+            return this.varName;
+        }
+
+        public StringProperty levelNameProperty() {
+            return this.levelName;
+        }
+
+        public StringProperty entryValueProperty() {
+            return this.entryValue;
+        }
+
+        public StringProperty entryUnitsProperty() {
+            return this.entryUnits;
+        }
     }
 }

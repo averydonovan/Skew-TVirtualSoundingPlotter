@@ -60,8 +60,36 @@
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
     </properties>
-    <name>SkewTMultiTool</name>
+    <name>Skew-T MultiTool</name>
+    <inceptionYear>2016</inceptionYear>
+    <url>http://github.com/donovan1983/SkewTMultiTool/</url>
+    <organization>
+        <name>Donovan Smith</name>
+        <url>http://donovan.mccollinsmith.com</url>
+    </organization>
+    <developers>
+        <developer>
+            <name>Donovan Smith</name>
+            <email>donovan@mccollinsmith.com</email>
+            <url>http://donovan.mccollinsmith.com</url>
+            <roles>
+                <role>Developer</role>
+            </roles>
+        </developer>
+    </developers>
+    <licenses>
+        <license>
+            <name>GNU General Public License version 3</name>
+            <url>http://www.gnu.org/licenses/</url>
+        </license>
+    </licenses>
     <build>
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>true</filtering>
+            </resource>
+        </resources>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>

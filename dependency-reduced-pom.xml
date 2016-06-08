@@ -3,9 +3,37 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.mccollinsmith.donovan</groupId>
   <artifactId>SkewTMultiTool</artifactId>
-  <name>SkewTMultiTool</name>
+  <name>Skew-T MultiTool</name>
   <version>0.0.1</version>
+  <url>http://github.com/donovan1983/SkewTMultiTool/</url>
+  <inceptionYear>2016</inceptionYear>
+  <developers>
+    <developer>
+      <name>Donovan Smith</name>
+      <email>donovan@mccollinsmith.com</email>
+      <url>http://donovan.mccollinsmith.com</url>
+      <roles>
+        <role>Developer</role>
+      </roles>
+    </developer>
+  </developers>
+  <licenses>
+    <license>
+      <name>GNU General Public License version 3</name>
+      <url>http://www.gnu.org/licenses/</url>
+    </license>
+  </licenses>
+  <organization>
+    <name>Donovan Smith</name>
+    <url>http://donovan.mccollinsmith.com</url>
+  </organization>
   <build>
+    <resources>
+      <resource>
+        <filtering>true</filtering>
+        <directory>src/main/resources</directory>
+      </resource>
+    </resources>
     <plugins>
       <plugin>
         <artifactId>maven-shade-plugin</artifactId>

@@ -49,6 +49,10 @@ public class SkewTMultiTool extends Application {
     }
 
     public static void main(String args[]) {
+        if (System.getProperty("os.name").contains("OS X")) {
+            System.setProperty("com.apple.mrj.application.apple.menu.about.name", "Skew-T MultiTool");
+        }
+        
         launch(args);
     }
 }
