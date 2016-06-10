@@ -17,6 +17,7 @@
 package com.mccollinsmith.donovan.skewtmultitool.controllers;
 
 import com.mccollinsmith.donovan.skewtmultitool.utils.ModelDataFile;
+import java.awt.image.RenderedImage;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
@@ -29,16 +30,20 @@ import java.util.ResourceBundle;
 import javafx.beans.property.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.embed.swing.SwingFXUtils;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.canvas.Canvas;
 import javafx.scene.control.*;
 import javafx.scene.control.Alert.AlertType;
+import javafx.scene.image.WritableImage;
 import javafx.scene.input.KeyCombination;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import javafx.stage.FileChooser.ExtensionFilter;
+import javax.imageio.ImageIO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -59,6 +64,7 @@ public class STMTController implements Initializable {
     public static StringProperty windowTitle
             = new SimpleStringProperty("Skew-T MultiTool");
     public BooleanProperty isNoFileOpen = new SimpleBooleanProperty(true);
+    public BooleanProperty isNoSkewTDrawn = new SimpleBooleanProperty(true);
 
     /*
      * GUI widgets that are accessed from this controller
@@ -73,7 +79,12 @@ public class STMTController implements Initializable {
     @FXML
     private MenuItem menuFileClose;
     @FXML
+    private MenuItem menuFileSaveSkewT;
+    @FXML
     private MenuItem menuFileExit;
+    // Toolbar
+    @FXML
+    private Button btnSaveSkewT;
     // Data selection pane
     @FXML
     private AnchorPane apDataTab;
@@ -104,6 +115,11 @@ public class STMTController implements Initializable {
     private TableColumn<DataEntry, String> tcValue;
     @FXML
     private TableColumn<DataEntry, String> tcUnits;
+    // Skew-T tab
+    @FXML
+    private AnchorPane apSkewTTab;
+    @FXML
+    private Canvas canvasSkewT;
 
     private ObservableList<DataEntry> dataList;
 
@@ -120,11 +136,15 @@ public class STMTController implements Initializable {
             menuBar.setUseSystemMenuBar(true);
             menuFileOpen.setAccelerator(KeyCombination.keyCombination("Meta+O"));
             menuFileClose.setAccelerator(KeyCombination.keyCombination("Meta+W"));
+            menuFileSaveSkewT.setAccelerator(KeyCombination.keyCombination("Meta+S"));
             menuFileExit.setAccelerator(KeyCombination.keyCombination("Meta+Q"));
         }
 
         menuFileClose.disableProperty().bind(isNoFileOpen);
         vbDataSelect.disableProperty().bind(isNoFileOpen);
+
+        menuFileSaveSkewT.disableProperty().bind(isNoSkewTDrawn);
+        btnSaveSkewT.disableProperty().bind(isNoSkewTDrawn);
 
         dataList = FXCollections.observableArrayList();
 
@@ -163,6 +183,7 @@ public class STMTController implements Initializable {
             return;
         } else {
             modelFileName = file.getAbsolutePath();
+            isNoSkewTDrawn.set(true);
         }
 
         try {
@@ -248,6 +269,47 @@ public class STMTController implements Initializable {
     }
 
     @FXML
+    protected void doSaveSkewT(ActionEvent event) {
+        String pngFileName = "";
+
+        Path curPath = Paths.get("");
+        String cwd = curPath.toAbsolutePath().toString();
+        File curPathAsFile = new File(cwd);
+
+        FileChooser chooser = new FileChooser();
+        chooser.setInitialDirectory(curPathAsFile);
+        chooser.setInitialFileName("skewt.png");
+        ExtensionFilter fileExtsPNG
+                = new ExtensionFilter(
+                        "PNG images", "*.png", "*.PNG");
+        chooser.getExtensionFilters().addAll(fileExtsPNG);
+        File file = chooser.showSaveDialog(anchorPane.getScene().getWindow());
+
+        if (file == null) {
+            return;
+        } else {
+            pngFileName = file.getAbsolutePath();
+            WritableImage writableImage = new WritableImage((int) canvasSkewT.getWidth(),
+                    (int) canvasSkewT.getHeight());
+            canvasSkewT.snapshot(null, writableImage);
+            RenderedImage renderedImage = SwingFXUtils.fromFXImage(writableImage, null);
+            try {
+                ImageIO.write(renderedImage, "png", file);
+            } catch (IOException ex) {
+                LOG.error("{}\n{}", ex.getLocalizedMessage(), ex.toString());
+                Alert alert = new Alert(AlertType.ERROR);
+                LOG.error("Unable to save PNG file!");
+                alert.setTitle("File Save Error");
+                alert.setHeaderText("Unable to save PNG file");
+                alert.setContentText("File name not valid or path not writeable.");
+                alert.showAndWait();
+                return;
+            }
+        }
+
+    }
+
+    @FXML
     protected void doExit(ActionEvent event) {
         LOG.debug("Exiting application.");
         if (isNoFileOpen.get() == false) {
@@ -259,10 +321,10 @@ public class STMTController implements Initializable {
         }
         System.exit(0);
     }
-    
+
     @FXML
     protected void eventWindowResized(ActionEvent event) {
-        
+
     }
 
     public void doUpdateData() {
@@ -333,7 +395,11 @@ public class STMTController implements Initializable {
         dataList = FXCollections.observableArrayList(newData);
         tblData.setItems(dataList);
         tblData.setPrefSize(apDataTab.getWidth(), apDataTab.getHeight());
-        //tblData.getColumns().addAll(tcVariable, tcLevel, tcValue, tcUnits);
+
+        SkewTPlot.plotSkewT(canvasSkewT.getGraphicsContext2D(), modelDataFile,
+                coordX, coordY);
+
+        isNoSkewTDrawn.set(false);
     }
 
     public static class DataEntry {

@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.geometry.Insets?>
+<?import javafx.scene.canvas.Canvas?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.Menu?>
@@ -47,6 +48,11 @@
                                             </accelerator>
                                         </MenuItem>
                                         <SeparatorMenuItem mnemonicParsing="false" />
+                                        <MenuItem fx:id="menuFileSaveSkewT" mnemonicParsing="false" onAction="#doSaveSkewT" text="Save Skew-T">
+                                 <accelerator>
+                                    <KeyCodeCombination alt="UP" code="S" control="DOWN" meta="UP" shift="UP" shortcut="UP" />
+                                 </accelerator></MenuItem>
+                                        <SeparatorMenuItem mnemonicParsing="false" />
                                         <MenuItem fx:id="menuFileExit" mnemonicParsing="false" onAction="#doExit" text="Exit">
                                             <accelerator>
                                                 <KeyCodeCombination alt="UP" code="Q" control="DOWN" meta="UP" shift="UP" shortcut="UP" />
@@ -63,7 +69,8 @@
                         </MenuBar>
                         <ToolBar prefHeight="40.0" prefWidth="200.0">
                             <items>
-                                <Button mnemonicParsing="false" onAction="#doOpenFile" text="Open GRIB" />
+                                <Button mnemonicParsing="false" onAction="#doOpenFile" text="Open File" />
+                                <Button fx:id="btnSaveSkewT" mnemonicParsing="false" onAction="#doSaveSkewT" text="Save Skew-T" />
                             </items>
                         </ToolBar>
                     </children>
@@ -75,9 +82,9 @@
                         <Label maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefWidth="600.0" text="Label" />
                         <ProgressBar maxWidth="200.0" minWidth="200.0" prefWidth="200.0" progress="0.0" />
                     </children>
-               <padding>
-                  <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
-               </padding>
+                    <padding>
+                        <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                    </padding>
                 </HBox>
             </bottom>
             <left>
@@ -203,6 +210,22 @@
             <center>
                 <TabPane prefHeight="-1" prefWidth="-1" tabClosingPolicy="UNAVAILABLE" BorderPane.alignment="CENTER">
                     <tabs>
+                        <Tab text="Skew-T">
+                            <content>
+                                <ScrollPane>
+                                    <content>
+                                        <AnchorPane fx:id="apSkewTTab" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308">
+                                            <children>
+                                                <Canvas fx:id="canvasSkewT" height="800.0" width="800.0" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="0.0" />
+                                            </children>
+                                            <padding>
+                                                <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                                            </padding>
+                                        </AnchorPane>
+                                    </content>
+                                </ScrollPane>
+                            </content>
+                        </Tab>
                         <Tab closable="false" text="Data">
                             <content>
                                 <AnchorPane fx:id="apDataTab" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="-1" prefWidth="-1">

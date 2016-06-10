@@ -154,6 +154,25 @@ public class AtmosThermoMath {
     }
 
     /*
+     * Wrappers around internal-use functions.
+     */
+    public static double calcTempFromPot(double potTemp, double pres) {
+        return from_pot_temp(potTemp, pres);
+    }
+
+    public static double calcTempSatAdiabat(double os, double pres) {
+        return tsa(os, pres);
+    }
+
+    public static double calcSatPotTemp(double temp, double pres) {
+        return os(temp, pres);
+    }
+
+    public static double calcTempAtMixingRatio(double w, double pres) {
+        return tmr(w, pres);
+    }
+
+    /*
      * Internal-use functions. Not that all return doubles to reduce rounding
      * errors, although externally accessible functions return floats.
      */
@@ -208,5 +227,30 @@ public class AtmosThermoMath {
         double result = 6.1078 * Math.exp((17.2693882 * temp) / (temp + 237.3));
         result = result * 100; // Convert hPa to Pa
         return result;
+    }
+
+    // Temperature of air when following a saturated adiabat, os in K, pres in Pa
+    private static double tsa(double os, double pres) {
+        double tq = 253.15;
+        double d = 120.0;
+        double x = 0;
+        for (int i = 0; i < 13; i++) {
+            d = d / 2.0;
+            x = os * Math.exp(-2.6518986 * w(tq, pres) / tq) - tq * Math.pow((100000 / pres), (2.0 / 7.0));
+            if (Math.abs(x) < 0.01) {
+                break;
+            } else {
+                d = Math.copySign(d, x);
+                tq += d;
+            }
+        }
+        return tq;
+    }
+
+    // Saturated potential temperature at 1000 hPa, temp in K, pres in Pa
+    private static double os(double temp, double pres) {
+        double os = temp * Math.pow((100000 / pres), (2.0 / 7.0))
+                / Math.exp(-2.6518986 * (w(temp, pres) / temp));
+        return os;
     }
 }

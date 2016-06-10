@@ -3,6 +3,7 @@
 /*.gbx9
 /*.ncx3
 /*.grb2
+/*.png
 *.ini
 .DS_Store
 /slf4j-jdk14-1.7.21.jar
