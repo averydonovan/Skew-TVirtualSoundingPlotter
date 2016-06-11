@@ -16,6 +16,9 @@
  */
 package com.mccollinsmith.donovan.skewtmultitool.utils;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * Various methods that are useful in atmospheric thermodynamics calculations.
  * All methods use base SI units (e.g. K, Pa, m). Parameters and returned values
@@ -24,6 +27,9 @@ package com.mccollinsmith.donovan.skewtmultitool.utils;
  * @author Donovan Smith <donovan@mccollinsmith.com>
  */
 public class AtmosThermoMath {
+
+    private static final Logger LOG
+            = LoggerFactory.getLogger(ModelDataFile.class.getName());
 
     /**
      * Calculates total totals (TT) index.
@@ -71,7 +77,7 @@ public class AtmosThermoMath {
      */
     public static float calcDewp(float temp, float pres, float rh) {
         rh = rh / 100;
-        double result = tmr(w(temp, pres) * rh, pres);
+        double result = calcTempAtMixingRatio(w(temp, pres) * rh, pres);
         return (float) result;
     }
 
@@ -85,16 +91,16 @@ public class AtmosThermoMath {
      * @return LCL as float[2]; [0] = pressure in Pa, [1] = temperature in K
      */
     public static float[] calcLCL(float temp, float dewp, float pres) {
-        double stepSize = 100;
+        final double stepSize = 100;
         double pt = pot_temp(temp, pres);
         double w_0 = w(dewp, pres);
         double w_s = w(temp, pres);
         double delta = stepSize * 10;
         double lcl = Math.ceil(pres / 100) * 100;
         double pt_l = 0;
-        while (Math.abs(delta) > stepSize && lcl > 10000) {
+        while (Math.abs(delta) > 0.1 && lcl > 10000) {
             lcl -= stepSize;
-            pt_l = from_pot_temp(pt, lcl);
+            pt_l = calcTempFromPot(pt, lcl);
             delta = w(pt_l, lcl) - w_0;
         }
         float[] result = {(float) lcl, (float) pt_l};
@@ -154,25 +160,6 @@ public class AtmosThermoMath {
     }
 
     /*
-     * Wrappers around internal-use functions.
-     */
-    public static double calcTempFromPot(double potTemp, double pres) {
-        return from_pot_temp(potTemp, pres);
-    }
-
-    public static double calcTempSatAdiabat(double os, double pres) {
-        return tsa(os, pres);
-    }
-
-    public static double calcSatPotTemp(double temp, double pres) {
-        return os(temp, pres);
-    }
-
-    public static double calcTempAtMixingRatio(double w, double pres) {
-        return tmr(w, pres);
-    }
-
-    /*
      * Internal-use functions. Not that all return doubles to reduce rounding
      * errors, although externally accessible functions return floats.
      */
@@ -190,7 +177,7 @@ public class AtmosThermoMath {
     }
 
     // Temperature of air in K from potential temperature in K, pressure in Pa
-    private static double from_pot_temp(double pot_temp, double pres) {
+    public static double calcTempFromPot(double pot_temp, double pres) {
         double result = pot_temp * Math.pow(pres / 100000.0, 2.0 / 7);
         return result;
     }
@@ -200,12 +187,37 @@ public class AtmosThermoMath {
      * http://cimss.ssec.wisc.edu/camex3/archive/quicklooks/skewt.pro
      */
     // Temperature of air (K) at a given mixing ratio (g/kg) and pressure (Pa)
-    private static double tmr(double w, double p) {
+    public static double calcTempAtMixingRatio(double w, double p) {
         p = p / 100; //Convert Pa to hPa
         double x = Math.log10(w * p / (622.0 + w));
         double result = Math.pow(10, 0.0498646455 * x + 2.4082965) - 7.07475
                 + 38.9114 * Math.pow(Math.pow(10, 0.0915 * x) - 1.2035, 2.0);
         return result;
+    }
+
+    // Temperature of air when following a saturated adiabat, os in K, pres in Pa
+    public static double calcTempSatAdiabat(double os, double pres) {
+        double tq = 253.15;
+        double d = 120.0;
+        double x = 0;
+        for (int i = 0; i < 13; i++) {
+            d = d / 2.0;
+            x = os * Math.exp(-2.6518986 * w(tq, pres) / tq) - tq * Math.pow((100000 / pres), (2.0 / 7.0));
+            if (Math.abs(x) < 0.01) {
+                break;
+            } else {
+                d = Math.copySign(d, x);
+                tq += d;
+            }
+        }
+        return tq;
+    }
+
+    // Saturated potential temperature at 1000 hPa, temp in K, pres in Pa
+    public static double calcSatPotTemp(double temp, double pres) {
+        double os = temp * Math.pow((100000 / pres), (2.0 / 7.0))
+                / Math.exp(-2.6518986 * (w(temp, pres) / temp));
+        return os;
     }
 
     // Saturated mixing ratio in g/kg from temp in K, pres in Pa
@@ -227,30 +239,5 @@ public class AtmosThermoMath {
         double result = 6.1078 * Math.exp((17.2693882 * temp) / (temp + 237.3));
         result = result * 100; // Convert hPa to Pa
         return result;
-    }
-
-    // Temperature of air when following a saturated adiabat, os in K, pres in Pa
-    private static double tsa(double os, double pres) {
-        double tq = 253.15;
-        double d = 120.0;
-        double x = 0;
-        for (int i = 0; i < 13; i++) {
-            d = d / 2.0;
-            x = os * Math.exp(-2.6518986 * w(tq, pres) / tq) - tq * Math.pow((100000 / pres), (2.0 / 7.0));
-            if (Math.abs(x) < 0.01) {
-                break;
-            } else {
-                d = Math.copySign(d, x);
-                tq += d;
-            }
-        }
-        return tq;
-    }
-
-    // Saturated potential temperature at 1000 hPa, temp in K, pres in Pa
-    private static double os(double temp, double pres) {
-        double os = temp * Math.pow((100000 / pres), (2.0 / 7.0))
-                / Math.exp(-2.6518986 * (w(temp, pres) / temp));
-        return os;
     }
 }

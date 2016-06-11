@@ -7,3 +7,4 @@
 *.ini
 .DS_Store
 /slf4j-jdk14-1.7.21.jar
+Thumbs.db

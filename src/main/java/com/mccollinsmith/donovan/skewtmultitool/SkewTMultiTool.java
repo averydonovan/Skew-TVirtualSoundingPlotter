@@ -41,7 +41,7 @@ public class SkewTMultiTool extends Application {
     public void start(Stage primaryStage) throws Exception {
         Parent root = FXMLLoader.load(getClass().getResource("/fxml/STMT.fxml"));
 
-        Scene scene = new Scene(root, 800, 600);
+        Scene scene = new Scene(root, 1200, 700);
 
         primaryStage.titleProperty().bind(STMTController.windowTitle);
         primaryStage.setScene(scene);

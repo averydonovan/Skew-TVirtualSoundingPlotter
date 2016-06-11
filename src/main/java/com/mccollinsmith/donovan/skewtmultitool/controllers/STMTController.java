@@ -367,6 +367,11 @@ public class STMTController implements Initializable {
                 String.format("%f", modelDataFile.getDewp2m(coordX, coordY)),
                 "K"));
 
+        newData.add(new DataEntry("Surface Pressure",
+                "Surface",
+                String.format("%d", (int) modelDataFile.getPresSfc(coordX, coordY) / 100),
+                "hPa"));
+
         newData.add(new DataEntry("Mean Sea Level Pressure",
                 "Surface",
                 String.format("%d", (int) modelDataFile.getMSL(coordX, coordY) / 100),

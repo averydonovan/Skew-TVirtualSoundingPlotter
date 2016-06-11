@@ -172,10 +172,10 @@ public class SkewTPlot {
             gcSkewTPlot.setLineWidth(1);
             gcSkewTPlot.setTextAlign(TextAlignment.RIGHT);
             gcSkewTPlot.setTextBaseline(VPos.CENTER);
-            gcSkewTPlot.setFont(Font.font("monospaced", FontWeight.NORMAL, 12 * plotAvgStep));
-            gcSkewTPlot.strokeLine(plotXOffset, y, plotXOffset - (5 * plotAvgStep), y);
+            gcSkewTPlot.setFont(Font.font("monospaced", FontWeight.NORMAL, 7 * plotAvgStep));
+            gcSkewTPlot.strokeLine(plotXOffset, y, plotXOffset - (3 * plotAvgStep), y);
             gcSkewTPlot.setLineWidth(0);
-            gcSkewTPlot.fillText(String.format("%.0f", curLevel / 100), plotXOffset - 6 * plotAvgStep, y);
+            gcSkewTPlot.fillText(String.format("%.0f", curLevel / 100), plotXOffset - 4 * plotAvgStep, y);
         }
 
         for (double curStep : tempSteps) {
@@ -184,14 +184,14 @@ public class SkewTPlot {
             gcSkewTPlot.setLineWidth(1);
             gcSkewTPlot.setTextAlign(TextAlignment.CENTER);
             gcSkewTPlot.setTextBaseline(VPos.TOP);
-            gcSkewTPlot.setFont(Font.font("monospaced", FontWeight.NORMAL, 12 * plotAvgStep));
-            gcSkewTPlot.strokeLine(x, plotYOffset, x, plotYOffset + (5 * plotAvgStep));
+            gcSkewTPlot.setFont(Font.font("monospaced", FontWeight.NORMAL, 7 * plotAvgStep));
+            gcSkewTPlot.strokeLine(x, plotYOffset, x, plotYOffset + (3 * plotAvgStep));
             gcSkewTPlot.setLineWidth(0);
-            gcSkewTPlot.fillText(String.format("%.0f", curStep - C_TO_K), x, plotYOffset + 6 * plotAvgStep);
+            gcSkewTPlot.fillText(String.format("%.0f", curStep - C_TO_K), x, plotYOffset + 4 * plotAvgStep);
         }
 
-        double yAxisLabelSize = 15 * plotAvgStep;
-        double yAxisLabelX = (canvasWidth * 0.05) + yAxisLabelSize;
+        double yAxisLabelSize = 10 * plotAvgStep;
+        double yAxisLabelX = (canvasWidth * 0.075) + yAxisLabelSize;
         double yAxisLabelY = (plotYRange / 2) + plotYMax;
 
         gcSkewTPlot.save();
@@ -204,9 +204,9 @@ public class SkewTPlot {
         gcSkewTPlot.fillText("Pressure (hPa)", yAxisLabelX, yAxisLabelY);
         gcSkewTPlot.restore();
 
-        double xAxisLabelSize = 15 * plotAvgStep;
+        double xAxisLabelSize = 10 * plotAvgStep;
         double xAxisLabelX = (plotXRange / 2) + plotXOffset;
-        double xAxisLabelY = (canvasHeight * 0.95) - xAxisLabelSize;
+        double xAxisLabelY = (canvasHeight * 0.90) - xAxisLabelSize;
         gcSkewTPlot.setLineWidth(0);
         gcSkewTPlot.setTextAlign(TextAlignment.CENTER);
         gcSkewTPlot.setTextBaseline(VPos.CENTER);
