@@ -34,6 +34,7 @@ import javafx.embed.swing.SwingFXUtils;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.SnapshotParameters;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.control.*;
 import javafx.scene.control.Alert.AlertType;
@@ -41,6 +42,7 @@ import javafx.scene.image.WritableImage;
 import javafx.scene.input.KeyCombination;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
 import javafx.stage.FileChooser;
 import javafx.stage.FileChooser.ExtensionFilter;
 import javax.imageio.ImageIO;
@@ -154,7 +156,8 @@ public class STMTController implements Initializable {
         tcUnits.setCellValueFactory(cellData -> cellData.getValue().entryUnitsProperty());
 
         tblData.setItems(dataList);
-        //tblData.setPrefSize(apDataTab.getWidth(), apDataTab.getHeight());
+        
+        SkewTPlot.drawSkewT(canvasSkewT.getGraphicsContext2D());
     }
 
     public void doAppendWindowTitle(String newTitle) {
@@ -289,10 +292,7 @@ public class STMTController implements Initializable {
             return;
         } else {
             pngFileName = file.getAbsolutePath();
-            WritableImage writableImage = new WritableImage((int) canvasSkewT.getWidth(),
-                    (int) canvasSkewT.getHeight());
-            canvasSkewT.snapshot(null, writableImage);
-            RenderedImage renderedImage = SwingFXUtils.fromFXImage(writableImage, null);
+            RenderedImage renderedImage = SkewTPlot.doSavePlot();
             try {
                 ImageIO.write(renderedImage, "png", file);
             } catch (IOException ex) {
@@ -306,7 +306,6 @@ public class STMTController implements Initializable {
                 return;
             }
         }
-
     }
 
     @FXML
@@ -400,7 +399,7 @@ public class STMTController implements Initializable {
         dataList = FXCollections.observableArrayList(newData);
         tblData.setItems(dataList);
         tblData.setPrefSize(apDataTab.getWidth(), apDataTab.getHeight());
-
+        
         SkewTPlot.plotSkewT(canvasSkewT.getGraphicsContext2D(), modelDataFile,
                 coordX, coordY);
 
