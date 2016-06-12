@@ -23,11 +23,12 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
-import java.util.stream.DoubleStream;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
+import javafx.application.Application.Parameters;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.geometry.VPos;
+import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
 import javafx.scene.image.WritableImage;
@@ -100,7 +101,7 @@ public class SkewTPlot {
         // Do nothing
     }
 
-    public static void drawSkewT(GraphicsContext gcSkewT) {
+    public static void initSkewT(GraphicsContext gcSkewT, boolean doClearPlot) {
         gcSkewTPlot = gcSkewT;
 
         presLevels = IntStream
@@ -116,7 +117,8 @@ public class SkewTPlot {
                 .collect(Collectors.toList());
 
         wLevels = Stream
-                .of(0.1, 0.5, 1.0, 1.5, 2.0, 3.0, 4.0, 6.0, 8.0, 10.0, 12.0, 15.0, 20.0, 25.0, 30.0, 35.0, 40.0, 45.0)
+                .of(0.1, 0.5, 1.0, 1.5, 2.0, 3.0, 4.0, 6.0, 8.0, 10.0, 12.0,
+                        15.0, 20.0, 25.0, 30.0, 35.0, 40.0, 45.0)
                 .collect(Collectors.toList());
 
         canvasWidth = gcSkewTPlot.getCanvas().getWidth();
@@ -132,16 +134,14 @@ public class SkewTPlot {
         plotYStep = plotYRange / PLOT_MAX_STEPS;
         plotAvgStep = (plotXStep + plotYStep) / 2;
 
-        gcSkewTPlot.clearRect(0, 0, canvasWidth, canvasHeight);
-
-        drawGridLines();
-
-        drawAxes();
-        drawTicksAndLabels();
+        if (doClearPlot == true) {
+            gcSkewTPlot.clearRect(0, 0, canvasWidth, canvasHeight);
+        }
     }
 
-    public static void plotSkewT(GraphicsContext gcSkewT, ModelDataFile mdfInUse, int curX, int curY) {
-        drawSkewT(gcSkewT);
+    public static void plotSkewT(GraphicsContext gcSkewT,
+            ModelDataFile mdfInUse, int curX, int curY) {
+        initSkewT(gcSkewT, true);
 
         mdfSkewTData = mdfInUse;
 
@@ -150,27 +150,42 @@ public class SkewTPlot {
 
         double[] foundLonLat = mdfSkewTData.getLonLatFromXYCoords(coordX, coordY);
 
+        drawGridLines();
+
         plotTemps();
+
+        drawAxes();
+        drawTicksAndLabels();
+    }
+    
+    public static void drawBlankSkewT(GraphicsContext gcSkewT) {
+        initSkewT(gcSkewT, true);
+
+        drawGridLines();
+
+        drawAxes();
+        drawTicksAndLabels();
     }
 
-    public static RenderedImage doSavePlot() {
+    public static RenderedImage getHiResPlot() {
         scaleLineFactor = 3;
         
-        gcSkewTPlot.getCanvas().setHeight(PLOT_PRINT_HEIGHT);
-        gcSkewTPlot.getCanvas().setWidth(PLOT_PRINT_WIDTH);
+        Canvas canvasHiResPlot = new Canvas();
+        GraphicsContext gcViewPlot = gcSkewTPlot;
+        
+        canvasHiResPlot.setHeight(PLOT_PRINT_HEIGHT);
+        canvasHiResPlot.setWidth(PLOT_PRINT_WIDTH);
 
-        WritableImage writableImage = new WritableImage((int) gcSkewTPlot.getCanvas().getWidth(),
-                (int) gcSkewTPlot.getCanvas().getHeight());
-        plotSkewT(gcSkewTPlot, mdfSkewTData, coordX, coordY);
-
-        gcSkewTPlot.getCanvas().snapshot(null, writableImage);
+        WritableImage writableImage = new WritableImage((int) PLOT_PRINT_WIDTH,
+                (int) PLOT_PRINT_HEIGHT);
+        plotSkewT(canvasHiResPlot.getGraphicsContext2D(), mdfSkewTData,
+                coordX, coordY);
+        
+        canvasHiResPlot.snapshot(null, writableImage);
 
         scaleLineFactor = 1;
 
-        gcSkewTPlot.getCanvas().setHeight(PLOT_VIEW_HEIGHT);
-        gcSkewTPlot.getCanvas().setWidth(PLOT_VIEW_WIDTH);
-
-        plotSkewT(gcSkewTPlot, mdfSkewTData, coordX, coordY);
+        initSkewT(gcViewPlot, false);
         
         return SwingFXUtils.fromFXImage(writableImage, null);
     }
@@ -207,18 +222,6 @@ public class SkewTPlot {
                     dataPresLevels.get(count));
             double[] resultsDewp = getXYFromTempPres(dataDewpVals.get(count),
                     dataPresLevels.get(count));
-            
-            if (resultsTemp[0] < plotXOffset) {
-                resultsTemp[0] = plotXOffset;
-            } else if (resultsTemp[0] > plotXMax) {
-                resultsTemp[0] = plotXMax;
-            }
-            
-            if (resultsDewp[0] < plotXOffset) {
-                resultsDewp[0] = plotXOffset;
-            } else if (resultsDewp[0] > plotXMax) {
-                resultsDewp[0] = plotXMax;
-            }
             
             xTempValsList.add(resultsTemp[0]);
             xDewpValsList.add(resultsDewp[0]);

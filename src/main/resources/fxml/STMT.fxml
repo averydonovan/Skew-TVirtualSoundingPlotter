@@ -49,9 +49,10 @@
                                         </MenuItem>
                                         <SeparatorMenuItem mnemonicParsing="false" />
                                         <MenuItem fx:id="menuFileSaveSkewT" mnemonicParsing="false" onAction="#doSaveSkewT" text="Save Skew-T">
-                                 <accelerator>
-                                    <KeyCodeCombination alt="UP" code="S" control="DOWN" meta="UP" shift="UP" shortcut="UP" />
-                                 </accelerator></MenuItem>
+                                            <accelerator>
+                                                <KeyCodeCombination alt="UP" code="S" control="DOWN" meta="UP" shift="UP" shortcut="UP" />
+                                            </accelerator>
+                                        </MenuItem>
                                         <SeparatorMenuItem mnemonicParsing="false" />
                                         <MenuItem fx:id="menuFileExit" mnemonicParsing="false" onAction="#doExit" text="Exit">
                                             <accelerator>
@@ -77,9 +78,9 @@
                 </VBox>
             </top>
             <bottom>
-                <HBox alignment="BOTTOM_CENTER" prefWidth="200.0" spacing="5.0" BorderPane.alignment="CENTER">
+                <HBox alignment="BOTTOM_CENTER" spacing="5.0" BorderPane.alignment="CENTER">
                     <children>
-                        <Label maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefWidth="600.0" text="Label" />
+                        <Label fx:id="lblStatus" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minWidth="700.0" prefWidth="1200.0" text="Label" />
                         <ProgressBar maxWidth="200.0" minWidth="200.0" prefWidth="200.0" progress="0.0" />
                     </children>
                     <padding>
@@ -212,7 +213,7 @@
                     <tabs>
                         <Tab text="Skew-T">
                             <content>
-                                <ScrollPane>
+                                <ScrollPane fx:id="spSkewTTab">
                                     <content>
                                         <AnchorPane fx:id="apSkewTTab" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308">
                                             <children>
@@ -232,10 +233,11 @@
                                     <children>
                                         <TableView fx:id="tblData" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="-1" prefWidth="-1" style="-fx-font-family: monospaced;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                                             <columns>
-                                                <TableColumn fx:id="tcVariable" editable="false" maxWidth="1.7976931348623157E308" minWidth="150.0" prefWidth="-1.0" text="Variable" />
-                                                <TableColumn fx:id="tcLevel" editable="false" maxWidth="1.7976931348623157E308" minWidth="150.0" prefWidth="-1.0" text="Level" />
+                                                <TableColumn fx:id="tcVariable" editable="false" maxWidth="1.7976931348623157E308" minWidth="300.0" prefWidth="-1.0" text="Variable" />
+                                                <TableColumn fx:id="tcLevel" editable="false" maxWidth="1.7976931348623157E308" minWidth="75.0" prefWidth="-1.0" text="Level" />
+                                                <TableColumn fx:id="tcLevelUnits" minWidth="150.0" prefWidth="150.0" text="Level Units" />
                                                 <TableColumn fx:id="tcValue" editable="false" maxWidth="1.7976931348623157E308" minWidth="150.0" prefWidth="-1.0" sortable="false" text="Value" />
-                                                <TableColumn fx:id="tcUnits" editable="false" maxWidth="1.7976931348623157E308" minWidth="100.0" prefWidth="-1.0" sortable="false" text="Units" />
+                                                <TableColumn fx:id="tcValueUnits" editable="false" maxWidth="1.7976931348623157E308" minWidth="100.0" prefWidth="-1.0" sortable="false" text="Value Units" />
                                             </columns>
                                         </TableView>
                                     </children>

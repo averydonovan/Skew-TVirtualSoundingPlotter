@@ -114,14 +114,21 @@ public class STMTController implements Initializable {
     @FXML
     private TableColumn<DataEntry, String> tcLevel;
     @FXML
+    private TableColumn<DataEntry, String> tcLevelUnits;
+    @FXML
     private TableColumn<DataEntry, String> tcValue;
     @FXML
-    private TableColumn<DataEntry, String> tcUnits;
+    private TableColumn<DataEntry, String> tcValueUnits;
     // Skew-T tab
+    @FXML
+    private ScrollPane spSkewTTab;
     @FXML
     private AnchorPane apSkewTTab;
     @FXML
     private Canvas canvasSkewT;
+    // Status bar
+    @FXML
+    private Label lblStatus;
 
     private ObservableList<DataEntry> dataList;
 
@@ -151,13 +158,16 @@ public class STMTController implements Initializable {
         dataList = FXCollections.observableArrayList();
 
         tcVariable.setCellValueFactory(cellData -> cellData.getValue().varNameProperty());
-        tcLevel.setCellValueFactory(cellData -> cellData.getValue().levelNameProperty());
+        tcLevel.setCellValueFactory(cellData -> cellData.getValue().levelValueProperty());
+        tcLevelUnits.setCellValueFactory(cellData -> cellData.getValue().levelUnitsProperty());
         tcValue.setCellValueFactory(cellData -> cellData.getValue().entryValueProperty());
-        tcUnits.setCellValueFactory(cellData -> cellData.getValue().entryUnitsProperty());
+        tcValueUnits.setCellValueFactory(cellData -> cellData.getValue().entryUnitsProperty());
 
         tblData.setItems(dataList);
+
+        SkewTPlot.drawBlankSkewT(canvasSkewT.getGraphicsContext2D());
         
-        SkewTPlot.drawSkewT(canvasSkewT.getGraphicsContext2D());
+        doUpdateStatus("Ready");
     }
 
     public void doAppendWindowTitle(String newTitle) {
@@ -166,6 +176,10 @@ public class STMTController implements Initializable {
 
     public void doResetWindowTitle() {
         windowTitle.setValue("Skew-T MultiTool");
+    }
+
+    public void doUpdateStatus(String newStatus) {
+        lblStatus.setText(newStatus);
     }
 
     @FXML
@@ -193,6 +207,7 @@ public class STMTController implements Initializable {
             modelDataFile = new ModelDataFile(modelFileName);
             if (modelDataFile != null) {
                 doAppendWindowTitle(file.getName());
+                doUpdateStatus("File opened");
                 isNoFileOpen.set(false);
             } else {
                 modelDataFile.close();
@@ -291,20 +306,23 @@ public class STMTController implements Initializable {
         if (file == null) {
             return;
         } else {
+            doUpdateStatus("Saving plot to file...");
             pngFileName = file.getAbsolutePath();
-            RenderedImage renderedImage = SkewTPlot.doSavePlot();
+            RenderedImage renderedImage = SkewTPlot.getHiResPlot();
             try {
                 ImageIO.write(renderedImage, "png", file);
             } catch (IOException ex) {
                 LOG.error("{}\n{}", ex.getLocalizedMessage(), ex.toString());
                 Alert alert = new Alert(AlertType.ERROR);
                 LOG.error("Unable to save PNG file!");
+                doUpdateStatus("Unable to save plot to file");
                 alert.setTitle("File Save Error");
                 alert.setHeaderText("Unable to save PNG file");
                 alert.setContentText("File name not valid or path not writeable.");
                 alert.showAndWait();
                 return;
             }
+            doUpdateStatus("Plot successfully saved to file " + file.getName());
         }
     }
 
@@ -342,13 +360,15 @@ public class STMTController implements Initializable {
             float curLevel = modelDataFile.getLevelFromIndex(coordLvl);
             if ((int) curLevel != -1) {
                 newData.add(new DataEntry("Temperature",
-                        String.format("%dhPa", (int) curLevel / 100),
+                        String.format("%d", (int) curLevel / 100),
+                        "hPa",
                         String.format("%f", modelDataFile.getTempIso(coordX, coordY, coordLvl)),
                         "K"));
             }
         }
         newData.add(new DataEntry("Temperature",
-                "2m above ground",
+                "2",
+                "m above ground",
                 String.format("%f", modelDataFile.getTemp2m(coordX, coordY)),
                 "K"));
 
@@ -356,66 +376,78 @@ public class STMTController implements Initializable {
             float curLevel = modelDataFile.getLevelFromIndex(coordLvl);
             if ((int) curLevel != -1) {
                 newData.add(new DataEntry("Dew Point",
-                        String.format("%dhPa", (int) curLevel / 100),
+                        String.format("%d", (int) curLevel / 100),
+                        "hPa",
                         String.format("%f", modelDataFile.getDewpIso(coordX, coordY, coordLvl)),
                         "K"));
             }
         }
         newData.add(new DataEntry("Dew Point",
-                "2m above ground",
+                "2",
+                "m above ground",
                 String.format("%f", modelDataFile.getDewp2m(coordX, coordY)),
                 "K"));
 
         newData.add(new DataEntry("Surface Pressure",
-                "Surface",
+                "surface",
+                "surface",
                 String.format("%d", (int) modelDataFile.getPresSfc(coordX, coordY) / 100),
                 "hPa"));
 
         newData.add(new DataEntry("Mean Sea Level Pressure",
-                "Surface",
+                "surface",
+                "surface",
                 String.format("%d", (int) modelDataFile.getMSL(coordX, coordY) / 100),
                 "hPa"));
 
         newData.add(new DataEntry("Lifted Condensation Level",
-                "Surface",
+                "surface",
+                "surface",
                 String.format("%d", (int) modelDataFile.getLCL(coordX, coordY)[0] / 100),
                 "hPa"));
 
         newData.add(new DataEntry("Convective Available Potential Energy",
-                "Surface",
+                "surface",
+                "surface",
                 String.format("%d", (int) modelDataFile.getCAPE(coordX, coordY)),
                 "J/kg"));
 
         newData.add(new DataEntry("Convective Inhibition",
-                "Surface",
+                "surface",
+                "surface",
                 String.format("%d", (int) modelDataFile.getCIN(coordX, coordY)),
                 "J/kg"));
 
         newData.add(new DataEntry("Lifted Index",
-                "Surface",
+                "1000-500",
+                "hPa",
                 String.format("%.2f", modelDataFile.getLFTX(coordX, coordY)),
                 "K"));
 
         dataList = FXCollections.observableArrayList(newData);
         tblData.setItems(dataList);
         tblData.setPrefSize(apDataTab.getWidth(), apDataTab.getHeight());
-        
+
         SkewTPlot.plotSkewT(canvasSkewT.getGraphicsContext2D(), modelDataFile,
                 coordX, coordY);
 
         isNoSkewTDrawn.set(false);
+        doUpdateStatus("Skew-T plot and data table updated");
     }
 
     public static class DataEntry {
 
         private final SimpleStringProperty varName;
-        private final SimpleStringProperty levelName;
+        private final SimpleStringProperty levelValue;
+        private final SimpleStringProperty levelUnits;
         private final SimpleStringProperty entryValue;
         private final SimpleStringProperty entryUnits;
 
-        public DataEntry(String vName, String lName, String eValue, String eUnits) {
+        public DataEntry(String vName, String lName, String lUnits,
+                String eValue, String eUnits) {
             this.varName = new SimpleStringProperty(vName);
-            this.levelName = new SimpleStringProperty(lName);
+            this.levelValue = new SimpleStringProperty(lName);
+            this.levelUnits = new SimpleStringProperty(lUnits);
             this.entryValue = new SimpleStringProperty(eValue);
             this.entryUnits = new SimpleStringProperty(eUnits);
         }
@@ -424,8 +456,12 @@ public class STMTController implements Initializable {
             return this.varName.get();
         }
 
-        public String getLevelName() {
-            return this.levelName.get();
+        public String getLevelValue() {
+            return this.levelValue.get();
+        }
+
+        public String getLevelUnits() {
+            return this.levelUnits.get();
         }
 
         public String getEntryValue() {
@@ -440,8 +476,12 @@ public class STMTController implements Initializable {
             return this.varName;
         }
 
-        public StringProperty levelNameProperty() {
-            return this.levelName;
+        public StringProperty levelValueProperty() {
+            return this.levelValue;
+        }
+
+        public StringProperty levelUnitsProperty() {
+            return this.levelUnits;
         }
 
         public StringProperty entryValueProperty() {

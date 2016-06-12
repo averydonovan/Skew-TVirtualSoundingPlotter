@@ -49,12 +49,6 @@
         <configuration>
           <filters>
             <filter>
-              <artifact>mysql:mysql-connector-java</artifact>
-              <includes>
-                <include>com/mysql/jdbc/**</include>
-              </includes>
-            </filter>
-            <filter>
               <artifact>edu.ucar:grib</artifact>
               <includes>
                 <include>**</include>

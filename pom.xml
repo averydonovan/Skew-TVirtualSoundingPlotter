@@ -32,12 +32,6 @@
             <scope>compile</scope>
         </dependency>
         <dependency>
-            <groupId>mysql</groupId>
-            <artifactId>mysql-connector-java</artifactId>
-            <version>5.1.39</version>
-            <scope>compile</scope>
-        </dependency>
-        <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
             <version>1.7.21</version>
@@ -98,12 +92,6 @@
                 <configuration>
                     <!--<minimizeJar>true</minimizeJar>-->
                     <filters>
-                        <filter>
-                            <artifact>mysql:mysql-connector-java</artifact>
-                            <includes>
-                                <include>com/mysql/jdbc/**</include>
-                            </includes>
-                        </filter>
                         <filter>
                             <artifact>edu.ucar:grib</artifact>
                             <includes>
