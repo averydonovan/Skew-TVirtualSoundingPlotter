@@ -170,7 +170,7 @@ public class STMTController implements Initializable {
         tblData.setItems(dataList);
 
         SkewTPlot.drawBlankSkewT(canvasSkewT.getGraphicsContext2D());
-        
+
         doUpdateStatus("Ready");
     }
 
@@ -231,15 +231,17 @@ public class STMTController implements Initializable {
         double lon = -97.740379;
         double lat = 30.274632;
 
-        List<DataEntry> newData = new ArrayList<DataEntry>();
+        List<DataEntry> newData = new ArrayList<>();
         dataList = FXCollections.observableArrayList(newData);
         tblData.setItems(dataList);
         tblData.setPrefSize(apDataTab.getWidth(), apDataTab.getHeight());
         tfLonFound.setText("0.0");
         tfLatFound.setText("0.0");
-        
+
         lblAnalTime.setText(modelDataFile.getAnalTime().toString());
         lblValidTime.setText(modelDataFile.getValidTime().toString());
+
+        SkewTPlot.drawBlankSkewT(canvasSkewT.getGraphicsContext2D());
     }
 
     @FXML
