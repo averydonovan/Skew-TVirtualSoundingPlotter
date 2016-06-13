@@ -17,6 +17,12 @@
 package com.mccollinsmith.donovan.skewtmultitool.utils;
 
 import java.io.IOException;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.ResolverStyle;
+import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.TreeMap;
 import org.slf4j.Logger;
@@ -27,6 +33,10 @@ import ucar.nc2.Variable;
 import ucar.nc2.dt.*;
 import ucar.unidata.geoloc.LatLonPoint;
 import ucar.ma2.*;
+import ucar.nc2.dataset.CoordinateAxis;
+import ucar.nc2.dataset.CoordinateAxis1DTime;
+import ucar.nc2.time.CalendarDate;
+import ucar.nc2.time.CalendarDateRange;
 
 /**
  * Loads GRIB files, reads in longitudes and latitudes of data points, and
@@ -504,6 +514,33 @@ public class ModelDataFile {
         float[] result = AtmosThermoMath.calcLCL(curTemp2m, curDewp2m, curPresSfc);
 
         return result;
+    }
+
+    public LocalDateTime getAnalTime() {
+        String gribTimeUnits = gribFile.findVariable("reftime").getUnitsString();
+        DateTimeFormatter dtFormat = DateTimeFormatter.ofPattern("'Hour since 'uuuu-MM-dd'T'HH:mm:ssX", Locale.US);
+        dtFormat.withResolverStyle(ResolverStyle.STRICT);
+        LocalDateTime gribAnalTime = LocalDateTime.parse(gribTimeUnits, dtFormat);
+        return gribAnalTime;
+    }
+
+    public LocalDateTime getValidTime() {
+        String gribTimeUnits = gribFile.findVariable("time").getUnitsString();
+        DateTimeFormatter dtFormat = DateTimeFormatter.ofPattern("'Hour since 'uuuu-MM-dd'T'HH:mm:ssX", Locale.US);
+        dtFormat.withResolverStyle(ResolverStyle.STRICT);
+        LocalDateTime gribAnalTime = LocalDateTime.parse(gribTimeUnits, dtFormat);
+        
+        int gribTimeOffset = 0;
+        try {
+            gribTimeOffset = gribFile.findVariable("time").read().reduce().getInt(0);
+        } catch (IOException ex) {
+            LOG.error("Can't read valid time from file, returning analysis time");
+            return gribAnalTime;
+        }
+
+        LocalDateTime gribValidTime = gribAnalTime.plusHours(gribTimeOffset);
+
+        return gribValidTime;
     }
 
     /**

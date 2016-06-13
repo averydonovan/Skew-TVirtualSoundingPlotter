@@ -93,6 +93,10 @@ public class STMTController implements Initializable {
     @FXML
     private VBox vbDataSelect;
     @FXML
+    private Label lblAnalTime;
+    @FXML
+    private Label lblValidTime;
+    @FXML
     private TextField tfLonSearch;
     @FXML
     private TextField tfLatSearch;
@@ -233,6 +237,9 @@ public class STMTController implements Initializable {
         tblData.setPrefSize(apDataTab.getWidth(), apDataTab.getHeight());
         tfLonFound.setText("0.0");
         tfLatFound.setText("0.0");
+        
+        lblAnalTime.setText(modelDataFile.getAnalTime().toString());
+        lblValidTime.setText(modelDataFile.getValidTime().toString());
     }
 
     @FXML
