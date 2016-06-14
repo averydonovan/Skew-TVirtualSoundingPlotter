@@ -14,10 +14,10 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.mccollinsmith.donovan.skewtmultitool.controllers;
+package com.mccollinsmith.donovan.skewtvsp.controllers;
 
-import com.mccollinsmith.donovan.skewtmultitool.utils.AtmosThermoMath;
-import com.mccollinsmith.donovan.skewtmultitool.utils.ModelDataFile;
+import com.mccollinsmith.donovan.skewtvsp.utils.AtmosThermoMath;
+import com.mccollinsmith.donovan.skewtvsp.utils.ModelDataFile;
 import java.awt.image.RenderedImage;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -25,7 +25,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
-import javafx.application.Application.Parameters;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.geometry.VPos;
 import javafx.scene.canvas.Canvas;
@@ -42,7 +41,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  *
- * @author Donovan Smith <donovan@mccollinsmith.com>
+ * @author Donovan Smith
  */
 public class SkewTPlot {
 
@@ -92,8 +91,6 @@ public class SkewTPlot {
     private static List<Integer> presLevels;
     private static List<Double> tempSteps;
     private static List<Double> wLevels;
-
-    private static boolean skewTBackgroundDrawn = false;
 
     private static Image skewTBackground;
 
@@ -157,7 +154,7 @@ public class SkewTPlot {
         drawAxes();
         drawTicksAndLabels();
     }
-    
+
     public static void drawBlankSkewT(GraphicsContext gcSkewT) {
         initSkewT(gcSkewT, true);
 
@@ -169,10 +166,10 @@ public class SkewTPlot {
 
     public static RenderedImage getHiResPlot() {
         scaleLineFactor = 3;
-        
+
         Canvas canvasHiResPlot = new Canvas();
         GraphicsContext gcViewPlot = gcSkewTPlot;
-        
+
         canvasHiResPlot.setHeight(PLOT_PRINT_HEIGHT);
         canvasHiResPlot.setWidth(PLOT_PRINT_WIDTH);
 
@@ -180,13 +177,13 @@ public class SkewTPlot {
                 (int) PLOT_PRINT_HEIGHT);
         plotSkewT(canvasHiResPlot.getGraphicsContext2D(), mdfSkewTData,
                 coordX, coordY);
-        
+
         canvasHiResPlot.snapshot(null, writableImage);
 
         scaleLineFactor = 1;
 
         initSkewT(gcViewPlot, false);
-        
+
         return SwingFXUtils.fromFXImage(writableImage, null);
     }
 
@@ -207,12 +204,12 @@ public class SkewTPlot {
         double presSurf = mdfSkewTData.getPresSfc(coordX, coordY);
         dataPresLevels.add(presSurf);
         Collections.sort(dataPresLevels);
-        
+
         int presSurfIndex = dataPresLevels.indexOf(presSurf);
-        
+
         dataTempVals.add(presSurfIndex, new Double(mdfSkewTData.getTemp2m(coordX, coordY)));
         dataDewpVals.add(presSurfIndex, new Double(mdfSkewTData.getDewp2m(coordX, coordY)));
-        
+
         List<Double> xTempValsList = new ArrayList<>();
         List<Double> xDewpValsList = new ArrayList<>();
         List<Double> yValsList = new ArrayList<>();
@@ -222,7 +219,7 @@ public class SkewTPlot {
                     dataPresLevels.get(count));
             double[] resultsDewp = getXYFromTempPres(dataDewpVals.get(count),
                     dataPresLevels.get(count));
-            
+
             xTempValsList.add(resultsTemp[0]);
             xDewpValsList.add(resultsDewp[0]);
             yValsList.add(resultsTemp[1]);
@@ -367,11 +364,11 @@ public class SkewTPlot {
                 AtmosThermoMath.calcTempFromPot(tempStep, 22000), y1);
         double x2 = getXFromTempY(
                 AtmosThermoMath.calcTempFromPot(tempStep, 20000), y2);
-        
+
         double labelY = getYFromPres(21000);
         double labelX = getXFromTempY(
                 AtmosThermoMath.calcTempFromPot(tempStep, 21000), labelY)
-                 + (1.5 * plotAvgStep);
+                + (1.5 * plotAvgStep);
 
         List<Double> xValsList = new ArrayList<>();
         List<Double> yValsList = new ArrayList<>();
@@ -396,7 +393,7 @@ public class SkewTPlot {
         gcSkewTPlot.setFont(Font.font("sans-serif", FontWeight.BOLD, 5.0 * plotAvgStep));
 
         gcSkewTPlot.save();
-        Rotate r = new Rotate(-Math.toDegrees(Math.atan((y1 - y2)/(x2 - x1))), labelX, labelY);
+        Rotate r = new Rotate(-Math.toDegrees(Math.atan((y1 - y2) / (x2 - x1))), labelX, labelY);
         gcSkewTPlot.setTransform(r.getMxx(), r.getMyx(), r.getMxy(), r.getMyy(), r.getTx(), r.getTy());
         gcSkewTPlot.fillText(String.format("%.0f C", tempStep - C_TO_K), labelX, labelY);
         gcSkewTPlot.restore();
@@ -411,11 +408,11 @@ public class SkewTPlot {
                 AtmosThermoMath.calcTempSatAdiabat(osaTemp, 28000), y1);
         double x2 = getXFromTempY(
                 AtmosThermoMath.calcTempSatAdiabat(osaTemp, 26000), y2);
-        
+
         double labelY = getYFromPres(27000);
         double labelX = getXFromTempY(
                 AtmosThermoMath.calcTempSatAdiabat(osaTemp, 27000), labelY)
-                 + (1.5 * plotAvgStep);
+                + (1.5 * plotAvgStep);
 
         ArrayList<Double> xValsList = new ArrayList<>();
         ArrayList<Double> yValsList = new ArrayList<>();
@@ -441,7 +438,7 @@ public class SkewTPlot {
         gcSkewTPlot.setFont(Font.font("sans-serif", FontWeight.BOLD, 5.0 * plotAvgStep));
 
         gcSkewTPlot.save();
-        Rotate r = new Rotate(-Math.toDegrees(Math.atan((y1 - y2)/(x2 - x1))), labelX, labelY);
+        Rotate r = new Rotate(-Math.toDegrees(Math.atan((y1 - y2) / (x2 - x1))), labelX, labelY);
         gcSkewTPlot.setTransform(r.getMxx(), r.getMyx(), r.getMxy(), r.getMyy(), r.getTx(), r.getTy());
         gcSkewTPlot.fillText(String.format("%.0f C", osTemp - C_TO_K), labelX, labelY);
         gcSkewTPlot.restore();
@@ -455,12 +452,12 @@ public class SkewTPlot {
                 AtmosThermoMath.calcTempAtMixingRatio(wLine, 75000), y1);
         double x2 = getXFromTempY(
                 AtmosThermoMath.calcTempAtMixingRatio(wLine, 73000), y2);
-        
+
         double labelY = getYFromPres(74000);
         double labelX = getXFromTempY(
                 AtmosThermoMath.calcTempAtMixingRatio(wLine, 74000), labelY)
-                 - (1.5 * plotAvgStep);
-        
+                - (1.5 * plotAvgStep);
+
         ArrayList<Double> xValsList = new ArrayList<>();
         ArrayList<Double> yValsList = new ArrayList<>();
         for (int curLevel = PRES_MAX; curLevel >= PRES_MIN; curLevel -= 100) {
@@ -472,7 +469,7 @@ public class SkewTPlot {
         }
         double[] xVals = xValsList.stream().mapToDouble(d -> d).toArray();
         double[] yVals = yValsList.stream().mapToDouble(d -> d).toArray();
-        
+
         gcSkewTPlot.setFill(Color.TEAL);
         gcSkewTPlot.setStroke(Color.TEAL);
         gcSkewTPlot.setLineDashes(scaleLineFactor * 6.0);
@@ -485,7 +482,7 @@ public class SkewTPlot {
         gcSkewTPlot.setFont(Font.font("sans-serif", FontWeight.BOLD, 4.0 * plotAvgStep));
 
         gcSkewTPlot.save();
-        Rotate r = new Rotate(-Math.toDegrees(Math.atan((y1 - y2)/(x2 - x1))), labelX, labelY);
+        Rotate r = new Rotate(-Math.toDegrees(Math.atan((y1 - y2) / (x2 - x1))), labelX, labelY);
         gcSkewTPlot.setTransform(r.getMxx(), r.getMyx(), r.getMxy(), r.getMyy(), r.getTx(), r.getTy());
         gcSkewTPlot.fillText(String.format("%.1f g/kg", wLine), labelX, labelY);
         gcSkewTPlot.restore();

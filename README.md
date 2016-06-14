@@ -1,21 +1,21 @@
-#Skew-T MultiTool#
+#Skew-T Virtual Sounding Plotter#
 
 ##About##
 
 A program to generate Skew-T meteorological data plots from GRIB files output by 
-meteorological forecasting models and other data sources.
+meteorological forecasting models, also known as a virtual sounding.
 The program uses the
 [UCAR Unidata netCDF-Java](http://www.unidata.ucar.edu/software/thredds/current/netcdf-java/)
 library for GRIB file reading and JavaFX 8 for the GUI.
 
 ##Status##
 
-Work on the basic functionality of the program is in progress.
+The program has implemented all features listed at a basic level.
 Currently it is able to read in GRIB1 and GRIB2 files published on the
 [NOAA NOMADS](http://nomads.ncdc.noaa.gov/data.php?name=access) site.
-A preview release will be posted soon.
+Further work on fixing bugs and adding features is ongoing.
 
-##Planned Features##
+##Features##
 
 * Generate high-quality Skew-T/Log-P plots from temperature and dew point data
   at various isobaric levels
