@@ -76,7 +76,7 @@ public class AtmosThermoMath {
      * @return dew point in K
      */
     public static float calcDewp(float temp, float pres, float rh) {
-        rh = rh / 100;
+        rh = rh / 100.0f;
         double result = calcTempAtMixingRatio(w(temp, pres) * rh, pres);
         return (float) result;
     }
@@ -91,14 +91,14 @@ public class AtmosThermoMath {
      * @return LCL as float[2]; [0] = pressure in Pa, [1] = temperature in K
      */
     public static float[] calcLCL(float temp, float dewp, float pres) {
-        final double stepSize = 100;
+        final double stepSize = 100.0;
         double pt = pot_temp(temp, pres);
         double w_0 = w(dewp, pres);
         double w_s = w(temp, pres);
-        double delta = stepSize * 10;
-        double lcl = Math.ceil(pres / 100) * 100;
-        double pt_l = 0;
-        while (Math.abs(delta) > 0.1 && lcl > 10000) {
+        double delta = stepSize * 10.0;
+        double lcl = Math.ceil(pres / 100.0) * 100.0;
+        double pt_l = 0.0;
+        while (Math.abs(delta) > 0.1 && lcl > 10000.0) {
             lcl -= stepSize;
             pt_l = calcTempFromPot(pt, lcl);
             delta = w(pt_l, lcl) - w_0;
@@ -130,17 +130,17 @@ public class AtmosThermoMath {
         double windSpd850 = wind850[0];
         double windDir850 = wind850[1];
 
-        double sweat1 = 12 * dewp850;
+        double sweat1 = 12.0 * dewp850;
         if (sweat1 < 0) {
             sweat1 = 0;
         }
 
-        double sweat2 = 20 * (totalTotals - 49);
+        double sweat2 = 20.0 * (totalTotals - 49.0);
         if (sweat2 < 0) {
             sweat2 = 0;
         }
 
-        double sweat3 = 2 * windSpd850;
+        double sweat3 = 2.0 * windSpd850;
         if (sweat3 < 0) {
             sweat3 = 0;
         }
@@ -150,7 +150,7 @@ public class AtmosThermoMath {
             sweat4 = 0;
         }
 
-        double sweat5 = 125 * (Math.sin(windDir500 - windDir850) + 0.2);
+        double sweat5 = 125.0 * (Math.sin(windDir500 - windDir850) + 0.2);
         if (sweat5 < 0) {
             sweat5 = 0;
         }
@@ -171,14 +171,14 @@ public class AtmosThermoMath {
     }
 
     // Potential temperature in K from temp in K, pressure in Pa
-    private static double pot_temp(double temp, double pres) {
-        double result = temp * Math.pow(pres / 100000.0, -2.0 / 7);
+    // Temperature of air in K from potential temperature in K, pressure in Pa
+    public static double calcTempFromPot(double pot_temp, double pres) {
+        double result = pot_temp * Math.pow(pres / 100000.0, 2.0 / 7.0);
         return result;
     }
 
-    // Temperature of air in K from potential temperature in K, pressure in Pa
-    public static double calcTempFromPot(double pot_temp, double pres) {
-        double result = pot_temp * Math.pow(pres / 100000.0, 2.0 / 7);
+    private static double pot_temp(double temp, double pres) {
+        double result = temp * Math.pow(pres / 100000.0, -2.0 / 7.0);
         return result;
     }
 
@@ -188,10 +188,13 @@ public class AtmosThermoMath {
      */
     // Temperature of air (K) at a given mixing ratio (g/kg) and pressure (Pa)
     public static double calcTempAtMixingRatio(double w, double p) {
-        p = p / 100; //Convert Pa to hPa
+        p = p / 100.0; //Convert Pa to hPa
         double x = Math.log10(w * p / (622.0 + w));
-        double result = Math.pow(10, 0.0498646455 * x + 2.4082965) - 7.07475
-                + 38.9114 * Math.pow(Math.pow(10, 0.0915 * x) - 1.2035, 2.0);
+        double result = Math.pow(10.0, 0.0498646455 * x + 2.4082965) - 7.07475
+                + 38.9114 * Math.pow(Math.pow(10.0, 0.0915 * x) - 1.2035, 2.0);
+        //X   =  ALOG10 ( W * P / (622.+ W) )
+        // TMR = 10. ^ ( .0498646455 * X + 2.4082965 ) - 7.07475 + $
+        //       38.9114 * ( (10.^( .0915 * X ) - 1.2035 )^2 )
         return result;
     }
 
@@ -199,10 +202,10 @@ public class AtmosThermoMath {
     public static double calcTempSatAdiabat(double os, double pres) {
         double tq = 253.15;
         double d = 120.0;
-        double x = 0;
+        double x = 0.0;
         for (int i = 0; i < 13; i++) {
             d = d / 2.0;
-            x = os * Math.exp(-2.6518986 * w(tq, pres) / tq) - tq * Math.pow((100000 / pres), (2.0 / 7.0));
+            x = os * Math.exp(-2.6518986 * w(tq, pres) / tq) - tq * Math.pow((100000.0 / pres), (2.0 / 7.0));
             if (Math.abs(x) < 0.01) {
                 break;
             } else {
@@ -215,7 +218,7 @@ public class AtmosThermoMath {
 
     // Saturated potential temperature at 1000 hPa, temp in K, pres in Pa
     public static double calcSatPotTemp(double temp, double pres) {
-        double os = temp * Math.pow((100000 / pres), (2.0 / 7.0))
+        double os = temp * Math.pow((100000.0 / pres), (2.0 / 7.0))
                 / Math.exp(-2.6518986 * (w(temp, pres) / temp));
         return os;
     }
@@ -224,7 +227,7 @@ public class AtmosThermoMath {
     private static double w(double temp, double pres) {
         double result = 0;
 
-        pres = pres / 100; // Convert Pa to hPa
+        pres = pres / 100.0; // Convert Pa to hPa
 
         if (temp < 999) {
             double x = esat(temp) / 100; // Convert sat. pres. from Pa to hPa
@@ -237,7 +240,7 @@ public class AtmosThermoMath {
     private static double esat(double temp) {
         temp -= 273.15;
         double result = 6.1078 * Math.exp((17.2693882 * temp) / (temp + 237.3));
-        result = result * 100; // Convert hPa to Pa
+        result = result * 100.0; // Convert hPa to Pa
         return result;
     }
 }

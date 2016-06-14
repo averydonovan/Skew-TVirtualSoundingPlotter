@@ -247,9 +247,9 @@ public class SkewTPlot {
         gcSkewTPlot.setFill(Color.BLACK);
         gcSkewTPlot.setStroke(Color.BLACK);
 
-        gcSkewTPlot.setFont(Font.font("monospaced", FontWeight.NORMAL, 7 * plotAvgStep));
+        gcSkewTPlot.setFont(Font.font("sans-serif", FontWeight.NORMAL, 7 * plotAvgStep));
 
-        gcSkewTPlot.setLineWidth(scaleLineFactor * 1);
+        gcSkewTPlot.setLineWidth(scaleLineFactor * 1.5);
         presLevels.stream()
                 .mapToDouble(i -> getYFromPres(i))
                 .forEach(d -> gcSkewTPlot.strokeLine(plotXOffset, d,
@@ -288,7 +288,7 @@ public class SkewTPlot {
         double xAxisLabelY = (canvasHeight * 0.90) - axisLabelSize;
 
         gcSkewTPlot.setTextBaseline(VPos.CENTER);
-        gcSkewTPlot.setFont(Font.font("monospaced", FontWeight.NORMAL, axisLabelSize));
+        gcSkewTPlot.setFont(Font.font("sans-serif", FontWeight.NORMAL, axisLabelSize));
 
         gcSkewTPlot.save();
         Rotate r = new Rotate(-90, yAxisLabelX, yAxisLabelY);
@@ -336,7 +336,7 @@ public class SkewTPlot {
 
         gcSkewTPlot.setFill(Color.BLACK);
         gcSkewTPlot.setStroke(Color.BLACK);
-        gcSkewTPlot.setLineWidth(scaleLineFactor * 1);
+        gcSkewTPlot.setLineWidth(scaleLineFactor * 1.5);
         gcSkewTPlot.strokeLine(plotXOffset, plotYOffset, plotXOffset, plotYMax);
         gcSkewTPlot.strokeLine(plotXOffset, plotYOffset, plotXMax, plotYOffset);
     }
@@ -356,11 +356,23 @@ public class SkewTPlot {
         double x2 = getXFromTempY(tempStep, y2);
         gcSkewTPlot.setFill(Color.BLACK);
         gcSkewTPlot.setStroke(Color.BLACK);
-        gcSkewTPlot.setLineWidth(scaleLineFactor * 0.75);
+        gcSkewTPlot.setLineWidth(scaleLineFactor * 1.25);
         gcSkewTPlot.strokeLine(x1, y1, x2, y2);
     }
 
     private static void drawDryAdiabat(double tempStep) {
+        double y1 = getYFromPres(22000);
+        double y2 = getYFromPres(20000);
+        double x1 = getXFromTempY(
+                AtmosThermoMath.calcTempFromPot(tempStep, 22000), y1);
+        double x2 = getXFromTempY(
+                AtmosThermoMath.calcTempFromPot(tempStep, 20000), y2);
+        
+        double labelY = getYFromPres(21000);
+        double labelX = getXFromTempY(
+                AtmosThermoMath.calcTempFromPot(tempStep, 21000), labelY)
+                 + (1.5 * plotAvgStep);
+
         List<Double> xValsList = new ArrayList<>();
         List<Double> yValsList = new ArrayList<>();
         for (int curLevel = PRES_MAX; curLevel >= PRES_MIN; curLevel -= 10) {
@@ -374,16 +386,39 @@ public class SkewTPlot {
         double[] xVals = xValsList.stream().mapToDouble(d -> d).toArray();
         double[] yVals = yValsList.stream().mapToDouble(d -> d).toArray();
 
-        gcSkewTPlot.setFill(Color.TAN);
-        gcSkewTPlot.setStroke(Color.TAN);
-        gcSkewTPlot.setLineWidth(scaleLineFactor * 1);
+        gcSkewTPlot.setFill(Color.rgb(127, 95, 63));
+        gcSkewTPlot.setStroke(Color.rgb(127, 95, 63));
+        gcSkewTPlot.setLineWidth(scaleLineFactor * 1.0);
         gcSkewTPlot.strokePolyline(xVals, yVals, yVals.length);
+
+        gcSkewTPlot.setTextAlign(TextAlignment.CENTER);
+        gcSkewTPlot.setTextBaseline(VPos.BASELINE);
+        gcSkewTPlot.setFont(Font.font("sans-serif", FontWeight.BOLD, 5.0 * plotAvgStep));
+
+        gcSkewTPlot.save();
+        Rotate r = new Rotate(-Math.toDegrees(Math.atan((y1 - y2)/(x2 - x1))), labelX, labelY);
+        gcSkewTPlot.setTransform(r.getMxx(), r.getMyx(), r.getMxy(), r.getMyy(), r.getTx(), r.getTy());
+        gcSkewTPlot.fillText(String.format("%.0f C", tempStep - C_TO_K), labelX, labelY);
+        gcSkewTPlot.restore();
     }
 
     private static void drawSatAdiabat(double osTemp) {
+        double osaTemp = AtmosThermoMath.calcSatPotTemp(osTemp, PRES_BASE);
+
+        double y1 = getYFromPres(28000);
+        double y2 = getYFromPres(26000);
+        double x1 = getXFromTempY(
+                AtmosThermoMath.calcTempSatAdiabat(osaTemp, 28000), y1);
+        double x2 = getXFromTempY(
+                AtmosThermoMath.calcTempSatAdiabat(osaTemp, 26000), y2);
+        
+        double labelY = getYFromPres(27000);
+        double labelX = getXFromTempY(
+                AtmosThermoMath.calcTempSatAdiabat(osaTemp, 27000), labelY)
+                 + (1.5 * plotAvgStep);
+
         ArrayList<Double> xValsList = new ArrayList<>();
         ArrayList<Double> yValsList = new ArrayList<>();
-        double osaTemp = AtmosThermoMath.calcSatPotTemp(osTemp, PRES_BASE);
         for (int curLevel = PRES_MAX; curLevel >= PRES_MIN; curLevel -= 100) {
             double[] results = getXYFromTempPres(
                     AtmosThermoMath.calcTempSatAdiabat(osaTemp, curLevel),
@@ -396,26 +431,64 @@ public class SkewTPlot {
 
         gcSkewTPlot.setFill(Color.GREEN);
         gcSkewTPlot.setStroke(Color.GREEN);
-        gcSkewTPlot.setLineDashes(3);
+        gcSkewTPlot.setLineDashes(scaleLineFactor * 3.0);
         gcSkewTPlot.setLineWidth(scaleLineFactor * 0.75);
         gcSkewTPlot.strokePolyline(xVals, yVals, yVals.length);
         gcSkewTPlot.setLineDashes(null);
+
+        gcSkewTPlot.setTextAlign(TextAlignment.CENTER);
+        gcSkewTPlot.setTextBaseline(VPos.BASELINE);
+        gcSkewTPlot.setFont(Font.font("sans-serif", FontWeight.BOLD, 5.0 * plotAvgStep));
+
+        gcSkewTPlot.save();
+        Rotate r = new Rotate(-Math.toDegrees(Math.atan((y1 - y2)/(x2 - x1))), labelX, labelY);
+        gcSkewTPlot.setTransform(r.getMxx(), r.getMyx(), r.getMxy(), r.getMyy(), r.getTx(), r.getTy());
+        gcSkewTPlot.fillText(String.format("%.0f C", osTemp - C_TO_K), labelX, labelY);
+        gcSkewTPlot.restore();
     }
 
     private static void drawMixRatios(double wLine) {
         // Draw mixing ratio lines at predetermined intervals
-        double y1 = getYFromPres(PRES_MAX);
-        double y2 = getYFromPres(PRES_MIN);
+        double y1 = getYFromPres(75000);
+        double y2 = getYFromPres(73000);
         double x1 = getXFromTempY(
-                AtmosThermoMath.calcTempAtMixingRatio(wLine, PRES_MAX), y1);
+                AtmosThermoMath.calcTempAtMixingRatio(wLine, 75000), y1);
         double x2 = getXFromTempY(
-                AtmosThermoMath.calcTempAtMixingRatio(wLine, PRES_MIN), y2);
+                AtmosThermoMath.calcTempAtMixingRatio(wLine, 73000), y2);
+        
+        double labelY = getYFromPres(74000);
+        double labelX = getXFromTempY(
+                AtmosThermoMath.calcTempAtMixingRatio(wLine, 74000), labelY)
+                 - (1.5 * plotAvgStep);
+        
+        ArrayList<Double> xValsList = new ArrayList<>();
+        ArrayList<Double> yValsList = new ArrayList<>();
+        for (int curLevel = PRES_MAX; curLevel >= PRES_MIN; curLevel -= 100) {
+            double[] results = getXYFromTempPres(
+                    AtmosThermoMath.calcTempAtMixingRatio(wLine, curLevel),
+                    curLevel);
+            xValsList.add(results[0]);
+            yValsList.add(results[1]);
+        }
+        double[] xVals = xValsList.stream().mapToDouble(d -> d).toArray();
+        double[] yVals = yValsList.stream().mapToDouble(d -> d).toArray();
+        
         gcSkewTPlot.setFill(Color.TEAL);
         gcSkewTPlot.setStroke(Color.TEAL);
-        gcSkewTPlot.setLineDashes(6);
-        gcSkewTPlot.setLineWidth(scaleLineFactor * 0.5);
-        gcSkewTPlot.strokeLine(x1, y1, x2, y2);
+        gcSkewTPlot.setLineDashes(scaleLineFactor * 6.0);
+        gcSkewTPlot.setLineWidth(scaleLineFactor * 0.75);
+        gcSkewTPlot.strokePolyline(xVals, yVals, yVals.length);
         gcSkewTPlot.setLineDashes(null);
+
+        gcSkewTPlot.setTextAlign(TextAlignment.CENTER);
+        gcSkewTPlot.setTextBaseline(VPos.BASELINE);
+        gcSkewTPlot.setFont(Font.font("sans-serif", FontWeight.BOLD, 4.0 * plotAvgStep));
+
+        gcSkewTPlot.save();
+        Rotate r = new Rotate(-Math.toDegrees(Math.atan((y1 - y2)/(x2 - x1))), labelX, labelY);
+        gcSkewTPlot.setTransform(r.getMxx(), r.getMyx(), r.getMxy(), r.getMyy(), r.getTx(), r.getTy());
+        gcSkewTPlot.fillText(String.format("%.1f g/kg", wLine), labelX, labelY);
+        gcSkewTPlot.restore();
     }
 
     private static double[] getXYFromTempPres(double temp, double pres) {
