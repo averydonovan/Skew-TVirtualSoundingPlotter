@@ -30,6 +30,8 @@ public class AtmosThermoMath {
 
     private static final Logger LOG
             = LoggerFactory.getLogger(ModelDataFile.class.getName());
+    
+    private static final double C_TO_K = 273.15;
 
     /**
      * Calculates total totals (TT) index.
@@ -43,6 +45,12 @@ public class AtmosThermoMath {
      */
     public static float calcTotalTotals(float temp500, float temp850,
             float dewp500, float dewp850) {
+        // Need to convert K to C
+        /*temp500 -= C_TO_K;
+        temp850 -= C_TO_K;
+        dewp500 -= C_TO_K;
+        dewp850 -= C_TO_K;*/
+
         double totVt = temp850 - temp500;
         double totCt = dewp850 - dewp500;
         double result = totVt + totCt;
@@ -62,7 +70,14 @@ public class AtmosThermoMath {
      */
     public static float calcKIndex(float temp500, float temp700, float temp850,
             float dewp700, float dewp850) {
-        double result = Math.abs(temp850 - temp500) + (dewp850 - (temp700 - dewp700));
+        // Need to convert K to C
+        temp500 -= C_TO_K;
+        temp700 -= C_TO_K;
+        temp850 -= C_TO_K;
+        dewp700 -= C_TO_K;
+        dewp850 -= C_TO_K;
+        
+        double result = (temp850 - temp500) + (dewp850 - (temp700 - dewp700));
         return (float) result;
     }
 
@@ -121,7 +136,7 @@ public class AtmosThermoMath {
      *
      * @return SWEAT index
      */
-    public static float calcSweat(float totalTotals, float dewp850,
+    public static float calcSWEAT(float totalTotals, float dewp850,
             float uGrd500, float vGrd500, float uGrd850, float vGrd850) {
         double[] wind500 = calcWindFromVec(uGrd500, vGrd500);
         double[] wind850 = calcWindFromVec(uGrd850, vGrd850);
@@ -129,6 +144,9 @@ public class AtmosThermoMath {
         double windDir500 = wind500[1];
         double windSpd850 = wind850[0];
         double windDir850 = wind850[1];
+
+        // Need to convert K to C
+        dewp850 -= C_TO_K;
 
         double sweat1 = 12.0 * dewp850;
         if (sweat1 < 0) {

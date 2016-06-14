@@ -13,18 +13,18 @@ library for GRIB file reading and JavaFX 8 for the GUI.
 Work on the basic functionality of the program is in progress.
 Currently it is able to read in GRIB1 and GRIB2 files published on the
 [NOAA NOMADS](http://nomads.ncdc.noaa.gov/data.php?name=access) site.
-A preview release will be posted when it is able to generate a Skew-T plot.
+A preview release will be posted soon.
 
 ##Planned Features##
 
-* Generate Skew-T Log(P) diagrams from temperature and dew point data at various
-  isobaric levels
+* Generate high-quality Skew-T/Log-P plots from temperature and dew point data
+  at various isobaric levels
 * Convert relative humidity to dew point as needed
 * Calculate values such as lifting condensation level (LCL), K-index,
   Total Totals, and SWEAT depending on data available
 * Read GRIB1 and GRIB2 files output by the NOAA RAP, NAM, and GFS forecasting
   models
-* Read and write comma-separated values (CSV) files
+* Output high-resolution (approximately 300 DPI) plot to a PNG file
 
 ##Requirements##
 

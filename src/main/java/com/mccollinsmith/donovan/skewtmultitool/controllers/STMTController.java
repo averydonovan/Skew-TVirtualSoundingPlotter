@@ -430,8 +430,26 @@ public class STMTController implements Initializable {
         newData.add(new DataEntry("Lifted Index",
                 "1000-500",
                 "hPa",
-                String.format("%.2f", modelDataFile.getLFTX(coordX, coordY)),
+                String.format("%.1f", modelDataFile.getLFTX(coordX, coordY)),
                 "K"));
+
+        newData.add(new DataEntry("K-Index",
+                "850-500",
+                "hPa",
+                String.format("%.0f", modelDataFile.getKIndex(coordX, coordY)),
+                "K"));
+
+        newData.add(new DataEntry("Total Totals",
+                "850-500",
+                "hPa",
+                String.format("%.0f", modelDataFile.getTotalTotals(coordX, coordY)),
+                "K"));
+
+        newData.add(new DataEntry("SWEAT",
+                "850-500",
+                "hPa",
+                String.format("%.0f", modelDataFile.getSWEAT(coordX, coordY)),
+                "(N/A)"));
 
         dataList = FXCollections.observableArrayList(newData);
         tblData.setItems(dataList);

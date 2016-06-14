@@ -516,6 +516,46 @@ public class ModelDataFile {
         return result;
     }
 
+    public float getTotalTotals(int coordX, int coordY) {
+        float curTemp500 = getTempIso(coordX, coordY, getIndexFromLevel(50000));
+        float curTemp850 = getTempIso(coordX, coordY, getIndexFromLevel(85000));
+        float curDewp500 = getDewpIso(coordX, coordY, getIndexFromLevel(50000));
+        float curDewp850 = getDewpIso(coordX, coordY, getIndexFromLevel(85000));
+
+        float result = AtmosThermoMath.calcTotalTotals(
+                curTemp500, curTemp850, curDewp500, curDewp850);
+
+        return result;
+    }
+
+    public float getKIndex(int coordX, int coordY) {
+        float curTemp500 = getTempIso(coordX, coordY, getIndexFromLevel(50000));
+        float curTemp700 = getTempIso(coordX, coordY, getIndexFromLevel(70000));
+        float curTemp850 = getTempIso(coordX, coordY, getIndexFromLevel(85000));
+        float curDewp700 = getDewpIso(coordX, coordY, getIndexFromLevel(70000));
+        float curDewp850 = getDewpIso(coordX, coordY, getIndexFromLevel(85000));
+
+        float result = AtmosThermoMath.calcKIndex(
+                curTemp500, curTemp700, curTemp850, curDewp700, curDewp850);
+
+        return result;
+    }
+    
+    public float getSWEAT(int coordX, int coordY) {
+        float curTotalTotals = getTotalTotals(coordX, coordY);
+
+        float uGrd500 = getValFromVar(varNameUGrd, coordX, coordY, getIndexFromLevel(50000), 4);
+        float uGrd850 = getValFromVar(varNameUGrd, coordX, coordY, getIndexFromLevel(85000), 4);
+        float vGrd500 = getValFromVar(varNameVGrd, coordX, coordY, getIndexFromLevel(50000), 4);
+        float vGrd850 = getValFromVar(varNameVGrd, coordX, coordY, getIndexFromLevel(85000), 4);
+        float curDewp850 = getDewpIso(coordX, coordY, getIndexFromLevel(85000));
+        
+        float result = AtmosThermoMath.calcSWEAT(
+                curTotalTotals, curDewp850, uGrd500, vGrd500, uGrd850, vGrd850);
+        
+        return result;
+    }
+
     public LocalDateTime getAnalTime() {
         String gribTimeUnits = gribFile.findVariable("reftime").getUnitsString();
         DateTimeFormatter dtFormat = DateTimeFormatter.ofPattern("'Hour since 'uuuu-MM-dd'T'HH:mm:ssX", Locale.US);
