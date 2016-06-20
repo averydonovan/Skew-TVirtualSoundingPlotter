@@ -64,7 +64,7 @@ public class ModelDataFile {
     private final String varNameLftxGFS4 = "Surface_Lifted_Index_surface";
     private final String varNameLftxGFS3 = "Surface_lifted_index_surface";
     private final String varNameLftxGRB
-            = "Surface_lifted_index_layer_between_two_isobaric_layer";
+            = "Parcel_lifted_index_to_500_hPa_layer_between_two_pressure_difference_from_ground_layer";
     private final String varNameUGrd = "u-component_of_wind_isobaric";
     private final String varNameVGrd = "v-component_of_wind_isobaric";
 
