@@ -30,6 +30,7 @@ import java.util.ResourceBundle;
 import javafx.beans.property.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -128,9 +129,13 @@ public class STVSPController implements Initializable {
     private AnchorPane apSkewTTab;
     @FXML
     private Canvas canvasSkewT;
+    @FXML
+    private Canvas canvasBlankSkewT;
     // Status bar
     @FXML
     private Label lblStatus;
+    @FXML
+    private ProgressBar pbProgress;
 
     private ObservableList<DataEntry> dataList;
 
@@ -162,8 +167,18 @@ public class STVSPController implements Initializable {
         menuFileClose.disableProperty().bind(isNoFileOpen);
         vbDataSelect.disableProperty().bind(isNoFileOpen);
 
+        // These are useless when no Skew-T plot has been drawn
         menuFileSaveSkewT.disableProperty().bind(isNoSkewTDrawn);
         btnSaveSkewT.disableProperty().bind(isNoSkewTDrawn);
+        tblData.disableProperty().bind(isNoSkewTDrawn);
+
+        /*
+         * Show blank Skew-T whenever either no Skew-T at all has been plotted
+         * yet or if on-screen Skew-T is out-of-date due to situations such as a
+         * new file being opened.
+         */
+        canvasSkewT.visibleProperty().bind(isNoSkewTDrawn.not());
+        canvasBlankSkewT.visibleProperty().bind(isNoSkewTDrawn);
 
         dataList = FXCollections.observableArrayList();
 
@@ -175,7 +190,7 @@ public class STVSPController implements Initializable {
 
         tblData.setItems(dataList);
 
-        SkewTPlot.drawBlankSkewT(canvasSkewT.getGraphicsContext2D());
+        SkewTPlot.drawBlankSkewT(canvasBlankSkewT.getGraphicsContext2D());
 
         doResetWindowTitle();
         doUpdateStatus("Ready");
@@ -226,48 +241,70 @@ public class STVSPController implements Initializable {
         chooser.getExtensionFilters().addAll(fileExtsGRIB);
         File file = chooser.showOpenDialog(anchorPane.getScene().getWindow());
 
-        if (file == null) {
-            return;
-        } else {
-            modelFileName = file.getAbsolutePath();
-            isNoSkewTDrawn.set(true);
-        }
+        Task<Void> taskOpenFile = new Task<Void>() {
+            @Override
+            public Void call() throws IOException {
+                try {
+                    updateProgress(20, 100);
+                    updateMessage("Opening data file " + file.getName() + "...");
+                    modelDataFile = new ModelDataFile(modelFileName);
+                    updateProgress(80, 100);
+                } catch (IOException ex) {
+                    LOG.error("Error when attempting to open {}\n{}",
+                            file.getName(), ex.getLocalizedMessage());
+                    modelDataFile = null;
+                }
+                return null;
+            }
+        };
 
-        try {
-            modelDataFile = new ModelDataFile(modelFileName);
+        taskOpenFile.setOnSucceeded(taskEvent -> {
+            lblStatus.textProperty().unbind();
+
             if (modelDataFile != null) {
                 doAppendWindowTitle(file.getName());
-                doUpdateStatus("File opened");
+                doUpdateStatus("Data file " + file.getName() + " opened");
                 isNoFileOpen.set(false);
+
+                List<DataEntry> newData = new ArrayList<>();
+                dataList = FXCollections.observableArrayList(newData);
+                tblData.setItems(dataList);
+                tblData.setPrefSize(apDataTab.getWidth(), apDataTab.getHeight());
+                tfLonFound.setText("0.0");
+                tfLatFound.setText("0.0");
+
+                lblAnalTime.setText(modelDataFile.getAnalysisTime().toString());
+                lblValidTime.setText(modelDataFile.getValidTime().toString());
             } else {
-                modelDataFile.close();
-                throw new IOException("Invalid file format.");
+                doUpdateStatus("Unable to open data file " + file.getName());
+                LOG.error("Unable to open data file {}", file.getName());
+                try {
+                    modelDataFile.close();
+                } catch (IOException ex) {
+                    LOG.error("Error when attempting to close data file\n{}",
+                            ex.getLocalizedMessage());
+                }
+                Alert alert = new Alert(AlertType.ERROR);
+                alert.setTitle("File Open Error");
+                alert.setHeaderText("Unable to open file " + file.getName());
+                alert.setContentText("File not found or invalid file format.");
+                alert.showAndWait();
             }
-        } catch (IOException ex) {
-            Alert alert = new Alert(AlertType.ERROR);
-            LOG.error("Unable to open GRIB file!");
-            alert.setTitle("File Open Error");
-            alert.setHeaderText("Unable to open GRIB file");
-            alert.setContentText("File not found or invalid file format.");
-            alert.showAndWait();
-            return;
+
+            pbProgress.progressProperty().unbind();
+            pbProgress.setVisible(false);
+        });
+
+        if (file != null) {
+            modelFileName = file.getAbsolutePath();
+            isNoSkewTDrawn.set(true);
+
+            lblStatus.textProperty().bind(taskOpenFile.messageProperty());
+            pbProgress.progressProperty().bind(taskOpenFile.progressProperty());
+            pbProgress.setVisible(true);
+
+            new Thread(taskOpenFile).start();
         }
-
-        // Texas State Capitol coords to test
-        double lon = -97.740379;
-        double lat = 30.274632;
-
-        List<DataEntry> newData = new ArrayList<>();
-        dataList = FXCollections.observableArrayList(newData);
-        tblData.setItems(dataList);
-        tblData.setPrefSize(apDataTab.getWidth(), apDataTab.getHeight());
-        tfLonFound.setText("0.0");
-        tfLatFound.setText("0.0");
-
-        lblAnalTime.setText(modelDataFile.getAnalysisTime().toString());
-        lblValidTime.setText(modelDataFile.getValidTime().toString());
-
-        SkewTPlot.drawBlankSkewT(canvasSkewT.getGraphicsContext2D());
     }
 
     /**
@@ -344,8 +381,6 @@ public class STVSPController implements Initializable {
      */
     @FXML
     protected void doSaveSkewT(ActionEvent event) {
-        String pngFileName = "";
-
         Path curPath = Paths.get("");
         String cwd = curPath.toAbsolutePath().toString();
         File curPathAsFile = new File(cwd);
@@ -359,26 +394,47 @@ public class STVSPController implements Initializable {
         chooser.getExtensionFilters().addAll(fileExtsPNG);
         File file = chooser.showSaveDialog(anchorPane.getScene().getWindow());
 
-        if (file == null) {
-            return;
-        } else {
-            doUpdateStatus("Saving plot to file...");
-            pngFileName = file.getAbsolutePath();
-            RenderedImage renderedImage = SkewTPlot.getHiResPlot();
-            try {
-                ImageIO.write(renderedImage, "png", file);
-            } catch (IOException ex) {
-                LOG.error("{}\n{}", ex.getLocalizedMessage(), ex.toString());
-                Alert alert = new Alert(AlertType.ERROR);
-                LOG.error("Unable to save PNG file!");
+        Task<Boolean> taskSavePlot = new Task<Boolean>() {
+            @Override
+            public Boolean call() {
+                updateMessage("Saving plot to " + file.getName() + "...");
+                updateProgress(10, 100);
+                RenderedImage renderedImage = SkewTPlot.getHiResPlot();
+                updateProgress(80, 100);
+                try {
+                    ImageIO.write(renderedImage, "png", file);
+                } catch (IOException ex) {
+                    LOG.error("{}\n{}", ex.getLocalizedMessage(), ex.toString());
+                    LOG.error("Unable to save PNG file!");
+                    return false;
+                }
+                return true;
+            }
+        };
+
+        taskSavePlot.setOnSucceeded(taskEvent -> {
+            lblStatus.textProperty().unbind();
+            pbProgress.progressProperty().unbind();
+            pbProgress.setVisible(false);
+
+            if (taskSavePlot.getValue() == true) {
+                doUpdateStatus("Plot saved to file " + file.getName());
+            } else {
                 doUpdateStatus("Unable to save plot to file");
+                Alert alert = new Alert(AlertType.ERROR);
                 alert.setTitle("File Save Error");
                 alert.setHeaderText("Unable to save PNG file");
                 alert.setContentText("File name not valid or path not writeable.");
                 alert.showAndWait();
-                return;
             }
-            doUpdateStatus("Plot successfully saved to file " + file.getName());
+        });
+
+        if (file != null) {
+            lblStatus.textProperty().bind(taskSavePlot.messageProperty());
+            pbProgress.progressProperty().bind(taskSavePlot.progressProperty());
+            pbProgress.setVisible(true);
+
+            new Thread(taskSavePlot).start();
         }
     }
 
@@ -416,6 +472,8 @@ public class STVSPController implements Initializable {
      * point in Skew-T Log-P plot.
      */
     public void doUpdateData() {
+        isNoSkewTDrawn.set(true);
+
         List<DataEntry> newData = new ArrayList<DataEntry>();
 
         double searchLon = Double.parseDouble(tfLonSearch.getText());
@@ -427,101 +485,130 @@ public class STVSPController implements Initializable {
         tfLonFound.setText(String.format("%.6f", foundLonLat[0]));
         tfLatFound.setText(String.format("%.6f", foundLonLat[1]));
 
-        for (int coordLvl = 0; coordLvl < 50; coordLvl++) {
-            float curLevel = modelDataFile.getLevelFromIndex(coordLvl);
-            if ((int) curLevel != -1) {
+        Task<Void> taskUpdateTable = new Task<Void>() {
+            @Override
+            public Void call() {
+                updateProgress(0, 100);
+                updateMessage("Updating data table...");
+
+                for (int coordLvl = 0; coordLvl < 50; coordLvl++) {
+                    float curLevel = modelDataFile.getLevelFromIndex(coordLvl);
+                    if ((int) curLevel != -1) {
+                        newData.add(new DataEntry("Temperature",
+                                String.format("%d", (int) curLevel / 100),
+                                "hPa",
+                                String.format("%f", modelDataFile.getTempIso(coordX, coordY, coordLvl)),
+                                "K"));
+                    }
+                }
                 newData.add(new DataEntry("Temperature",
-                        String.format("%d", (int) curLevel / 100),
-                        "hPa",
-                        String.format("%f", modelDataFile.getTempIso(coordX, coordY, coordLvl)),
+                        "2",
+                        "m above ground",
+                        String.format("%f", modelDataFile.getTemp2m(coordX, coordY)),
                         "K"));
-            }
-        }
-        newData.add(new DataEntry("Temperature",
-                "2",
-                "m above ground",
-                String.format("%f", modelDataFile.getTemp2m(coordX, coordY)),
-                "K"));
+                updateProgress(30, 100);
 
-        for (int coordLvl = 0; coordLvl < 50; coordLvl++) {
-            float curLevel = modelDataFile.getLevelFromIndex(coordLvl);
-            if ((int) curLevel != -1) {
+                for (int coordLvl = 0; coordLvl < 50; coordLvl++) {
+                    float curLevel = modelDataFile.getLevelFromIndex(coordLvl);
+                    if ((int) curLevel != -1) {
+                        newData.add(new DataEntry("Dew Point",
+                                String.format("%d", (int) curLevel / 100),
+                                "hPa",
+                                String.format("%f", modelDataFile.getDewpIso(coordX, coordY, coordLvl)),
+                                "K"));
+                    }
+                }
                 newData.add(new DataEntry("Dew Point",
-                        String.format("%d", (int) curLevel / 100),
-                        "hPa",
-                        String.format("%f", modelDataFile.getDewpIso(coordX, coordY, coordLvl)),
+                        "2",
+                        "m above ground",
+                        String.format("%f", modelDataFile.getDewp2m(coordX, coordY)),
                         "K"));
+                updateProgress(60, 100);
+
+                newData.add(new DataEntry("Surface Pressure",
+                        "surface",
+                        "surface",
+                        String.format("%d", (int) modelDataFile.getPresSfc(coordX, coordY) / 100),
+                        "hPa"));
+
+                newData.add(new DataEntry("Mean Sea Level Pressure",
+                        "surface",
+                        "surface",
+                        String.format("%d", (int) modelDataFile.getMSL(coordX, coordY) / 100),
+                        "hPa"));
+
+                newData.add(new DataEntry("Lifted Condensation Level",
+                        "surface",
+                        "surface",
+                        String.format("%d", (int) modelDataFile.getLCL(coordX, coordY)[0] / 100),
+                        "hPa"));
+
+                newData.add(new DataEntry("Convective Available Potential Energy",
+                        "surface",
+                        "surface",
+                        String.format("%d", (int) modelDataFile.getCAPE(coordX, coordY)),
+                        "J/kg"));
+                updateProgress(75, 100);
+
+                newData.add(new DataEntry("Convective Inhibition",
+                        "surface",
+                        "surface",
+                        String.format("%d", (int) modelDataFile.getCIN(coordX, coordY)),
+                        "J/kg"));
+
+                newData.add(new DataEntry("Lifted Index",
+                        "1000-500",
+                        "hPa",
+                        String.format("%.1f", modelDataFile.getLFTX(coordX, coordY)),
+                        "K"));
+
+                newData.add(new DataEntry("K-Index",
+                        "850-500",
+                        "hPa",
+                        String.format("%.0f", modelDataFile.getKIndex(coordX, coordY)),
+                        "K"));
+
+                newData.add(new DataEntry("Total Totals",
+                        "850-500",
+                        "hPa",
+                        String.format("%.0f", modelDataFile.getTotalTotals(coordX, coordY)),
+                        "K"));
+
+                newData.add(new DataEntry("SWEAT",
+                        "850-500",
+                        "hPa",
+                        String.format("%.0f", modelDataFile.getSWEAT(coordX, coordY)),
+                        "(N/A)"));
+
+                updateProgress(80, 100);
+                updateMessage("Plotting Skew-T...");
+
+                SkewTPlot.plotSkewT(canvasSkewT.getGraphicsContext2D(), modelDataFile,
+                        coordX, coordY);
+                updateProgress(100, 100);
+
+                return null;
             }
-        }
-        newData.add(new DataEntry("Dew Point",
-                "2",
-                "m above ground",
-                String.format("%f", modelDataFile.getDewp2m(coordX, coordY)),
-                "K"));
+        };
 
-        newData.add(new DataEntry("Surface Pressure",
-                "surface",
-                "surface",
-                String.format("%d", (int) modelDataFile.getPresSfc(coordX, coordY) / 100),
-                "hPa"));
+        taskUpdateTable.setOnSucceeded(event -> {
+            lblStatus.textProperty().unbind();
+            pbProgress.progressProperty().unbind();
+            pbProgress.setVisible(false);
 
-        newData.add(new DataEntry("Mean Sea Level Pressure",
-                "surface",
-                "surface",
-                String.format("%d", (int) modelDataFile.getMSL(coordX, coordY) / 100),
-                "hPa"));
+            dataList = FXCollections.observableArrayList(newData);
+            tblData.setItems(dataList);
+            tblData.setPrefSize(apDataTab.getWidth(), apDataTab.getHeight());
 
-        newData.add(new DataEntry("Lifted Condensation Level",
-                "surface",
-                "surface",
-                String.format("%d", (int) modelDataFile.getLCL(coordX, coordY)[0] / 100),
-                "hPa"));
+            isNoSkewTDrawn.set(false);
+            doUpdateStatus("Data table updated and Skew-T plotted");
+        });
 
-        newData.add(new DataEntry("Convective Available Potential Energy",
-                "surface",
-                "surface",
-                String.format("%d", (int) modelDataFile.getCAPE(coordX, coordY)),
-                "J/kg"));
+        lblStatus.textProperty().bind(taskUpdateTable.messageProperty());
+        pbProgress.progressProperty().bind(taskUpdateTable.progressProperty());
+        pbProgress.setVisible(true);
 
-        newData.add(new DataEntry("Convective Inhibition",
-                "surface",
-                "surface",
-                String.format("%d", (int) modelDataFile.getCIN(coordX, coordY)),
-                "J/kg"));
-
-        newData.add(new DataEntry("Lifted Index",
-                "1000-500",
-                "hPa",
-                String.format("%.1f", modelDataFile.getLFTX(coordX, coordY)),
-                "K"));
-
-        newData.add(new DataEntry("K-Index",
-                "850-500",
-                "hPa",
-                String.format("%.0f", modelDataFile.getKIndex(coordX, coordY)),
-                "K"));
-
-        newData.add(new DataEntry("Total Totals",
-                "850-500",
-                "hPa",
-                String.format("%.0f", modelDataFile.getTotalTotals(coordX, coordY)),
-                "K"));
-
-        newData.add(new DataEntry("SWEAT",
-                "850-500",
-                "hPa",
-                String.format("%.0f", modelDataFile.getSWEAT(coordX, coordY)),
-                "(N/A)"));
-
-        dataList = FXCollections.observableArrayList(newData);
-        tblData.setItems(dataList);
-        tblData.setPrefSize(apDataTab.getWidth(), apDataTab.getHeight());
-
-        SkewTPlot.plotSkewT(canvasSkewT.getGraphicsContext2D(), modelDataFile,
-                coordX, coordY);
-
-        isNoSkewTDrawn.set(false);
-        doUpdateStatus("Skew-T plot and data table updated");
+        new Thread(taskUpdateTable).start();
     }
 
     /**

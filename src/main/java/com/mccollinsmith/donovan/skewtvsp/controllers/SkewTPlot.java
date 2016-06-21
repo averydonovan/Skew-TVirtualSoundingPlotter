@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
+import javafx.application.Platform;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.geometry.VPos;
 import javafx.scene.canvas.Canvas;
@@ -178,7 +179,9 @@ public class SkewTPlot {
         plotSkewT(canvasHiResPlot.getGraphicsContext2D(), mdfSkewTData,
                 coordX, coordY);
 
-        canvasHiResPlot.snapshot(null, writableImage);
+        Platform.runLater(() -> {
+            canvasHiResPlot.snapshot(null, writableImage);
+        });
 
         scaleLineFactor = 1;
 

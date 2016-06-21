@@ -27,7 +27,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane id="AnchorPane" fx:id="anchorPane" prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/8.0.60" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.mccollinsmith.donovan.skewtvsp.controllers.STVSPController">
+<AnchorPane id="AnchorPane" fx:id="anchorPane" prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/8.0.65" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.mccollinsmith.donovan.skewtvsp.controllers.STVSPController">
     <children>
         <BorderPane prefHeight="400.0" prefWidth="600.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
             <top>
@@ -81,7 +81,7 @@
                 <HBox alignment="BOTTOM_CENTER" spacing="5.0" BorderPane.alignment="CENTER">
                     <children>
                         <Label fx:id="lblStatus" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minWidth="700.0" prefWidth="1200.0" text="Label" />
-                        <ProgressBar maxWidth="200.0" minWidth="200.0" prefWidth="200.0" progress="0.0" />
+                        <ProgressBar fx:id="pbProgress" maxWidth="200.0" minWidth="200.0" prefWidth="200.0" progress="0.0" visible="false" />
                     </children>
                     <padding>
                         <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
@@ -218,6 +218,7 @@
                                         <AnchorPane fx:id="apSkewTTab" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308">
                                             <children>
                                                 <Canvas fx:id="canvasSkewT" height="1200.0" width="900.0" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="0.0" />
+                                    <Canvas fx:id="canvasBlankSkewT" height="1200.0" width="900.0" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="0.0" />
                                             </children>
                                             <padding>
                                                 <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />

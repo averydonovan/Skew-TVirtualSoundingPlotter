@@ -4,7 +4,7 @@
   <groupId>com.mccollinsmith.donovan</groupId>
   <artifactId>SkewTVSP</artifactId>
   <name>Skew-T Virtual Sounding Plotter</name>
-  <version>0.1.0</version>
+  <version>0.2.0-alpha.1</version>
   <url>http://github.com/donovan1983/SkewTVirtualSoundingPlotter/</url>
   <inceptionYear>2016</inceptionYear>
   <developers>
