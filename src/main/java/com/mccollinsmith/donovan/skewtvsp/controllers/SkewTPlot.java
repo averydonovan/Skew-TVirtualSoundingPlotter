@@ -196,6 +196,9 @@ public class SkewTPlot {
 
         drawAxes();
         drawTicksAndLabels();
+        
+        drawLocationAndTime();
+        drawWeatherIndices();
     }
 
     /**
@@ -348,6 +351,117 @@ public class SkewTPlot {
         gcSkewTPlot.setLineWidth(scaleLineFactor * 2);
         gcSkewTPlot.strokePolyline(xDewpVals, yVals, yVals.length);
     }
+    
+    /**
+     * Draws labels for location, analysis time, and valid time.
+     */
+    private static void drawLocationAndTime() {
+        // All labels drawn in black
+        gcSkewTPlot.setFill(Color.BLACK);
+        gcSkewTPlot.setStroke(Color.BLACK);
+
+        /*
+         * Draw location and time labels.
+         */
+        gcSkewTPlot.setLineWidth(scaleLineFactor * 0);
+
+        gcSkewTPlot.setFont(
+                Font.font("sans-serif", FontWeight.NORMAL, 12 * plotAvgStep));
+
+        gcSkewTPlot.setTextAlign(TextAlignment.CENTER);
+        gcSkewTPlot.setTextBaseline(VPos.CENTER);
+        
+        double yAxisLocation = plotYMax/10 * 5;
+        double yAxisTime = plotYMax/10 * 8;
+        double xAxisLocation = canvasWidth/2;
+        double xAxisTime = canvasWidth/2;
+        
+        double[] plotLonLat = 
+                mdfSkewTData.getLonLatFromXYCoords(coordX, coordY);
+        String plotLocation = 
+                String.format("Longitude, Latitude: %.6f, %.6f",
+                        plotLonLat[0], plotLonLat[1]);
+
+        gcSkewTPlot.fillText(plotLocation, xAxisLocation, yAxisLocation);
+        
+        gcSkewTPlot.setFont(
+                Font.font("sans-serif", FontWeight.NORMAL, 9 * plotAvgStep));
+
+        String plotTime = "Analysis: "
+                + mdfSkewTData.getAnalysisTime().toString()
+                + "   "
+                + "Valid: "
+                + mdfSkewTData.getValidTime().toString();
+ 
+        gcSkewTPlot.fillText(plotTime, xAxisTime, yAxisTime);
+    }
+
+    /**
+     * Draws labels for location, analysis time, and valid time.
+     */
+    private static void drawWeatherIndices() {
+        // All labels drawn in black
+        gcSkewTPlot.setFill(Color.BLACK);
+        gcSkewTPlot.setStroke(Color.BLACK);
+
+        /*
+         * Draw weather indices labels.
+         */
+        gcSkewTPlot.setLineWidth(scaleLineFactor * 0);
+
+        gcSkewTPlot.setTextAlign(TextAlignment.CENTER);
+        gcSkewTPlot.setTextBaseline(VPos.CENTER);
+        
+        double yAxisIndices1 = (canvasHeight - plotYOffset)/20 * 9 + plotYOffset;
+        double yAxisIndices2 = (canvasHeight - plotYOffset)/20 * 12 + plotYOffset;
+        double yAxisIndices3 = (canvasHeight - plotYOffset)/20 * 14 + plotYOffset;
+        double xAxisIndices = canvasWidth/2;
+        
+        String plotIndices1 =
+                String.format("Temperature 2m: %.1f C", 
+                        mdfSkewTData.getTemp2m(coordX, coordY) - C_TO_K)
+                + "     "
+                + String.format("Dew Point 2m: %.1f C", 
+                        mdfSkewTData.getDewp2m(coordX, coordY) - C_TO_K)
+                + "     "
+                + String.format("Pressure Sfc: %.0f hPa", 
+                        mdfSkewTData.getPresSfc(coordX, coordY)/HPA_TO_PA);
+        String plotIndices2 =
+                String.format("LCL: %.0f hPa", 
+                        mdfSkewTData.getLCL(coordX, coordY)[0]/HPA_TO_PA)
+                + "     "
+                + String.format("MSL: %.0f hPa", 
+                        mdfSkewTData.getMSL(coordX, coordY)/HPA_TO_PA)
+                + "     "
+                + String.format("CAPE: %.0f J/kg", 
+                        mdfSkewTData.getCAPE(coordX, coordY))
+                + "     "
+                + String.format("CIN: %.0f J/kg", 
+                        mdfSkewTData.getCIN(coordX, coordY));
+        String plotIndices3 =
+                String.format("Lifted Index: %.1f", 
+                        mdfSkewTData.getLFTX(coordX, coordY))
+                + "     "
+                + String.format("K-Index: %.0f", 
+                        mdfSkewTData.getKIndex(coordX, coordY))
+                + "     "
+                + String.format("Total Totals: %.0f", 
+                        mdfSkewTData.getTotalTotals(coordX, coordY))
+                + "     "
+                + String.format("SWEAT: %.0f", 
+                        mdfSkewTData.getSWEAT(coordX, coordY));
+ 
+        gcSkewTPlot.setFont(
+                Font.font("sans-serif", FontWeight.NORMAL, 8 * plotAvgStep));
+
+        gcSkewTPlot.fillText(plotIndices1, xAxisIndices, yAxisIndices1);
+
+        gcSkewTPlot.setFont(
+                Font.font("sans-serif", FontWeight.NORMAL, 7 * plotAvgStep));
+
+        gcSkewTPlot.fillText(plotIndices2, xAxisIndices, yAxisIndices2);
+        gcSkewTPlot.fillText(plotIndices3, xAxisIndices, yAxisIndices3);
+    }
 
     /**
      * Draws ticks and labels on plot axes.
@@ -389,7 +503,7 @@ public class SkewTPlot {
         presLevels.stream()
                 .mapToDouble(i -> i)
                 .forEach(d -> gcSkewTPlot
-                        .fillText(String.format("%.0f", d / 100),
+                        .fillText(String.format("%.0f", d / HPA_TO_PA),
                                 plotXOffset - 4 * plotAvgStep,
                                 getYFromPres(d)));
 
