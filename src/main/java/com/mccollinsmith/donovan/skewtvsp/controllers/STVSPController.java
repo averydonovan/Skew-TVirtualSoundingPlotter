@@ -85,7 +85,9 @@ public class STVSPController implements Initializable {
     private MenuItem menuFileExit;
     // Toolbar
     @FXML
-    private Button btnSaveSkewT;
+    private Button btnOpenFile;
+    @FXML
+    private Button btnSavePlot;
     // Data selection pane
     @FXML
     private AnchorPane apDataTab;
@@ -169,8 +171,15 @@ public class STVSPController implements Initializable {
 
         // These are useless when no Skew-T plot has been drawn
         menuFileSaveSkewT.disableProperty().bind(isNoSkewTDrawn);
-        btnSaveSkewT.disableProperty().bind(isNoSkewTDrawn);
+        btnSavePlot.disableProperty().bind(isNoSkewTDrawn);
         tblData.disableProperty().bind(isNoSkewTDrawn);
+
+        // Tooltips for buttons and input boxes
+        btnOpenFile.setTooltip(new Tooltip("Open GRIB data file"));
+        btnSavePlot.setTooltip(new Tooltip("Save Skew-T plot to a PNG file"));
+        btnLonLatSearch.setTooltip(
+                new Tooltip("Plot Skew-T for closest point to\n"
+                        + "requested longitude and latitude"));
 
         /*
          * Show blank Skew-T whenever either no Skew-T at all has been plotted
@@ -335,7 +344,83 @@ public class STVSPController implements Initializable {
      */
     @FXML
     protected void doLonLatSearch(ActionEvent event) {
-        doUpdateData();
+        // If longitude or latitude are empty, display error dialog
+        if (tfLonSearch.getText().isEmpty() && tfLatSearch.getText().isEmpty()) {
+            Alert alert = new Alert(AlertType.ERROR);
+            alert.setTitle("Unable to Plot");
+            alert.setHeaderText("No coordinates input");
+            alert.setContentText("Enter a longitude and latitude before plotting.");
+            alert.showAndWait();
+            tfLonSearch.requestFocus();
+            return;
+        } else if (tfLonSearch.getText().isEmpty()) {
+            Alert alert = new Alert(AlertType.ERROR);
+            alert.setTitle("Unable to Plot");
+            alert.setHeaderText("No longitude input");
+            alert.setContentText("Enter a longitude before plotting.");
+            alert.showAndWait();
+            tfLonSearch.requestFocus();
+            return;
+        } else if (tfLatSearch.getText().isEmpty()) {
+            Alert alert = new Alert(AlertType.ERROR);
+            alert.setTitle("Unable to Plot");
+            alert.setHeaderText("No latitude input");
+            alert.setContentText("Enter a latitude before plotting.");
+            alert.showAndWait();
+            tfLatSearch.requestFocus();
+            return;
+        }
+
+        boolean lonIsValid = false;
+        boolean latIsValid = false;
+        String msgLonLat = "";
+
+        // Make sure longitude is a decimal number between -180 and 180
+        try {
+            Double searchLon = Double.parseDouble(tfLonSearch.getText());
+            if (searchLon < -180) {
+                msgLonLat += "Longitude must be \u2265 -180.\n";
+            } else if (searchLon > 180) {
+                msgLonLat += "Longitude must be \u2264 180.\n";
+            } else {
+                lonIsValid = true;
+            }
+        } catch (Exception ex) {
+            msgLonLat += "Longitude must be in decimal form.\n";
+        }
+
+        // Make sure latitude is a decimal number between -90 and 90
+        try {
+            Double searchLat = Double.parseDouble(tfLatSearch.getText());
+            if (searchLat < -90) {
+                msgLonLat += "Latitude must be \u2265 -90.\n";
+            } else if (searchLat > 90) {
+                msgLonLat += "Latitude must be \u2264 90.\n";
+            } else {
+                latIsValid = true;
+            }
+        } catch (Exception ex) {
+            msgLonLat += "Latitude must be in decimal form.\n";
+        }
+
+        /*
+         * If both longitude and latitude are valid, plot data and update data.
+         * If either or both are invalid, display error message.
+         */
+        if (lonIsValid == true && latIsValid == true) {
+            doUpdateData();
+        } else {
+            Alert alert = new Alert(AlertType.ERROR);
+            alert.setTitle("Unable to Plot");
+            alert.setHeaderText("Invalid coordinate(s)");
+            alert.setContentText(msgLonLat);
+            alert.showAndWait();
+            if (lonIsValid == false) {
+                tfLonSearch.requestFocus();
+            } else {
+                tfLatSearch.requestFocus();
+            }
+        }
     }
 
     /**
@@ -385,9 +470,21 @@ public class STVSPController implements Initializable {
         String cwd = curPath.toAbsolutePath().toString();
         File curPathAsFile = new File(cwd);
 
+        /*
+         * double[] plotLonLat = mdfSkewTData.getLonLatFromXYCoords(coordX,
+         * coordY); String plotLocation = String.format("Longitude, Latitude:
+         * %.6f, %.6f", plotLonLat[0], plotLonLat[1]);
+         */
+        String initFileName = "skewt"
+                + "_" + lblAnalTime.getText().replaceAll("[^a-zA-Z0-9]", "")
+                + "_" + lblValidTime.getText().replaceAll("[^a-zA-Z0-9]", "")
+                + "_" + tfLonFound.getText()
+                + "_" + tfLatFound.getText()
+                + ".png";
+
         FileChooser chooser = new FileChooser();
         chooser.setInitialDirectory(curPathAsFile);
-        chooser.setInitialFileName("skewt.png");
+        chooser.setInitialFileName(initFileName);
         ExtensionFilter fileExtsPNG
                 = new ExtensionFilter(
                         "PNG images", "*.png", "*.PNG");

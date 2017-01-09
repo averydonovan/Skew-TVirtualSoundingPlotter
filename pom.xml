@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.mccollinsmith.donovan</groupId>
     <artifactId>SkewTVSP</artifactId>
-    <version>0.2.0-alpha.1</version>
+    <version>0.2.0</version>
     <packaging>jar</packaging>
     <repositories>
         <repository>

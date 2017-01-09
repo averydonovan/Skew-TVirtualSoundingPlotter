@@ -27,7 +27,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane id="AnchorPane" fx:id="anchorPane" prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/8.0.65" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.mccollinsmith.donovan.skewtvsp.controllers.STVSPController">
+<AnchorPane id="AnchorPane" fx:id="anchorPane" prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.mccollinsmith.donovan.skewtvsp.controllers.STVSPController">
     <children>
         <BorderPane prefHeight="400.0" prefWidth="600.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
             <top>
@@ -37,18 +37,18 @@
                             <menus>
                                 <Menu mnemonicParsing="false" text="File">
                                     <items>
-                                        <MenuItem fx:id="menuFileOpen" mnemonicParsing="false" onAction="#doOpenFile" text="Open File">
+                                        <MenuItem fx:id="menuFileOpen" mnemonicParsing="false" onAction="#doOpenFile" text="Open Data File">
                                             <accelerator>
                                                 <KeyCodeCombination alt="UP" code="O" control="DOWN" meta="UP" shift="UP" shortcut="UP" />
                                             </accelerator>
                                         </MenuItem>
-                                        <MenuItem fx:id="menuFileClose" disable="true" mnemonicParsing="false" onAction="#doCloseFile" text="Close File">
+                                        <MenuItem fx:id="menuFileClose" disable="true" mnemonicParsing="false" onAction="#doCloseFile" text="Close Data File">
                                             <accelerator>
                                                 <KeyCodeCombination alt="UP" code="W" control="DOWN" meta="UP" shift="UP" shortcut="UP" />
                                             </accelerator>
                                         </MenuItem>
                                         <SeparatorMenuItem mnemonicParsing="false" />
-                                        <MenuItem fx:id="menuFileSaveSkewT" mnemonicParsing="false" onAction="#doSaveSkewT" text="Save Skew-T">
+                                        <MenuItem fx:id="menuFileSaveSkewT" mnemonicParsing="false" onAction="#doSaveSkewT" text="Save Skew-T as PNG">
                                             <accelerator>
                                                 <KeyCodeCombination alt="UP" code="S" control="DOWN" meta="UP" shift="UP" shortcut="UP" />
                                             </accelerator>
@@ -70,8 +70,8 @@
                         </MenuBar>
                         <ToolBar prefHeight="40.0" prefWidth="200.0">
                             <items>
-                                <Button mnemonicParsing="false" onAction="#doOpenFile" text="Open File" />
-                                <Button fx:id="btnSaveSkewT" mnemonicParsing="false" onAction="#doSaveSkewT" text="Save Skew-T" />
+                                <Button fx:id="btnOpenFile" mnemonicParsing="false" onAction="#doOpenFile" text="Open File" />
+                                <Button fx:id="btnSavePlot" mnemonicParsing="false" onAction="#doSaveSkewT" text="Save Plot" />
                             </items>
                         </ToolBar>
                     </children>
@@ -146,7 +146,7 @@
                                                 <Font name="Monospaced Regular" size="13.0" />
                                             </font>
                                         </TextField>
-                                        <Button fx:id="btnLonLatSearch" alignment="CENTER" defaultButton="true" mnemonicParsing="false" onAction="#doLonLatSearch" text="Search" GridPane.columnSpan="2" GridPane.halignment="CENTER" GridPane.rowIndex="3" GridPane.valignment="CENTER" />
+                                        <Button fx:id="btnLonLatSearch" alignment="CENTER" defaultButton="true" mnemonicParsing="false" onAction="#doLonLatSearch" text="Plot Skew-T" GridPane.columnSpan="2" GridPane.halignment="CENTER" GridPane.rowIndex="3" GridPane.valignment="CENTER" />
                                     </children>
                                     <VBox.margin>
                                         <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
