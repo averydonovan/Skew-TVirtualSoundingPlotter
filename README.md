@@ -6,38 +6,33 @@ A program to generate Skew-T meteorological data plots from GRIB files output by
 meteorological forecasting models, also known as a virtual sounding.
 It is intended for use as an easy-to-use educational tool by students or
 researchers.
+
 The program uses the
 [UCAR/Unidata NetCDF-Java](http://www.unidata.ucar.edu/software/thredds/current/netcdf-java/)
-library for GRIB file reading and JavaFX 8 for the GUI.
-Licensed under the GNU General Public License version 3.
-
-##Status##
-
-The program has implemented all features listed at a basic level.
-Currently it is able to read in GRIB1 and GRIB2 files published on the
+library for GRIB file reading.
+Currently it is able to read GRIB1 and GRIB2 files published on the
 [NOAA NOMADS](http://nomads.ncdc.noaa.gov/data.php?name=access) site.
-Further work on fixing bugs and adding features is ongoing.
-Feedback and bug reports are welcomed; simply submit them as issues and provide
-a detailed description.
+
+Licensed under the GNU General Public License version 3.
 
 ##Features##
 
+* Read GRIB1 and GRIB2 files output by the NOAA RAP, NAM, and GFS forecasting
+  models
 * Generate high-quality Skew-T/Log-P plots from temperature and dew point data
   at various isobaric levels
 * Convert relative humidity to dew point as needed
 * Calculate values such as lifting condensation level (LCL), K-index,
   Total Totals, and SWEAT depending on data available
-* Read GRIB1 and GRIB2 files output by the NOAA RAP, NAM, and GFS forecasting
-  models
 * Output high-resolution (approximately 300 DPI) plot to a PNG file
 
 ##Requirements##
 
 ###Running###
 
-* Java 8 SE
+* Java 8 SE runtime
 * Desktop operating system with windowing system (e.g. Microsoft Windows,
-  Apple Mac OS X, Linux with X11)
+  Apple macOS, Linux with X11)
 
 ###Building###
 
@@ -46,7 +41,7 @@ a detailed description.
 
 Maven should pull in all required dependencies automatically.
 Simply run `mvn package` to build.
-Alternately, you can open the project in NetBeans 8.1 or above and build from
+Alternately, you can open the project in NetBeans 8.2 or above and build from
 there.
 
 ##Citing/Acknowledging##
@@ -60,11 +55,11 @@ BibTeX example:
         author = {{Donovan Smith}},
         title = {Skew-T Virtual Sounding Plotter},
         url = {https://github.com/donovan1983/Skew-TVirtualSoundingPlotter},
-        version = {0.1.0},
-        year = {2016},
+        version = {0.2.0},
+        year = {2017},
     }
 
 Text example:
 
-    Donovan Smith, (2016): Skew-T Virtual Sounding Plotter (SkewTVSP) version 0.1.0 [software].
+    Donovan Smith, (2017): Skew-T Virtual Sounding Plotter (SkewTVSP) version 0.2.0 [software].
     (https://github.com/donovan1983/Skew-TVirtualSoundingPlotter)
