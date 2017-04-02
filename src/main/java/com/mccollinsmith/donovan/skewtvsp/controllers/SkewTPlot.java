@@ -242,13 +242,9 @@ public class SkewTPlot {
         //Create raster image to hold a snapshot of the Canvas.
         WritableImage writableImage = new WritableImage((int) PLOT_PRINT_WIDTH,
                 (int) PLOT_PRINT_HEIGHT);
-        /*
-         * Run Canvas.snapshot on the main JavaFX thread, otherwise it will lock
-         * up the application if ran in concurrent thread.
-         */
-        Platform.runLater(() -> {
-            canvasHiResPlot.snapshot(null, writableImage);
-        });
+
+        // Take snapshot of plot and save to writableImage
+        canvasHiResPlot.snapshot(null, writableImage);
 
         // Restore original scale factor and GraphicsContext.
         scaleLineFactor = PLOT_VIEW_SCALE;

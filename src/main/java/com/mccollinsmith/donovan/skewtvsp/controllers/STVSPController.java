@@ -491,32 +491,24 @@ public class STVSPController implements Initializable {
         chooser.getExtensionFilters().addAll(fileExtsPNG);
         File file = chooser.showSaveDialog(anchorPane.getScene().getWindow());
 
-        Task<Boolean> taskSavePlot = new Task<Boolean>() {
-            @Override
-            public Boolean call() {
-                updateMessage("Saving plot to " + file.getName() + "...");
-                updateProgress(10, 100);
-                RenderedImage renderedImage = SkewTPlot.getHiResPlot();
-                updateProgress(80, 100);
-                try {
-                    ImageIO.write(renderedImage, "png", file);
-                } catch (IOException ex) {
-                    LOG.error("{}\n{}", ex.getLocalizedMessage(), ex.toString());
-                    LOG.error("Unable to save PNG file!");
-                    return false;
-                }
-                return true;
-            }
-        };
-
-        taskSavePlot.setOnSucceeded(taskEvent -> {
-            lblStatus.textProperty().unbind();
-            pbProgress.progressProperty().unbind();
-            pbProgress.setVisible(false);
-
-            if (taskSavePlot.getValue() == true) {
+        // Only try to save plot if a location and filename was chosen
+        if (file != null) {
+            pbProgress.setVisible(true);
+            
+            pbProgress.setProgress(0.1);
+            RenderedImage renderedImage = SkewTPlot.getHiResPlot();
+            pbProgress.setProgress(0.8);
+            
+            try {
+                // Save the plot to the chosen PNG file
+                ImageIO.write(renderedImage, "png", file);
                 doUpdateStatus("Plot saved to file " + file.getName());
-            } else {
+            } catch (IOException ex) {
+                // Unable to save PNG so log the error...
+                LOG.error("{}\n{}", ex.getLocalizedMessage(), ex.toString());
+                LOG.error("Unable to save PNG file!");
+
+                // ...and show an alert
                 doUpdateStatus("Unable to save plot to file");
                 Alert alert = new Alert(AlertType.ERROR);
                 alert.setTitle("File Save Error");
@@ -524,14 +516,8 @@ public class STVSPController implements Initializable {
                 alert.setContentText("File name not valid or path not writeable.");
                 alert.showAndWait();
             }
-        });
 
-        if (file != null) {
-            lblStatus.textProperty().bind(taskSavePlot.messageProperty());
-            pbProgress.progressProperty().bind(taskSavePlot.progressProperty());
-            pbProgress.setVisible(true);
-
-            new Thread(taskSavePlot).start();
+            pbProgress.setVisible(false);
         }
     }
 
