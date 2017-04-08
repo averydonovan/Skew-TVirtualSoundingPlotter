@@ -246,7 +246,8 @@ public class STVSPController implements Initializable {
         chooser.setInitialFileName(modelFileName);
         ExtensionFilter fileExtsGRIB
                 = new ExtensionFilter(
-                        "GRIB files", "*.grb", "*.grib", "*.grb2", "*.grib2");
+                        "GRIB files", "*.grb", "*.grib", "*.grb2", "*.grib2",
+                        "*.pgrb2.*");
         chooser.getExtensionFilters().addAll(fileExtsGRIB);
         File file = chooser.showOpenDialog(anchorPane.getScene().getWindow());
 
@@ -291,6 +292,9 @@ public class STVSPController implements Initializable {
                     modelDataFile.close();
                 } catch (IOException ex) {
                     LOG.error("Error when attempting to close data file\n{}",
+                            ex.getLocalizedMessage());
+                } catch (NullPointerException ex) {
+                    LOG.error("Unable to read data file type\n{}",
                             ex.getLocalizedMessage());
                 }
                 Alert alert = new Alert(AlertType.ERROR);

@@ -77,6 +77,7 @@ public class ModelDataFile {
     private boolean modelIsGRB = false;
     private boolean modelIsGFS3 = false;
     private boolean modelIsGFS4 = false;
+    private boolean modelIsNAMGRB2 = false;
 
     /**
      * Create new instance. Need to call {@link #open(java.lang.String) open}
@@ -94,7 +95,11 @@ public class ModelDataFile {
      * @throws IOException GRIB file not found or unusable
      */
     public ModelDataFile(String gribFileName) throws IOException {
-        open(gribFileName);
+        boolean didOpen = open(gribFileName);
+        
+        if (didOpen == false) {
+            throw new IOException("Unable to open file");
+        }
     }
 
     /**
@@ -124,32 +129,62 @@ public class ModelDataFile {
      */
     public boolean open(String gribFileName) throws IOException {
         LOG.debug("Attempting to open GRIB file: {}", gribFileName);
-
-        /*
+        
+        /* 
+         * Make sure the model data file being opened can be read by program and
+         * detect type of model data file.
+         * 
          * Different forecasting model's data files may need slightly different
          * variable names and or grid dimensions for a variable. Methods that
          * retrieve data utilize these values to adjust how they retrieve data.
          */
-        // GRIB1 files, effectively refers to NAM and partly the GFS on grid 3
-        if (gribFileName.endsWith(".grb") || gribFileName.endsWith(".grib")) {
+        if (gribFileName.contains("gfs_3_")
+                && gribFileName.endsWith(".grb")) {
+            LOG.debug("Detected GFS GRIB1 file");
             modelIsGRB = true;
-        } else {
-            modelIsGRB = false;
-        }
-
-        // GFS on grid 4
-        if (gribFileName.contains("gfs_4_")
-                || (gribFileName.contains("z.pgrb2.") && gribFileName.contains("gfs"))) {
+            modelIsGFS3 = true;
+        } else if (gribFileName.contains("gfs_4_")
+                && gribFileName.endsWith(".grb2")) {
+            LOG.debug("Detected GFS GRIB2 file");
+            modelIsGFS4 = true;
+        } else if (gribFileName.contains("nam_218_")
+                && gribFileName.endsWith(".grb")) {
+            LOG.debug("Detected NAM GRIB1 file");
+            modelIsGRB = true;
+        } else if (gribFileName.contains("rap_130_")
+                && gribFileName.endsWith(".grb2")) {
+            LOG.debug("Detected RAP 130 GRIB2 file");
+        } else if (gribFileName.contains("rap_252_")
+                && gribFileName.endsWith(".grb2")) {
+            LOG.debug("Detected RAP 252 GRIB2 file");
+        } else if (gribFileName.contains("rap.")
+                && gribFileName.contains("awp130pgrbf")
+                && gribFileName.endsWith(".grib2")) {
+            LOG.debug("Detected RAP 130 GRIB2 file");
+        } else if (gribFileName.contains("rap.")
+                && gribFileName.contains("awp252pgrbf")
+                && gribFileName.endsWith(".grib2")) {
+            LOG.debug("Detected RAP 252 GRIB2 file");
+        } else if (gribFileName.contains("nam.")
+                && gribFileName.contains("z.awphys")
+                && gribFileName.endsWith(".grib2")) {
+            LOG.debug("Detected NAM GRIB2 file");
+            modelIsNAMGRB2 = true;
+        } else if (gribFileName.contains("gfs.")
+                && gribFileName.contains(".pgrb2.0p25")) {
+            LOG.debug("Detected GFS 0.25 GRIB2 file");
+            modelIsGFS4 = true;
+        } else if (gribFileName.contains("gfs.")
+                && gribFileName.contains(".pgrb2.0p50")) {
+            LOG.debug("Detected GFS 0.50 GRIB2 file");
+            modelIsGFS4 = true;
+        } else if (gribFileName.contains("gfs.")
+                && gribFileName.contains(".pgrb2.1p00")) {
+            LOG.debug("Detected GFS 1.00 GRIB2 file");
             modelIsGFS4 = true;
         } else {
-            modelIsGFS4 = false;
-        }
-
-        // GFS grid 3 files that are also GRIB1 files
-        if (gribFileName.contains("gfs_3_") && modelIsGRB) {
-            modelIsGFS3 = true;
-        } else {
-            modelIsGFS3 = false;
+            LOG.debug("Unable to read file");
+            return false;
         }
 
         /*
@@ -202,15 +237,20 @@ public class ModelDataFile {
         }
 
         int[] varShape = gribVarData.getShape();
+        LOG.debug("varShape = {}", varShape);
         maxX = varShape[varShape.length - 1];
         maxY = varShape[varShape.length - 2];
         maxLevel = varShape[varShape.length - 3];
+        
+        boolean didGetLevels = doGetLevels();
 
-        doGetLevels();
-
-        LOG.debug("Successfully opened GRIB file: {}", gribFileName);
-
-        return true;
+        if (didGetLevels == true) {
+            LOG.debug("Successfully opened GRIB file: {}", gribFileName);
+            return true;
+        } else {
+            LOG.debug("Unable to open GRIB file: {}", gribFileName);
+            return false;
+        }
     }
 
     /**
@@ -459,7 +499,7 @@ public class ModelDataFile {
 
         if (modelIsGRB) {
             result = getValFromVar(varNameMslGRB, coordX, coordY, 3);
-        } else if (modelIsGFS4) {
+        } else if (modelIsGFS4 || modelIsNAMGRB2) {
             result = getValFromVar(varNameMslGFS4, coordX, coordY, 3);
         } else {
             result = getValFromVar(varNameMsl, coordX, coordY, 3);
@@ -605,9 +645,14 @@ public class ModelDataFile {
      */
     private boolean doGetLevels() {
         String varNameIso;
+        int initCoordLvl = 0;
 
         if (modelIsGFS3) {
             varNameIso = "isobaric1";
+        } else if (modelIsNAMGRB2) {
+            varNameIso = "isobaric1";
+            // Need to skip first 2 isobaric levels
+            initCoordLvl = 2;
         } else {
             varNameIso = "isobaric";
         }
@@ -624,7 +669,7 @@ public class ModelDataFile {
         if (gribVarDataIso != null) {
             Index idxIso = gribVarDataIso.getIndex();
 
-            for (int coordLvl = 0; coordLvl < maxLevel; coordLvl++) {
+            for (int coordLvl = initCoordLvl; coordLvl < maxLevel; coordLvl++) {
                 idxIso.set(coordLvl);
                 Integer curLevel = gribVarDataIso.getInt(idxIso);
                 if (curLevel >= 10000 && curLevel <= 100000
@@ -707,7 +752,7 @@ public class ModelDataFile {
              * the particular type of data file. Use the UCAR Unidata Tools UI
              * to inspect the data file you are trying to read to verify.
              */
-            LOG.error("Can't read variable: {}", ex.getLocalizedMessage());
+            LOG.error("Can't read variable: {}\n{}", varName, ex.getLocalizedMessage());
             return errorVal;
         }
         return result;
