@@ -34,6 +34,7 @@ import javafx.scene.image.Image;
 import javafx.scene.image.WritableImage;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
+import javafx.scene.text.FontPosture;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.TextAlignment;
 import javafx.scene.transform.Rotate;
@@ -68,14 +69,12 @@ public class SkewTPlot {
     private static final double TEMP_MIN = TEMP_MIN_C + C_TO_K;
     private static final double TEMP_MAX = TEMP_MAX_C + C_TO_K;
 
-    private static final int PLOT_VIEW_WIDTH = 900;
-    private static final int PLOT_VIEW_HEIGHT = 1200;
-    private static final int PLOT_VIEW_SCALE = 1;
+    private static final int PLOT_VIEW_WIDTH = 1800;
+    private static final int PLOT_VIEW_HEIGHT = 2400;
+    private static final int PLOT_VIEW_SCALE = 2;
     private static final int PLOT_PRINT_SCALE = 3;
-    private static final int PLOT_PRINT_WIDTH
-            = PLOT_VIEW_WIDTH * PLOT_PRINT_SCALE;
-    private static final int PLOT_PRINT_HEIGHT
-            = PLOT_VIEW_HEIGHT * PLOT_PRINT_SCALE;
+    private static final int PLOT_PRINT_WIDTH = 2400;
+    private static final int PLOT_PRINT_HEIGHT = 3600;
 
     /**
      * ModelDataFile currently in use.
@@ -367,10 +366,12 @@ public class SkewTPlot {
         gcSkewTPlot.setTextAlign(TextAlignment.CENTER);
         gcSkewTPlot.setTextBaseline(VPos.CENTER);
         
-        double yAxisLocation = plotYMax/10 * 5;
-        double yAxisTime = plotYMax/10 * 8;
+        double yAxisLocation = plotYMax/10 * 4.5;
+        double yAxisTime = plotYMax/10 * 7;
+        double yAxisModelName = plotYMax/10 * 9;
         double xAxisLocation = canvasWidth/2;
         double xAxisTime = canvasWidth/2;
+        double xAxisModelName = canvasWidth/2;
         
         double[] plotLonLat = 
                 mdfSkewTData.getLonLatFromXYCoords(coordX, coordY);
@@ -390,6 +391,14 @@ public class SkewTPlot {
                 + mdfSkewTData.getValidTime().toString();
  
         gcSkewTPlot.fillText(plotTime, xAxisTime, yAxisTime);
+        
+        gcSkewTPlot.setFont(
+                Font.font("sans-serif", FontWeight.NORMAL, FontPosture.ITALIC,
+                        7 * plotAvgStep));
+
+        String plotModelName = "Source: " + mdfSkewTData.getModelName();
+
+        gcSkewTPlot.fillText(plotModelName, xAxisModelName, yAxisModelName);
     }
 
     /**
@@ -599,12 +608,16 @@ public class SkewTPlot {
         gcSkewTPlot.setFill(Color.WHITE);
         gcSkewTPlot.setStroke(Color.WHITE);
         gcSkewTPlot.setLineWidth(scaleLineFactor * 0);
+        // Upper
         gcSkewTPlot.fillRect(0, 0,
                 canvasWidth, plotYMax);
+        // Lower
         gcSkewTPlot.fillRect(0, plotYOffset,
                 canvasWidth, plotYMax - plotYOffset);
+        // Left
         gcSkewTPlot.fillRect(0, plotYMax,
-                plotXOffset, plotYOffset - plotYMax);
+                plotXOffset, canvasHeight - plotYMax);
+        // Lower
         gcSkewTPlot.fillRect(plotXMax, plotYMax,
                 canvasWidth - plotXMax, canvasHeight - plotYMax);
 

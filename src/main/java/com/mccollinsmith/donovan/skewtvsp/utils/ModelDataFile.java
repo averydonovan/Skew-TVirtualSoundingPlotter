@@ -67,6 +67,12 @@ public class ModelDataFile {
             = "Parcel_lifted_index_to_500_hPa_layer_between_two_pressure_difference_from_ground_layer";
     private final String varNameUGrd = "u-component_of_wind_isobaric";
     private final String varNameVGrd = "v-component_of_wind_isobaric";
+    
+    private final String modelNameGFS = "NOAA Global Forecast System";
+    private final String modelNameNAM = "NOAA North American Model";
+    private final String modelNameRAP = "NOAA Rapid Refresh";
+    
+    private String modelName = "";
 
     private Map<Float, Integer> isoLevels = null;
 
@@ -78,6 +84,10 @@ public class ModelDataFile {
     private boolean modelIsGFS3 = false;
     private boolean modelIsGFS4 = false;
     private boolean modelIsNAMGRB2 = false;
+    
+    private boolean modelIsGFS = false;
+    private boolean modelIsNAM = false;
+    private boolean modelIsRAP = false;
 
     /**
      * Create new instance. Need to call {@link #open(java.lang.String) open}
@@ -130,6 +140,16 @@ public class ModelDataFile {
     public boolean open(String gribFileName) throws IOException {
         LOG.debug("Attempting to open GRIB file: {}", gribFileName);
         
+        // Set all model type flags to false and clear model name string
+        modelIsGRB = false;
+        modelIsGFS3 = false;
+        modelIsGFS4 = false;
+        modelIsNAMGRB2 = false;
+        modelIsGFS = false;
+        modelIsNAM = false;
+        modelIsRAP = false;
+        modelName = "";
+
         /* 
          * Make sure the model data file being opened can be read by program and
          * detect type of model data file.
@@ -143,45 +163,78 @@ public class ModelDataFile {
             LOG.debug("Detected GFS GRIB1 file");
             modelIsGRB = true;
             modelIsGFS3 = true;
+            
+            modelIsGFS = true;
+            modelName = modelNameGFS;
         } else if (gribFileName.contains("gfs_4_")
                 && gribFileName.endsWith(".grb2")) {
             LOG.debug("Detected GFS GRIB2 file");
             modelIsGFS4 = true;
+            
+            modelIsGFS = true;
+            modelName = modelNameGFS;
         } else if (gribFileName.contains("nam_218_")
                 && gribFileName.endsWith(".grb")) {
             LOG.debug("Detected NAM GRIB1 file");
             modelIsGRB = true;
+            
+            modelIsNAM = true;
+            modelName = modelNameNAM;
         } else if (gribFileName.contains("rap_130_")
                 && gribFileName.endsWith(".grb2")) {
             LOG.debug("Detected RAP 130 GRIB2 file");
+
+            modelIsRAP = true;
+            modelName = modelNameRAP;
         } else if (gribFileName.contains("rap_252_")
                 && gribFileName.endsWith(".grb2")) {
             LOG.debug("Detected RAP 252 GRIB2 file");
+            
+            modelIsRAP = true;
+            modelName = modelNameRAP;
         } else if (gribFileName.contains("rap.")
                 && gribFileName.contains("awp130pgrbf")
                 && gribFileName.endsWith(".grib2")) {
             LOG.debug("Detected RAP 130 GRIB2 file");
+            
+            modelIsRAP = true;
+            modelName = modelNameRAP;
         } else if (gribFileName.contains("rap.")
                 && gribFileName.contains("awp252pgrbf")
                 && gribFileName.endsWith(".grib2")) {
             LOG.debug("Detected RAP 252 GRIB2 file");
+            
+            modelIsRAP = true;
+            modelName = modelNameRAP;
         } else if (gribFileName.contains("nam.")
                 && gribFileName.contains("z.awphys")
                 && gribFileName.endsWith(".grib2")) {
             LOG.debug("Detected NAM GRIB2 file");
             modelIsNAMGRB2 = true;
+            
+            modelIsNAM = true;
+            modelName = modelNameNAM;
         } else if (gribFileName.contains("gfs.")
                 && gribFileName.contains(".pgrb2.0p25")) {
             LOG.debug("Detected GFS 0.25 GRIB2 file");
             modelIsGFS4 = true;
+            
+            modelIsGFS = true;
+            modelName = modelNameGFS;
         } else if (gribFileName.contains("gfs.")
                 && gribFileName.contains(".pgrb2.0p50")) {
             LOG.debug("Detected GFS 0.50 GRIB2 file");
             modelIsGFS4 = true;
+            
+            modelIsGFS = true;
+            modelName = modelNameGFS;
         } else if (gribFileName.contains("gfs.")
                 && gribFileName.contains(".pgrb2.1p00")) {
             LOG.debug("Detected GFS 1.00 GRIB2 file");
             modelIsGFS4 = true;
+            
+            modelIsGFS = true;
+            modelName = modelNameGFS;
         } else {
             LOG.debug("Unable to read file");
             return false;
@@ -262,6 +315,7 @@ public class ModelDataFile {
      */
     public boolean close() throws IOException {
         LOG.debug("Closing GRIB file...");
+        
         try {
             gribFile.close();
             gribFile = null;
@@ -271,6 +325,15 @@ public class ModelDataFile {
             LOG.error("{}\n{}", ex.getLocalizedMessage(), ex.toString());
             throw ex;
         }
+    }
+    
+    /**
+     * Returns name of model used to generate data file.
+     * 
+     * @return model name
+     */
+    public String getModelName() {
+        return modelName;
     }
 
     /**
