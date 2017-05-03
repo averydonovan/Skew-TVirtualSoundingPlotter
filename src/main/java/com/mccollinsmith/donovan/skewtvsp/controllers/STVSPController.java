@@ -579,7 +579,7 @@ public class STVSPController implements Initializable {
                 updateMessage("Updating data table...");
 
                 for (int coordLvl = 0; coordLvl < 50; coordLvl++) {
-                    float curLevel = modelDataFile.getLevelFromIndex(coordLvl);
+                    double curLevel = modelDataFile.getLevelFromIndex(coordLvl);
                     if ((int) curLevel != -1) {
                         newData.add(new DataEntry("Temperature",
                                 String.format("%d", (int) curLevel / 100),
@@ -596,7 +596,7 @@ public class STVSPController implements Initializable {
                 updateProgress(30, 100);
 
                 for (int coordLvl = 0; coordLvl < 50; coordLvl++) {
-                    float curLevel = modelDataFile.getLevelFromIndex(coordLvl);
+                    double curLevel = modelDataFile.getLevelFromIndex(coordLvl);
                     if ((int) curLevel != -1) {
                         newData.add(new DataEntry("Dew Point",
                                 String.format("%d", (int) curLevel / 100),

@@ -268,13 +268,13 @@ public class SkewTPlot {
          * level.
          */
         for (int coordLvl = 0; coordLvl < 50; coordLvl++) {
-            Double curLevel = (double) mdfSkewTData.getLevelFromIndex(coordLvl);
+            Double curLevel = mdfSkewTData.getLevelFromIndex(coordLvl);
             if (curLevel.intValue() >= 0) {
                 dataPresLevels.add(curLevel);
-                dataTempVals.add(new Double(mdfSkewTData
-                        .getTempIso(coordX, coordY, coordLvl)));
-                dataDewpVals.add(new Double(mdfSkewTData
-                        .getDewpIso(coordX, coordY, coordLvl)));
+                dataTempVals.add(mdfSkewTData
+                        .getTempIso(coordX, coordY, coordLvl));
+                dataDewpVals.add(mdfSkewTData
+                        .getDewpIso(coordX, coordY, coordLvl));
             }
         }
 
@@ -293,10 +293,8 @@ public class SkewTPlot {
          * dew point lists at the appropriate place so that lists are ordered
          * from lowest to highest isobaric level.
          */
-        dataTempVals.add(presSurfIndex,
-                new Double(mdfSkewTData.getTemp2m(coordX, coordY)));
-        dataDewpVals.add(presSurfIndex,
-                new Double(mdfSkewTData.getDewp2m(coordX, coordY)));
+        dataTempVals.add(presSurfIndex, mdfSkewTData.getTemp2m(coordX, coordY));
+        dataDewpVals.add(presSurfIndex, mdfSkewTData.getDewp2m(coordX, coordY));
 
         List<Double> xTempValsList = new ArrayList<>();
         List<Double> xDewpValsList = new ArrayList<>();
@@ -637,7 +635,7 @@ public class SkewTPlot {
      * @param isoLevel pressure in Pa
      */
     private static void drawIsobar(int isoLevel) {
-        double y = getYFromPres((double) isoLevel);
+        double y = getYFromPres(isoLevel);
         gcSkewTPlot.setFill(Color.BLUE);
         gcSkewTPlot.setStroke(Color.BLUE);
         gcSkewTPlot.setLineWidth(scaleLineFactor * 0.75);

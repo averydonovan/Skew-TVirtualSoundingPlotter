@@ -42,12 +42,12 @@ public class AtmosThermoMath {
      *
      * @return TT index
      */
-    public static float calcTotalTotals(float temp500, float temp850,
-            float dewp500, float dewp850) {
+    public static double calcTotalTotals(double temp500, double temp850,
+            double dewp500, double dewp850) {
         double totVt = temp850 - temp500;
         double totCt = dewp850 - dewp500;
         double result = totVt + totCt;
-        return (float) result;
+        return result;
     }
 
     /**
@@ -61,8 +61,8 @@ public class AtmosThermoMath {
      *
      * @return K-index
      */
-    public static float calcKIndex(float temp500, float temp700, float temp850,
-            float dewp700, float dewp850) {
+    public static double calcKIndex(double temp500, double temp700, double temp850,
+            double dewp700, double dewp850) {
         // Need to convert K to C
         temp500 -= C_TO_K;
         temp700 -= C_TO_K;
@@ -71,7 +71,7 @@ public class AtmosThermoMath {
         dewp850 -= C_TO_K;
 
         double result = (temp850 - temp500) + (dewp850 - (temp700 - dewp700));
-        return (float) result;
+        return result;
     }
 
     /**
@@ -83,10 +83,10 @@ public class AtmosThermoMath {
      *
      * @return dew point in K
      */
-    public static float calcDewp(float temp, float pres, float rh) {
+    public static double calcDewp(double temp, double pres, double rh) {
         rh = rh / 100.0f;
         double result = calcTempAtMixingRatio(w(temp, pres) * rh, pres);
-        return (float) result;
+        return result;
     }
 
     /**
@@ -96,9 +96,9 @@ public class AtmosThermoMath {
      * @param dewp 2m surface dew point in K
      * @param pres surface pressure in Pa
      *
-     * @return LCL as float[2]; [0] = pressure in Pa, [1] = temperature in K
+     * @return LCL as double[2]; [0] = pressure in Pa, [1] = temperature in K
      */
-    public static float[] calcLCL(float temp, float dewp, float pres) {
+    public static double[] calcLCL(double temp, double dewp, double pres) {
         final double stepSize = 100.0;
         double pt = pot_temp(temp, pres);
         double w_0 = w(dewp, pres);
@@ -111,14 +111,14 @@ public class AtmosThermoMath {
             pt_l = calcTempFromPot(pt, lcl);
             delta = w(pt_l, lcl) - w_0;
         }
-        float[] result = {(float) lcl, (float) pt_l};
+        double[] result = {lcl, pt_l};
         return result;
     }
 
     /**
      * Calculates Severe WEAther Threat (SWEAT) index. Total totals (TT) index
      * must be provided or calculated using
-     * {@link #calcTotalTotals(float, float, float, float) calcTotalTotals}.
+     * {@link #calcTotalTotals(double, double, double, double) calcTotalTotals}.
      *
      * @param totalTotals TT index
      * @param dewp850     dew point at 850hPa, in K
@@ -129,8 +129,8 @@ public class AtmosThermoMath {
      *
      * @return SWEAT index
      */
-    public static float calcSWEAT(float totalTotals, float dewp850,
-            float uGrd500, float vGrd500, float uGrd850, float vGrd850) {
+    public static double calcSWEAT(double totalTotals, double dewp850,
+            double uGrd500, double vGrd500, double uGrd850, double vGrd850) {
         double[] wind500 = calcWindFromVec(uGrd500, vGrd500);
         double[] wind850 = calcWindFromVec(uGrd850, vGrd850);
         double windSpd500 = wind500[0];
@@ -167,7 +167,7 @@ public class AtmosThermoMath {
         }
 
         double result = sweat1 + sweat2 + sweat3 + sweat4 + sweat5;
-        return (float) result;
+        return result;
     }
 
     /*
@@ -211,7 +211,7 @@ public class AtmosThermoMath {
      * @param uGrd zonal component of wind
      * @param vGrd meridional component of wind
      *
-     * @return wind as float[2]; [0] = speed in m/s, [1] = direction in radians
+     * @return wind as double[2]; [0] = speed in m/s, [1] = direction in radians
      */
     private static double[] calcWindFromVec(double uGrd, double vGrd) {
         double windSpeed = Math.sqrt(Math.pow(uGrd, 2.0) + Math.pow(vGrd, 2.0));

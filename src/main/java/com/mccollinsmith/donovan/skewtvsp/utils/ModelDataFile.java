@@ -74,7 +74,7 @@ public class ModelDataFile {
     
     private String modelName = "";
 
-    private Map<Float, Integer> isoLevels = null;
+    private Map<Double, Integer> isoLevels = null;
 
     private int maxX = 0;
     private int maxY = 0;
@@ -343,7 +343,7 @@ public class ModelDataFile {
      * @param coordX x-coordinate in data grid
      * @param coordY y-coordinate in data grid
      *
-     * @return float[2]; [0] = longitude in degrees, [1] = latitude in degrees
+     * @return double[2]; [0] = longitude in degrees, [1] = latitude in degrees
      */
     public double[] getLonLatFromXYCoords(int coordX, int coordY) {
         LatLonPoint ptLatLon = gribGCS.getLatLon(coordX, coordY);
@@ -372,10 +372,10 @@ public class ModelDataFile {
      *
      * @return isobaric level in Pa
      */
-    public float getLevelFromIndex(int coordLvl) {
+    public double getLevelFromIndex(int coordLvl) {
         if (coordLvl < maxLevel) {
-            float result = -1;
-            for (Map.Entry<Float, Integer> entry : isoLevels.entrySet()) {
+            double result = -1;
+            for (Map.Entry<Double, Integer> entry : isoLevels.entrySet()) {
                 if (entry.getValue() == coordLvl) {
                     result = entry.getKey();
                     break;
@@ -394,11 +394,11 @@ public class ModelDataFile {
      *
      * @return index for nearest isobaric level in data grid
      */
-    public int getIndexFromLevel(float level) {
+    public int getIndexFromLevel(double level) {
         int result = -1;
         int closest = 5000;
-        float howClose = 10000;
-        for (Map.Entry<Float, Integer> entry : isoLevels.entrySet()) {
+        double howClose = 10000;
+        for (Map.Entry<Double, Integer> entry : isoLevels.entrySet()) {
             howClose = Math.abs(entry.getKey() - level);
             if (howClose < closest) {
                 result = entry.getValue();
@@ -416,8 +416,8 @@ public class ModelDataFile {
      *
      * @return temperature in K
      */
-    public float getTempIso(int coordX, int coordY, int coordLvl) {
-        float result = getValFromVar(varNameTempIso, coordX, coordY, coordLvl, 4);
+    public double getTempIso(int coordX, int coordY, int coordLvl) {
+        double result = getValFromVar(varNameTempIso, coordX, coordY, coordLvl, 4);
         return result;
     }
 
@@ -429,8 +429,8 @@ public class ModelDataFile {
      *
      * @return temperature in K
      */
-    public float getTemp2m(int coordX, int coordY) {
-        float result = getValFromVar(varNameTemp2m, coordX, coordY, 4);
+    public double getTemp2m(int coordX, int coordY) {
+        double result = getValFromVar(varNameTemp2m, coordX, coordY, 4);
         return result;
     }
 
@@ -446,11 +446,11 @@ public class ModelDataFile {
      *
      * @return dew point in K
      */
-    public float getDewpIso(int coordX, int coordY, int coordLvl) {
-        float temp = getTempIso(coordX, coordY, coordLvl);
-        float rh = getValFromVar(varNameRHIso, coordX, coordY, coordLvl, 4);
-        float pres = getLevelFromIndex(coordLvl);
-        float result = AtmosThermoMath.calcDewp(temp, pres, rh);
+    public double getDewpIso(int coordX, int coordY, int coordLvl) {
+        double temp = getTempIso(coordX, coordY, coordLvl);
+        double rh = getValFromVar(varNameRHIso, coordX, coordY, coordLvl, 4);
+        double pres = getLevelFromIndex(coordLvl);
+        double result = AtmosThermoMath.calcDewp(temp, pres, rh);
         return result;
     }
 
@@ -462,8 +462,8 @@ public class ModelDataFile {
      *
      * @return dew point in K
      */
-    public float getDewp2m(int coordX, int coordY) {
-        float result = -1;
+    public double getDewp2m(int coordX, int coordY) {
+        double result = -1;
 
         if (modelIsGRB) {
             result = getValFromVar(varNameDewp2mNAM, coordX, coordY, 4);
@@ -482,8 +482,8 @@ public class ModelDataFile {
      *
      * @return pressure in Pa
      */
-    public float getPresSfc(int coordX, int coordY) {
-        float result = getValFromVar(varNamePresSfc, coordX, coordY, 3);
+    public double getPresSfc(int coordX, int coordY) {
+        double result = getValFromVar(varNamePresSfc, coordX, coordY, 3);
         return result;
     }
 
@@ -496,8 +496,8 @@ public class ModelDataFile {
      *
      * @return CAPE in J/kg
      */
-    public float getCAPE(int coordX, int coordY) {
-        float result = -1;
+    public double getCAPE(int coordX, int coordY) {
+        double result = -1;
 
         if (modelIsGRB) {
             result = getValFromVar(varNameCapeGRB, coordX, coordY, 3);
@@ -516,8 +516,8 @@ public class ModelDataFile {
      *
      * @return CIN in J/kg
      */
-    public float getCIN(int coordX, int coordY) {
-        float result = getValFromVar(varNameCin, coordX, coordY, 3);
+    public double getCIN(int coordX, int coordY) {
+        double result = getValFromVar(varNameCin, coordX, coordY, 3);
         return result;
     }
 
@@ -529,8 +529,8 @@ public class ModelDataFile {
      *
      * @return lifted index in K
      */
-    public float getLFTX(int coordX, int coordY) {
-        float result = -1;
+    public double getLFTX(int coordX, int coordY) {
+        double result = -1;
 
         if (modelIsGFS3) {
             result = getValFromVar(varNameLftxGFS3, coordX, coordY, 3);
@@ -557,8 +557,8 @@ public class ModelDataFile {
      *
      * @return mean sea level pressure in Pa
      */
-    public float getMSL(int coordX, int coordY) {
-        float result = -1;
+    public double getMSL(int coordX, int coordY) {
+        double result = -1;
 
         if (modelIsGRB) {
             result = getValFromVar(varNameMslGRB, coordX, coordY, 3);
@@ -584,14 +584,14 @@ public class ModelDataFile {
      * @param coordX x-coordinate in the data grid
      * @param coordY y-coordinate in the data grid
      *
-     * @return LCL as float[2]; [0] = pressure in Pa, [1] = temperature in K
+     * @return LCL as double[2]; [0] = pressure in Pa, [1] = temperature in K
      */
-    public float[] getLCL(int coordX, int coordY) {
-        float curTemp2m = getTemp2m(coordX, coordY);
-        float curDewp2m = getDewp2m(coordX, coordY);
-        float curPresSfc = getPresSfc(coordX, coordY);
+    public double[] getLCL(int coordX, int coordY) {
+        double curTemp2m = getTemp2m(coordX, coordY);
+        double curDewp2m = getDewp2m(coordX, coordY);
+        double curPresSfc = getPresSfc(coordX, coordY);
 
-        float[] result = AtmosThermoMath.calcLCL(curTemp2m, curDewp2m, curPresSfc);
+        double[] result = AtmosThermoMath.calcLCL(curTemp2m, curDewp2m, curPresSfc);
 
         return result;
     }
@@ -604,13 +604,13 @@ public class ModelDataFile {
      *
      * @return total totals in K
      */
-    public float getTotalTotals(int coordX, int coordY) {
-        float curTemp500 = getTempIso(coordX, coordY, getIndexFromLevel(50000));
-        float curTemp850 = getTempIso(coordX, coordY, getIndexFromLevel(85000));
-        float curDewp500 = getDewpIso(coordX, coordY, getIndexFromLevel(50000));
-        float curDewp850 = getDewpIso(coordX, coordY, getIndexFromLevel(85000));
+    public double getTotalTotals(int coordX, int coordY) {
+        double curTemp500 = getTempIso(coordX, coordY, getIndexFromLevel(50000));
+        double curTemp850 = getTempIso(coordX, coordY, getIndexFromLevel(85000));
+        double curDewp500 = getDewpIso(coordX, coordY, getIndexFromLevel(50000));
+        double curDewp850 = getDewpIso(coordX, coordY, getIndexFromLevel(85000));
 
-        float result = AtmosThermoMath.calcTotalTotals(
+        double result = AtmosThermoMath.calcTotalTotals(
                 curTemp500, curTemp850, curDewp500, curDewp850);
 
         return result;
@@ -624,14 +624,14 @@ public class ModelDataFile {
      *
      * @return K-index in K
      */
-    public float getKIndex(int coordX, int coordY) {
-        float curTemp500 = getTempIso(coordX, coordY, getIndexFromLevel(50000));
-        float curTemp700 = getTempIso(coordX, coordY, getIndexFromLevel(70000));
-        float curTemp850 = getTempIso(coordX, coordY, getIndexFromLevel(85000));
-        float curDewp700 = getDewpIso(coordX, coordY, getIndexFromLevel(70000));
-        float curDewp850 = getDewpIso(coordX, coordY, getIndexFromLevel(85000));
+    public double getKIndex(int coordX, int coordY) {
+        double curTemp500 = getTempIso(coordX, coordY, getIndexFromLevel(50000));
+        double curTemp700 = getTempIso(coordX, coordY, getIndexFromLevel(70000));
+        double curTemp850 = getTempIso(coordX, coordY, getIndexFromLevel(85000));
+        double curDewp700 = getDewpIso(coordX, coordY, getIndexFromLevel(70000));
+        double curDewp850 = getDewpIso(coordX, coordY, getIndexFromLevel(85000));
 
-        float result = AtmosThermoMath.calcKIndex(
+        double result = AtmosThermoMath.calcKIndex(
                 curTemp500, curTemp700, curTemp850, curDewp700, curDewp850);
 
         return result;
@@ -645,16 +645,16 @@ public class ModelDataFile {
      *
      * @return SWEAT index
      */
-    public float getSWEAT(int coordX, int coordY) {
-        float curTotalTotals = getTotalTotals(coordX, coordY);
+    public double getSWEAT(int coordX, int coordY) {
+        double curTotalTotals = getTotalTotals(coordX, coordY);
 
-        float uGrd500 = getValFromVar(varNameUGrd, coordX, coordY, getIndexFromLevel(50000), 4);
-        float uGrd850 = getValFromVar(varNameUGrd, coordX, coordY, getIndexFromLevel(85000), 4);
-        float vGrd500 = getValFromVar(varNameVGrd, coordX, coordY, getIndexFromLevel(50000), 4);
-        float vGrd850 = getValFromVar(varNameVGrd, coordX, coordY, getIndexFromLevel(85000), 4);
-        float curDewp850 = getDewpIso(coordX, coordY, getIndexFromLevel(85000));
+        double uGrd500 = getValFromVar(varNameUGrd, coordX, coordY, getIndexFromLevel(50000), 4);
+        double uGrd850 = getValFromVar(varNameUGrd, coordX, coordY, getIndexFromLevel(85000), 4);
+        double vGrd500 = getValFromVar(varNameVGrd, coordX, coordY, getIndexFromLevel(50000), 4);
+        double vGrd850 = getValFromVar(varNameVGrd, coordX, coordY, getIndexFromLevel(85000), 4);
+        double curDewp850 = getDewpIso(coordX, coordY, getIndexFromLevel(85000));
 
-        float result = AtmosThermoMath.calcSWEAT(
+        double result = AtmosThermoMath.calcSWEAT(
                 curTotalTotals, curDewp850, uGrd500, vGrd500, uGrd850, vGrd850);
 
         return result;
@@ -738,11 +738,11 @@ public class ModelDataFile {
                 if (curLevel >= 10000 && curLevel <= 100000
                         && (curLevel % 2500) == 0) {
                     // GRIB2 files use Pa
-                    isoLevels.put(new Float(curLevel), coordLvl);
+                    isoLevels.put(new Double(curLevel), coordLvl);
                 } else if (curLevel >= 100 && curLevel <= 1000
                         && (curLevel % 25) == 0 && modelIsGRB) {
                     // GRIB1 files use hPa, must conver to Pa
-                    isoLevels.put(new Float(curLevel * 100), coordLvl);
+                    isoLevels.put(new Double(curLevel * 100), coordLvl);
                 }
             }
             return true;
@@ -761,7 +761,7 @@ public class ModelDataFile {
      *
      * @return value of variable at XY-coordinate, -99999 if not found
      */
-    private float getValFromVar(String varName,
+    private double getValFromVar(String varName,
             int coordX, int coordY, int varDim) {
         return getValFromVar(varName, coordX, coordY, 0, varDim);
     }
@@ -778,10 +778,10 @@ public class ModelDataFile {
      *
      * @return value of variable at XY-coordinate, -99999 if not found
      */
-    private float getValFromVar(String varName,
+    private double getValFromVar(String varName,
             int coordX, int coordY, int coordLvl, int varDim) {
-        final float errorVal = -99999;
-        float result = errorVal;
+        final double errorVal = -99999;
+        double result = errorVal;
 
         int[] arrayOrigin = null;
         int[] arraySize = null;
@@ -807,7 +807,7 @@ public class ModelDataFile {
         try {
             // Successful only if an exception doesn't occur here
             result = gribFile.findVariable(varName).read(arrayOrigin, arraySize)
-                    .reduce().getFloat(0);
+                    .reduce().getDouble(0);
         } catch (IOException | InvalidRangeException | NullPointerException ex) {
             /*
              * These exceptions almost invariably point to programmer error.
