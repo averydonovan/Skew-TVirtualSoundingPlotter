@@ -25,12 +25,10 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
-import javafx.application.Platform;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.geometry.VPos;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
-import javafx.scene.image.Image;
 import javafx.scene.image.WritableImage;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
@@ -68,13 +66,17 @@ public class SkewTPlot {
     private static final int PRES_MAX = PRES_MAX_HPA * HPA_TO_PA;
     private static final double TEMP_MIN = TEMP_MIN_C + C_TO_K;
     private static final double TEMP_MAX = TEMP_MAX_C + C_TO_K;
+    
+    private static final double PRES_MIN_LOG = Math.log(PRES_MIN);
+    private static final double PRES_MAX_LOG = Math.log(PRES_MAX);
+    private static final double PRES_LOG_RANGE = PRES_MAX_LOG - PRES_MIN_LOG;
 
-    private static final int PLOT_VIEW_WIDTH = 1800;
-    private static final int PLOT_VIEW_HEIGHT = 2400;
-    private static final int PLOT_VIEW_SCALE = 2;
+    private static final int PLOT_VIEW_WIDTH = 900;
+    private static final int PLOT_VIEW_HEIGHT = 1200;
+    private static final int PLOT_VIEW_SCALE = 1;
     private static final int PLOT_PRINT_SCALE = 3;
-    private static final int PLOT_PRINT_WIDTH = 2400;
-    private static final int PLOT_PRINT_HEIGHT = 3600;
+    private static final int PLOT_PRINT_WIDTH = PLOT_VIEW_WIDTH * PLOT_PRINT_SCALE;
+    private static final int PLOT_PRINT_HEIGHT = PLOT_VIEW_HEIGHT * PLOT_PRINT_SCALE;
 
     /**
      * ModelDataFile currently in use.
@@ -110,7 +112,7 @@ public class SkewTPlot {
      * Factor to scale plotted elements by so that they have the same relative
      * size at higher resolutions.
      */
-    private static int scaleLineFactor = 1;
+    private static int scaleLineFactor = PLOT_VIEW_SCALE;
 
     /**
      * Pressure levels to plot ticks and labels for.
@@ -895,10 +897,7 @@ public class SkewTPlot {
      */
     private static double getYFromPres(double pres) {
         double presLog = Math.log(pres);
-        double presMinLog = Math.log(PRES_MIN);
-        double presMaxLog = Math.log(PRES_MAX);
-        double presLogRange = presMaxLog - presMinLog;
-        double presLogPercent = Math.abs((presLog - presMinLog) / presLogRange);
+        double presLogPercent = Math.abs((presLog - PRES_MIN_LOG) / PRES_LOG_RANGE);
         double y = plotYMax + (presLogPercent * plotYRange);
         return y;
     }
