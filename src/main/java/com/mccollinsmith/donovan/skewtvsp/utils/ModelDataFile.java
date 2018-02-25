@@ -180,6 +180,12 @@ public class ModelDataFile {
             
             modelIsNAM = true;
             modelName = modelNameNAM;
+        } else if (gribFileName.contains("nam_218_")
+                && gribFileName.endsWith(".grb2")) {
+            LOG.debug("Detected NAM GRIB2 file");
+            modelIsNAMGRB2 = true;
+            
+            modelName = modelNameNAM;
         } else if (gribFileName.contains("rap_130_")
                 && gribFileName.endsWith(".grb2")) {
             LOG.debug("Detected RAP 130 GRIB2 file");
