@@ -58,6 +58,8 @@ public class STVSPController implements Initializable {
 
     public String modelFileName = "rap_252_20160524_0000_000.grb2";
     public ModelDataFile modelDataFile = null;
+    
+    public String currentWorkingDirectory = "";
 
     public static String applicationName = "";
 
@@ -200,6 +202,10 @@ public class STVSPController implements Initializable {
         tblData.setItems(dataList);
 
         SkewTPlot.drawBlankSkewT(canvasBlankSkewT.getGraphicsContext2D());
+        
+        // Get current working directory
+        currentWorkingDirectory = Paths.get("").toAbsolutePath().toString();
+        LOG.debug("CWD is " + currentWorkingDirectory);
 
         doResetWindowTitle();
         doUpdateStatus("Ready");
@@ -238,9 +244,7 @@ public class STVSPController implements Initializable {
      */
     @FXML
     protected void doOpenFile(ActionEvent event) {
-        Path curPath = Paths.get("");
-        String cwd = curPath.toAbsolutePath().toString();
-        File curPathAsFile = new File(cwd);
+        File curPathAsFile = new File(currentWorkingDirectory);
         FileChooser chooser = new FileChooser();
         chooser.setInitialDirectory(curPathAsFile);
         chooser.setInitialFileName(modelFileName);
@@ -310,6 +314,7 @@ public class STVSPController implements Initializable {
 
         if (file != null) {
             modelFileName = file.getAbsolutePath();
+            currentWorkingDirectory = file.getParent();
             isNoSkewTDrawn.set(true);
 
             lblStatus.textProperty().bind(taskOpenFile.messageProperty());
