@@ -16,19 +16,19 @@
         <dependency>
             <groupId>edu.ucar</groupId>
             <artifactId>grib</artifactId>
-            <version>4.6.5</version>
+            <version>4.6.11</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>edu.ucar</groupId>
             <artifactId>cdm</artifactId>
-            <version>4.6.5</version>
+            <version>4.6.11</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>edu.ucar</groupId>
             <artifactId>netcdf4</artifactId>
-            <version>4.6.5</version>
+            <version>4.6.11</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
