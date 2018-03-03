@@ -65,12 +65,14 @@ public class ModelDataFile {
     private final String varNameLftxGFS3 = "Surface_lifted_index_surface";
     private final String varNameLftxGRB
             = "Parcel_lifted_index_to_500_hPa_layer_between_two_pressure_difference_from_ground_layer";
+    private final String varNameLftxHRRR = "Surface_lifted_index_isobaric_layer";
     private final String varNameUGrd = "u-component_of_wind_isobaric";
     private final String varNameVGrd = "v-component_of_wind_isobaric";
     
     private final String modelNameGFS = "NOAA Global Forecast System";
     private final String modelNameNAM = "NOAA North American Model";
     private final String modelNameRAP = "NOAA Rapid Refresh";
+    private final String modelNameHRRR = "NOAA High-Resolution Rapid Refresh";
     
     private String modelName = "";
 
@@ -83,6 +85,7 @@ public class ModelDataFile {
     private boolean modelIsGRB = false;
     private boolean modelIsGFS3 = false;
     private boolean modelIsGFS4 = false;
+    private boolean modelIsHRRR = false;
     private boolean modelIsNAMGRB2 = false;
     
     private boolean modelIsGFS = false;
@@ -212,6 +215,14 @@ public class ModelDataFile {
             
             modelIsRAP = true;
             modelName = modelNameRAP;
+        } else if (gribFileName.contains("hrrr.")
+                && gribFileName.contains("wrfprsf")
+                && gribFileName.endsWith(".grib2")) {
+            LOG.debug("Detected HRRR GRIB2 file");
+            
+            modelIsRAP = true;
+            modelIsHRRR = true;
+            modelName = modelNameHRRR;
         } else if (gribFileName.contains("nam.")
                 && gribFileName.contains("z.awphys")
                 && gribFileName.endsWith(".grib2")) {
@@ -544,6 +555,8 @@ public class ModelDataFile {
             result = getValFromVar(varNameLftxGRB, coordX, coordY, 4);
         } else if (modelIsGFS4) {
             result = getValFromVar(varNameLftxGFS4, coordX, coordY, 3);
+        } else if (modelIsHRRR) {
+            result = getValFromVar(varNameLftxHRRR, coordX, coordY, 4);
         } else {
             result = getValFromVar(varNameLftx, coordX, coordY, 4);
         }
