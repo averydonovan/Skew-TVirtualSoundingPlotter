@@ -37,7 +37,7 @@
     <plugins>
       <plugin>
         <artifactId>maven-shade-plugin</artifactId>
-        <version>2.4.3</version>
+        <version>3.2.1</version>
         <executions>
           <execution>
             <phase>package</phase>
@@ -47,37 +47,33 @@
           </execution>
         </executions>
         <configuration>
-          <filters>
-            <filter>
-              <artifact>edu.ucar:grib</artifact>
-              <includes>
-                <include>**</include>
-              </includes>
-            </filter>
-            <filter>
-              <artifact>edu.ucar:cdm</artifact>
-              <includes>
-                <include>**</include>
-              </includes>
-            </filter>
-            <filter>
-              <artifact>com.amazonaws:*</artifact>
-              <excludes>
-                <exclude>**</exclude>
-              </excludes>
-            </filter>
-            <filter>
-              <artifact>com.fasterxml.jackson.core:*</artifact>
-              <excludes>
-                <exclude>**</exclude>
-              </excludes>
-            </filter>
-          </filters>
           <transformers>
             <transformer>
-              <mainClass>com.mccollinsmith.donovan.skewtvsp.SkewTVSP</mainClass>
+              <mainClass>com.mccollinsmith.donovan.skewtvsp.RunApp</mainClass>
             </transformer>
           </transformers>
+        </configuration>
+      </plugin>
+      <plugin>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <version>3.8.0</version>
+        <configuration>
+          <release>11</release>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>exec-maven-plugin</artifactId>
+        <version>1.6.0</version>
+        <executions>
+          <execution>
+            <goals>
+              <goal>java</goal>
+            </goals>
+          </execution>
+        </executions>
+        <configuration>
+          <mainClass>com.mccollinsmith.donovan.skewtvsp.RunApp</mainClass>
         </configuration>
       </plugin>
     </plugins>
@@ -90,9 +86,8 @@
     </repository>
   </repositories>
   <properties>
+    <maven.compiler.target>1.8</maven.compiler.target>
     <maven.compiler.source>1.8</maven.compiler.source>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <maven.compiler.target>1.8</maven.compiler.target>
   </properties>
 </project>
-

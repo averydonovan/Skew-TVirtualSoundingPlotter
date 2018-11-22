@@ -48,6 +48,39 @@
             <version>0.11</version>
             <scope>compile</scope>
         </dependency>-->
+        <dependency>
+            <groupId>org.openjfx</groupId>
+            <artifactId>javafx-controls</artifactId>
+            <version>11</version>
+        </dependency>
+        <dependency>
+            <groupId>org.openjfx</groupId>
+            <artifactId>javafx-fxml</artifactId>
+            <version>11</version>
+        </dependency>
+        <dependency>
+            <groupId>org.openjfx</groupId>
+            <artifactId>javafx-swing</artifactId>
+            <version>11</version>
+        </dependency>
+        <dependency>
+            <groupId>org.openjfx</groupId>
+            <artifactId>javafx-graphics </artifactId>
+            <version>11</version>
+            <classifier>win</classifier>
+        </dependency>
+        <dependency>
+            <groupId>org.openjfx</groupId>
+            <artifactId>javafx-graphics </artifactId>
+            <version>11</version>
+            <classifier>linux</classifier>
+        </dependency>
+        <dependency>
+            <groupId>org.openjfx</groupId>
+            <artifactId>javafx-graphics </artifactId>
+            <version>11</version>
+            <classifier>mac</classifier>
+        </dependency>
     </dependencies>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -88,9 +121,9 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-shade-plugin</artifactId>
-                <version>2.4.3</version>
+                <version>3.2.1</version>
                 <configuration>
-                    <!--<minimizeJar>true</minimizeJar>-->
+                    <!--<minimizeJar>true</minimizeJar>
                     <filters>
                         <filter>
                             <artifact>edu.ucar:grib</artifact>
@@ -116,11 +149,12 @@
                                 <exclude>**</exclude>
                             </excludes>
                         </filter>
-                    </filters>
+                    </filters>-->
                     <transformers>
                         <transformer 
                             implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
-                            <mainClass>com.mccollinsmith.donovan.skewtvsp.SkewTVSP</mainClass>
+                            <!--<mainClass>com.mccollinsmith.donovan.skewtvsp.SkewTVSP</mainClass>-->
+                            <mainClass>com.mccollinsmith.donovan.skewtvsp.RunApp</mainClass>
                         </transformer>
                     </transformers>
                 </configuration>
@@ -132,6 +166,30 @@
                         </goals>
                     </execution>
                 </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.8.0</version>
+                <configuration>
+                <release>11</release>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
+                <version>1.6.0</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>java</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <!--<mainClass>com.mccollinsmith.donovan.skewtvsp.SkewTVSP</mainClass>-->
+                    <mainClass>com.mccollinsmith.donovan.skewtvsp.RunApp</mainClass>
+                </configuration>
             </plugin>
         </plugins>
     </build>
