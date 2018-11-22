@@ -13,7 +13,7 @@ library for GRIB file reading.
 Currently it is able to read GRIB1 and GRIB2 files published on the
 [NOAA NOMADS](http://nomads.ncdc.noaa.gov/data.php?name=access) site.
 
-Licensed under the GNU General Public License version 3.
+Licensed under the 2-clause BSD license.
 
 ## Features
 
@@ -30,19 +30,17 @@ Licensed under the GNU General Public License version 3.
 
 ### Running
 
-* Java 8 SE runtime
+* Java 11 runtime (Java 8 for versions before 0.3.0)
 * Desktop operating system with windowing system (e.g. Microsoft Windows,
   Apple macOS, Linux with X11)
 
 ### Building
 
-* Java 8 Development Kit and Java 8 SE runtime
+* Java 11 Development Kit and Java 11 runtime
 * Apache Maven 3
 
 Maven should pull in all required dependencies automatically.
-Simply run `mvn package` to build.
-Alternately, you can open the project in NetBeans 8.2 or above and build from
-there.
+Simply run `mvn package` to build and `mvn exec:java` to run.
 
 ## Citing/Acknowledging
 
