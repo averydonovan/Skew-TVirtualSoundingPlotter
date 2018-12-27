@@ -62,19 +62,17 @@ import org.slf4j.LoggerFactory;
  */
 public class STVSPController implements Initializable {
 
-    private static final Logger LOG
-            = LoggerFactory.getLogger(ModelDataFile.class.getName());
+    private static final Logger LOG = LoggerFactory.getLogger(ModelDataFile.class.getName());
 
     public String modelFileName = "rap_252_20160524_0000_000.grb2";
     public ModelDataFile modelDataFile = null;
-    
+
     public String currentWorkingDirectory = "";
 
     public static String applicationName = "";
 
     // Properties that are bound to GUI
-    public static StringProperty windowTitle
-            = new SimpleStringProperty(applicationName);
+    public static StringProperty windowTitle = new SimpleStringProperty(applicationName);
     public BooleanProperty isNoFileOpen = new SimpleBooleanProperty(true);
     public BooleanProperty isNoSkewTDrawn = new SimpleBooleanProperty(true);
 
@@ -118,10 +116,10 @@ public class STVSPController implements Initializable {
     private TextField tfLonFound;
     @FXML
     private TextField tfLatFound;
-    @FXML
-    private ComboBox cbVariable;
-    @FXML
-    private ComboBox cbLevel;
+//    @FXML
+//    private ComboBox cbVariable;
+//    @FXML
+//    private ComboBox cbLevel;
     // Data view tab
     @FXML
     private TableView<DataEntry> tblData;
@@ -162,7 +160,8 @@ public class STVSPController implements Initializable {
     public void initialize(URL url, ResourceBundle rb) {
         try {
             Properties versionProps = new Properties();
-            versionProps.load(getClass().getClassLoader().getResourceAsStream("version.properties"));
+            versionProps
+                    .load(getClass().getClassLoader().getResourceAsStream("version.properties"));
             applicationName = versionProps.getProperty("name");
         } catch (IOException ex) {
             LOG.error("Failed to load version properties file.");
@@ -188,14 +187,13 @@ public class STVSPController implements Initializable {
         // Tooltips for buttons and input boxes
         btnOpenFile.setTooltip(new Tooltip("Open GRIB data file"));
         btnSavePlot.setTooltip(new Tooltip("Save Skew-T plot to a PNG file"));
-        btnLonLatSearch.setTooltip(
-                new Tooltip("Plot Skew-T for closest point to\n"
-                        + "requested longitude and latitude"));
+        btnLonLatSearch.setTooltip(new Tooltip(
+                "Plot Skew-T for closest point to\n" + "requested longitude and latitude"));
 
         /*
-         * Show blank Skew-T whenever either no Skew-T at all has been plotted
-         * yet or if on-screen Skew-T is out-of-date due to situations such as a
-         * new file being opened.
+         * Show blank Skew-T whenever either no Skew-T at all has been plotted yet or if
+         * on-screen Skew-T is out-of-date due to situations such as a new file being
+         * opened.
          */
         canvasSkewT.visibleProperty().bind(isNoSkewTDrawn.not());
         canvasBlankSkewT.visibleProperty().bind(isNoSkewTDrawn);
@@ -211,7 +209,7 @@ public class STVSPController implements Initializable {
         tblData.setItems(dataList);
 
         SkewTPlot.drawBlankSkewT(canvasBlankSkewT.getGraphicsContext2D());
-        
+
         // Get current working directory
         currentWorkingDirectory = Paths.get("").toAbsolutePath().toString();
         LOG.debug("CWD is " + currentWorkingDirectory);
@@ -221,8 +219,8 @@ public class STVSPController implements Initializable {
     }
 
     /**
-     * Appends text to the application name in the window title. Typically shows
-     * the name of the data file currently opened.
+     * Appends text to the application name in the window title. Typically shows the
+     * name of the data file currently opened.
      *
      * @param newTitle text to be appended
      */
@@ -257,10 +255,8 @@ public class STVSPController implements Initializable {
         FileChooser chooser = new FileChooser();
         chooser.setInitialDirectory(curPathAsFile);
         chooser.setInitialFileName(modelFileName);
-        ExtensionFilter fileExtsGRIB
-                = new ExtensionFilter(
-                        "GRIB files", "*.grb", "*.grib", "*.grb2", "*.grib2",
-                        "*.pgrb2.*");
+        ExtensionFilter fileExtsGRIB = new ExtensionFilter("GRIB files", "*.grb", "*.grib",
+                "*.grb2", "*.grib2", "*.pgrb2.*");
         chooser.getExtensionFilters().addAll(fileExtsGRIB);
         File file = chooser.showOpenDialog(anchorPane.getScene().getWindow());
 
@@ -273,8 +269,8 @@ public class STVSPController implements Initializable {
                     modelDataFile = new ModelDataFile(modelFileName);
                     updateProgress(80, 100);
                 } catch (IOException ex) {
-                    LOG.error("Error when attempting to open {}\n{}",
-                            file.getName(), ex.getLocalizedMessage());
+                    LOG.error("Error when attempting to open {}\n{}", file.getName(),
+                              ex.getLocalizedMessage());
                     modelDataFile = null;
                 }
                 return null;
@@ -305,10 +301,9 @@ public class STVSPController implements Initializable {
                     modelDataFile.close();
                 } catch (IOException ex) {
                     LOG.error("Error when attempting to close data file\n{}",
-                            ex.getLocalizedMessage());
+                              ex.getLocalizedMessage());
                 } catch (NullPointerException ex) {
-                    LOG.error("Unable to read data file type\n{}",
-                            ex.getLocalizedMessage());
+                    LOG.error("Unable to read data file type\n{}", ex.getLocalizedMessage());
                 }
                 Alert alert = new Alert(AlertType.ERROR);
                 alert.setTitle("File Open Error");
@@ -422,8 +417,8 @@ public class STVSPController implements Initializable {
         }
 
         /*
-         * If both longitude and latitude are valid, plot data and update data.
-         * If either or both are invalid, display error message.
+         * If both longitude and latitude are valid, plot data and update data. If
+         * either or both are invalid, display error message.
          */
         if (lonIsValid == true && latIsValid == true) {
             doUpdateData();
@@ -450,7 +445,8 @@ public class STVSPController implements Initializable {
     protected void doHelpAbout(ActionEvent event) {
         try {
             Properties versionProps = new Properties();
-            versionProps.load(getClass().getClassLoader().getResourceAsStream("version.properties"));
+            versionProps
+                    .load(getClass().getClassLoader().getResourceAsStream("version.properties"));
 
             String propVers = versionProps.getProperty("version");
             String propAuthor = versionProps.getProperty("author");
@@ -469,8 +465,8 @@ public class STVSPController implements Initializable {
             alert.setTitle("About");
             alert.setHeaderText(applicationName + " v" + propVers);
             alert.setContentText("Copright " + propYears + " " + propAuthor + "\n\n"
-                    + "Licensed under the " + propLicense + "." + "\n\n"
-                    + "Makes use of the UCAR/Unidata NetCDF-Java library.");
+                                 + "Licensed under the " + propLicense + "." + "\n\n"
+                                 + "Makes use of the UCAR/Unidata NetCDF-Java library.");
             alert.showAndWait();
         } catch (IOException ex) {
             LOG.error("Failed to load version properties file.");
@@ -489,34 +485,29 @@ public class STVSPController implements Initializable {
         File curPathAsFile = new File(cwd);
 
         /*
-         * double[] plotLonLat = mdfSkewTData.getLonLatFromXYCoords(coordX,
-         * coordY); String plotLocation = String.format("Longitude, Latitude:
-         * %.6f, %.6f", plotLonLat[0], plotLonLat[1]);
+         * double[] plotLonLat = mdfSkewTData.getLonLatFromXYCoords(coordX, coordY);
+         * String plotLocation = String.format("Longitude, Latitude: %.6f, %.6f",
+         * plotLonLat[0], plotLonLat[1]);
          */
-        String initFileName = "skewt"
-                + "_" + lblAnalTime.getText().replaceAll("[^a-zA-Z0-9]", "")
-                + "_" + lblValidTime.getText().replaceAll("[^a-zA-Z0-9]", "")
-                + "_" + tfLonFound.getText()
-                + "_" + tfLatFound.getText()
-                + ".png";
+        String initFileName = "skewt" + "_" + lblAnalTime.getText().replaceAll("[^a-zA-Z0-9]", "")
+                              + "_" + lblValidTime.getText().replaceAll("[^a-zA-Z0-9]", "") + "_"
+                              + tfLonFound.getText() + "_" + tfLatFound.getText() + ".png";
 
         FileChooser chooser = new FileChooser();
         chooser.setInitialDirectory(curPathAsFile);
         chooser.setInitialFileName(initFileName);
-        ExtensionFilter fileExtsPNG
-                = new ExtensionFilter(
-                        "PNG images", "*.png", "*.PNG");
+        ExtensionFilter fileExtsPNG = new ExtensionFilter("PNG images", "*.png", "*.PNG");
         chooser.getExtensionFilters().addAll(fileExtsPNG);
         File file = chooser.showSaveDialog(anchorPane.getScene().getWindow());
 
         // Only try to save plot if a location and filename was chosen
         if (file != null) {
             pbProgress.setVisible(true);
-            
+
             pbProgress.setProgress(0.1);
             RenderedImage renderedImage = SkewTPlot.getHiResPlot();
             pbProgress.setProgress(0.8);
-            
+
             try {
                 // Save the plot to the chosen PNG file
                 ImageIO.write(renderedImage, "png", file);
@@ -568,9 +559,9 @@ public class STVSPController implements Initializable {
     }
 
     /**
-     * Find nearest coordinate point in data file to that entered by user,
-     * display data for found point in tabular format, and plot data for found
-     * point in Skew-T Log-P plot.
+     * Find nearest coordinate point in data file to that entered by user, display
+     * data for found point in tabular format, and plot data for found point in
+     * Skew-T Log-P plot.
      */
     public void doUpdateData() {
         isNoSkewTDrawn.set(true);
@@ -596,96 +587,67 @@ public class STVSPController implements Initializable {
                     double curLevel = modelDataFile.getLevelFromIndex(coordLvl);
                     if ((int) curLevel != -1) {
                         newData.add(new DataEntry("Temperature",
-                                String.format("%d", (int) curLevel / 100),
-                                "hPa",
-                                String.format("%f", modelDataFile.getTempIso(coordX, coordY, coordLvl)),
+                                String.format("%d", (int) curLevel / 100), "hPa",
+                                String.format("%f",
+                                              modelDataFile.getTempIso(coordX, coordY, coordLvl)),
                                 "K"));
                     }
                 }
-                newData.add(new DataEntry("Temperature",
-                        "2",
-                        "m above ground",
-                        String.format("%f", modelDataFile.getTemp2m(coordX, coordY)),
-                        "K"));
+                newData.add(new DataEntry("Temperature", "2", "m above ground",
+                        String.format("%f", modelDataFile.getTemp2m(coordX, coordY)), "K"));
                 updateProgress(30, 100);
 
                 for (int coordLvl = 0; coordLvl < 50; coordLvl++) {
                     double curLevel = modelDataFile.getLevelFromIndex(coordLvl);
                     if ((int) curLevel != -1) {
                         newData.add(new DataEntry("Dew Point",
-                                String.format("%d", (int) curLevel / 100),
-                                "hPa",
-                                String.format("%f", modelDataFile.getDewpIso(coordX, coordY, coordLvl)),
+                                String.format("%d", (int) curLevel / 100), "hPa",
+                                String.format("%f",
+                                              modelDataFile.getDewpIso(coordX, coordY, coordLvl)),
                                 "K"));
                     }
                 }
-                newData.add(new DataEntry("Dew Point",
-                        "2",
-                        "m above ground",
-                        String.format("%f", modelDataFile.getDewp2m(coordX, coordY)),
-                        "K"));
+                newData.add(new DataEntry("Dew Point", "2", "m above ground",
+                        String.format("%f", modelDataFile.getDewp2m(coordX, coordY)), "K"));
                 updateProgress(60, 100);
 
-                newData.add(new DataEntry("Surface Pressure",
-                        "surface",
-                        "surface",
+                newData.add(new DataEntry("Surface Pressure", "surface", "surface",
                         String.format("%d", (int) modelDataFile.getPresSfc(coordX, coordY) / 100),
                         "hPa"));
 
-                newData.add(new DataEntry("Mean Sea Level Pressure",
-                        "surface",
-                        "surface",
+                newData.add(new DataEntry("Mean Sea Level Pressure", "surface", "surface",
                         String.format("%d", (int) modelDataFile.getMSL(coordX, coordY) / 100),
                         "hPa"));
 
-                newData.add(new DataEntry("Lifted Condensation Level",
-                        "surface",
-                        "surface",
+                newData.add(new DataEntry("Lifted Condensation Level", "surface", "surface",
                         String.format("%d", (int) modelDataFile.getLCL(coordX, coordY)[0] / 100),
                         "hPa"));
 
-                newData.add(new DataEntry("Convective Available Potential Energy",
-                        "surface",
-                        "surface",
-                        String.format("%d", (int) modelDataFile.getCAPE(coordX, coordY)),
+                newData.add(new DataEntry("Convective Available Potential Energy", "surface",
+                        "surface", String.format("%d", (int) modelDataFile.getCAPE(coordX, coordY)),
                         "J/kg"));
                 updateProgress(75, 100);
 
-                newData.add(new DataEntry("Convective Inhibition",
-                        "surface",
-                        "surface",
-                        String.format("%d", (int) modelDataFile.getCIN(coordX, coordY)),
-                        "J/kg"));
+                newData.add(new DataEntry("Convective Inhibition", "surface", "surface",
+                        String.format("%d", (int) modelDataFile.getCIN(coordX, coordY)), "J/kg"));
 
-                newData.add(new DataEntry("Lifted Index",
-                        "1000-500",
-                        "hPa",
-                        String.format("%.1f", modelDataFile.getLFTX(coordX, coordY)),
-                        "K"));
+                newData.add(new DataEntry("Lifted Index", "1000-500", "hPa",
+                        String.format("%.1f", modelDataFile.getLFTX(coordX, coordY)), "K"));
 
-                newData.add(new DataEntry("K-Index",
-                        "850-500",
-                        "hPa",
-                        String.format("%.0f", modelDataFile.getKIndex(coordX, coordY)),
-                        "K"));
+                newData.add(new DataEntry("K-Index", "850-500", "hPa",
+                        String.format("%.0f", modelDataFile.getKIndex(coordX, coordY)), "K"));
 
-                newData.add(new DataEntry("Total Totals",
-                        "850-500",
-                        "hPa",
-                        String.format("%.0f", modelDataFile.getTotalTotals(coordX, coordY)),
-                        "K"));
+                newData.add(new DataEntry("Total Totals", "850-500", "hPa",
+                        String.format("%.0f", modelDataFile.getTotalTotals(coordX, coordY)), "K"));
 
-                newData.add(new DataEntry("SWEAT",
-                        "850-500",
-                        "hPa",
-                        String.format("%.0f", modelDataFile.getSWEAT(coordX, coordY)),
-                        "(N/A)"));
+                newData.add(new DataEntry("SWEAT", "850-500", "hPa",
+                        String.format("%.0f", modelDataFile.getSWEAT(coordX, coordY)), "(N/A)"));
 
                 updateProgress(80, 100);
                 updateMessage("Plotting Skew-T...");
 
-                SkewTPlot.plotSkewT(canvasSkewT.getGraphicsContext2D(), modelDataFile,
-                        coordX, coordY);
+                SkewTPlot.plotSkewT(canvasSkewT.getGraphicsContext2D(), modelDataFile, coordX,
+                                    coordY);
                 updateProgress(100, 100);
 
                 return null;
@@ -723,8 +685,7 @@ public class STVSPController implements Initializable {
         private final SimpleStringProperty entryValue;
         private final SimpleStringProperty entryUnits;
 
-        public DataEntry(String vName, String lName, String lUnits,
-                String eValue, String eUnits) {
+        public DataEntry(String vName, String lName, String lUnits, String eValue, String eUnits) {
             this.varName = new SimpleStringProperty(vName);
             this.levelValue = new SimpleStringProperty(lName);
             this.levelUnits = new SimpleStringProperty(lUnits);

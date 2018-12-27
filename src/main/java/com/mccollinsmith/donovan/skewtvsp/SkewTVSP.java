@@ -43,8 +43,7 @@ import static javafx.application.Application.launch;
  */
 public class SkewTVSP extends Application {
 
-    private static final Logger LOG
-            = LoggerFactory.getLogger(SkewTVSP.class.getName());
+    private static final Logger LOG = LoggerFactory.getLogger(SkewTVSP.class.getName());
 
     @Override
     public void start(Stage primaryStage) throws Exception {
@@ -59,7 +58,8 @@ public class SkewTVSP extends Application {
 
     public static void main(String args[]) {
         if (System.getProperty("os.name").contains("OS X")) {
-            System.setProperty("com.apple.mrj.application.apple.menu.about.name", "Skew-T Virtual Sounding Plotter");
+            System.setProperty("com.apple.mrj.application.apple.menu.about.name",
+                               "Skew-T Virtual Sounding Plotter");
         }
 
         launch(args);
