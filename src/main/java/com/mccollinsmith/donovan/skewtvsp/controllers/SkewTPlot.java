@@ -622,26 +622,26 @@ public class SkewTPlot {
         /*
          * Compute XY-coordinates for segments of dry adiabat line.
          */
-        List<Double> xValsList = new ArrayList<>();
-        List<Double> yValsList = new ArrayList<>();
+        int numPoints = (PRES_MAX - PRES_MIN)/10 + 1;
+        int curPoint = 0;
+        double[] xVals = new double[numPoints];
+        double[] yVals = new double[numPoints];
+        double[] results = new double[2];
         for (int curLevel = PRES_MAX; curLevel >= PRES_MIN; curLevel -= 10) {
-            double[] results = getXYFromTempPres(AtmosThermoMath
+            results = getXYFromTempPres(AtmosThermoMath
                     .calcTempFromPot(tempStep, curLevel), curLevel);
-            xValsList.add(results[0]);
-            yValsList.add(results[1]);
+            xVals[curPoint] = results[0];
+            yVals[curPoint] = results[1];
+            curPoint++;
         }
-
-        // Convert lists to arrays for use with JavaFX drawing methods.
-        double[] xVals = xValsList.stream().parallel().mapToDouble(d -> d).toArray();
-        double[] yVals = yValsList.stream().parallel().mapToDouble(d -> d).toArray();
-
+        
         /*
          * Draw dry adiabat line.
          */
         gcSkewTPlot.setFill(Color.rgb(127, 95, 63));
         gcSkewTPlot.setStroke(Color.rgb(127, 95, 63));
         gcSkewTPlot.setLineWidth(scaleLineFactor * 1.0);
-        gcSkewTPlot.strokePolyline(xVals, yVals, yVals.length);
+        gcSkewTPlot.strokePolyline(xVals, yVals, numPoints);
 
         /*
          * Draw label parallel to line.
@@ -678,18 +678,18 @@ public class SkewTPlot {
         /*
          * Compute XY-coordinates for segments of saturated adiabat line.
          */
-        ArrayList<Double> xValsList = new ArrayList<>();
-        ArrayList<Double> yValsList = new ArrayList<>();
+        int numPoints = (PRES_MAX - PRES_MIN)/100 + 1;
+        int curPoint = 0;
+        double[] xVals = new double[numPoints];
+        double[] yVals = new double[numPoints];
+        double[] results = new double[2];
         for (int curLevel = PRES_MAX; curLevel >= PRES_MIN; curLevel -= 100) {
-            double[] results = getXYFromTempPres(AtmosThermoMath
-                    .calcTempSatAdiabat(osaTemp, curLevel), curLevel);
-            xValsList.add(results[0]);
-            yValsList.add(results[1]);
+            results = getXYFromTempPres(AtmosThermoMath
+                                                 .calcTempSatAdiabat(osaTemp, curLevel), curLevel);
+            xVals[curPoint] = results[0];
+            yVals[curPoint] = results[1];
+            curPoint++;
         }
-
-        // Convert lists to arrays for use with JavaFX drawing methods.
-        double[] xVals = xValsList.stream().parallel().mapToDouble(d -> d).toArray();
-        double[] yVals = yValsList.stream().parallel().mapToDouble(d -> d).toArray();
 
         /*
          * Draw saturated adiabat line.
@@ -698,7 +698,7 @@ public class SkewTPlot {
         gcSkewTPlot.setStroke(Color.GREEN);
         gcSkewTPlot.setLineDashes(scaleLineFactor * 3.0);
         gcSkewTPlot.setLineWidth(scaleLineFactor * 0.75);
-        gcSkewTPlot.strokePolyline(xVals, yVals, yVals.length);
+        gcSkewTPlot.strokePolyline(xVals, yVals, numPoints);
         gcSkewTPlot.setLineDashes(null);
 
         /*
@@ -735,19 +735,19 @@ public class SkewTPlot {
         /*
          * Compute XY-coordinates for segments of mixing ratio line.
          */
-        ArrayList<Double> xValsList = new ArrayList<>();
-        ArrayList<Double> yValsList = new ArrayList<>();
+        int numPoints = (PRES_MAX - PRES_MIN)/100 + 1;
+        int curPoint = 0;
+        double[] xVals = new double[numPoints];
+        double[] yVals = new double[numPoints];
+        double[] results = new double[2];
         for (int curLevel = PRES_MAX; curLevel >= PRES_MIN; curLevel -= 100) {
-            double[] results = getXYFromTempPres(AtmosThermoMath
-                    .calcTempAtMixingRatio(wLine, curLevel), curLevel);
-            xValsList.add(results[0]);
-            yValsList.add(results[1]);
+            results = getXYFromTempPres(AtmosThermoMath
+                                        .calcTempAtMixingRatio(wLine, curLevel), curLevel);
+            xVals[curPoint] = results[0];
+            yVals[curPoint] = results[1];
+            curPoint++;
         }
-
-        // Convert lists to arrays for use with JavaFX drawing methods.
-        double[] xVals = xValsList.stream().parallel().mapToDouble(d -> d).toArray();
-        double[] yVals = yValsList.stream().parallel().mapToDouble(d -> d).toArray();
-
+        
         /*
          * Draw mixing ratio line.
          */
@@ -755,7 +755,7 @@ public class SkewTPlot {
         gcSkewTPlot.setStroke(Color.TEAL);
         gcSkewTPlot.setLineDashes(scaleLineFactor * 6.0);
         gcSkewTPlot.setLineWidth(scaleLineFactor * 0.75);
-        gcSkewTPlot.strokePolyline(xVals, yVals, yVals.length);
+        gcSkewTPlot.strokePolyline(xVals, yVals, numPoints);
         gcSkewTPlot.setLineDashes(null);
 
         /*
