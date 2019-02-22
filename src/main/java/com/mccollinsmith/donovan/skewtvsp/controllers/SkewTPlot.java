@@ -79,12 +79,12 @@ public class SkewTPlot {
     private static final double PRES_MAX_LOG = Math.log(PRES_MAX);
     private static final double PRES_LOG_RANGE = PRES_MAX_LOG - PRES_MIN_LOG;
 
-    private static final int PLOT_VIEW_WIDTH = 900;
-    private static final int PLOT_VIEW_HEIGHT = 1200;
-    private static final int PLOT_VIEW_SCALE = 1;
-    private static final int PLOT_PRINT_SCALE = 3;
-    private static final int PLOT_PRINT_WIDTH = PLOT_VIEW_WIDTH * PLOT_PRINT_SCALE;
-    private static final int PLOT_PRINT_HEIGHT = PLOT_VIEW_HEIGHT * PLOT_PRINT_SCALE;
+    private static final int PLOT_VIEW_WIDTH = 900 * 3;
+    private static final int PLOT_VIEW_HEIGHT = 1200 * 3;
+    private static final int PLOT_VIEW_SCALE = 3;
+    //private static final int PLOT_PRINT_SCALE = 3;
+    //private static final int PLOT_PRINT_WIDTH = PLOT_VIEW_WIDTH * PLOT_PRINT_SCALE;
+    //private static final int PLOT_PRINT_HEIGHT = PLOT_VIEW_HEIGHT * PLOT_PRINT_SCALE;
 
     /**
      * ModelDataFile currently in use.
@@ -157,6 +157,9 @@ public class SkewTPlot {
                             25.0, 30.0, 35.0, 40.0, 45.0)
                 .collect(Collectors.toList());
 
+        gcSkewTPlot.getCanvas().setHeight(PLOT_VIEW_HEIGHT);
+        gcSkewTPlot.getCanvas().setWidth(PLOT_VIEW_WIDTH);
+
         canvasWidth = gcSkewTPlot.getCanvas().getWidth();
         canvasHeight = gcSkewTPlot.getCanvas().getHeight();
         plotXOffset = canvasWidth * 0.15;
@@ -225,30 +228,32 @@ public class SkewTPlot {
      */
     public static RenderedImage getHiResPlot() {
         // Save viewed GraphicsContext so it can be restored later
-        GraphicsContext gcViewPlot = gcSkewTPlot;
+        //GraphicsContext gcViewPlot = gcSkewTPlot;
 
         /*
          * Create a new Canvas at high-resolution to render plot to and then plot to it
          * using the same ModelDataFile and XY-coordinates as the on-screen plot.
          */
-        Canvas canvasHiResPlot = new Canvas();
+        //Canvas canvasHiResPlot = new Canvas();
 
-        scaleLineFactor = PLOT_PRINT_SCALE;
-        canvasHiResPlot.setHeight(PLOT_PRINT_HEIGHT);
-        canvasHiResPlot.setWidth(PLOT_PRINT_WIDTH);
+        //scaleLineFactor = PLOT_PRINT_SCALE;
+        //canvasHiResPlot.setHeight(PLOT_PRINT_HEIGHT);
+        //canvasHiResPlot.setWidth(PLOT_PRINT_WIDTH);
 
-        plotSkewT(canvasHiResPlot.getGraphicsContext2D(), mdfSkewTData, coordX, coordY);
+        //plotSkewT(canvasHiResPlot.getGraphicsContext2D(), mdfSkewTData, coordX, coordY);
 
         // Create raster image to hold a snapshot of the Canvas.
-        WritableImage writableImage = new WritableImage((int) PLOT_PRINT_WIDTH,
-                (int) PLOT_PRINT_HEIGHT);
+        WritableImage writableImage = new WritableImage((int) PLOT_VIEW_WIDTH,
+                (int) PLOT_VIEW_HEIGHT);
 
         // Take snapshot of plot and save to writableImage
-        canvasHiResPlot.snapshot(null, writableImage);
+        //canvasHiResPlot.snapshot(null, writableImage);
+        
+        gcSkewTPlot.getCanvas().snapshot(null, writableImage);
 
         // Restore original scale factor and GraphicsContext.
-        scaleLineFactor = PLOT_VIEW_SCALE;
-        initSkewT(gcViewPlot, false);
+        //scaleLineFactor = PLOT_VIEW_SCALE;
+        //initSkewT(gcViewPlot, false);
 
         /*
          * Convert WriteableImage to RenderedImage and return it.
