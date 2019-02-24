@@ -24,23 +24,27 @@ Licensed under the 2-clause BSD license.
 * Convert relative humidity to dew point as needed
 * Calculate values such as lifting condensation level (LCL), K-index,
   Total Totals, and SWEAT depending on data available
-* Output high-resolution (approximately 300 DPI) plot to a PNG file
+* Output high-resolution (approximately 328 DPI) plot to a PNG file
 
 ## Requirements
 
 ### Running
 
-* Java 11 runtime (Java 8 for versions before 0.3.0)
-* Desktop operating system with windowing system (e.g. Microsoft Windows,
-  Apple macOS, Linux with X11)
+#### Version 0.3.0 and later
+* For Windows: double-click on "SkewTVSP.cmd" inside installation folder 
+
+#### Versions prior to 0.3.0
+* Must have Java 8 SE runtime installed
+* Double-click downloaded JAR file
 
 ### Building
 
-* Java 11 Development Kit and Java 11 runtime
+* Java 11 Development Kit
+* OpenJFX 11
 * Apache Maven 3
 
 Maven should pull in all required dependencies automatically.
-Simply run `mvn package` to build and `mvn exec:java` to run.
+Simply run `mvn clean compile package` to build and `mvn exec:java` to run.
 
 ## Citing/Acknowledging
 

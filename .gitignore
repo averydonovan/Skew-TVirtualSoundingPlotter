@@ -7,4 +7,6 @@
 *.ini
 .DS_Store
 /slf4j-jdk14-1.7.21.jar
+/SkewTVSP-*/
+SkewTVSP-*.zip
 Thumbs.db
