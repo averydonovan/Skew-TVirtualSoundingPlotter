@@ -160,8 +160,8 @@ public class SkewTPlot {
         gcSkewTPlot.getCanvas().setHeight(PLOT_VIEW_HEIGHT);
         gcSkewTPlot.getCanvas().setWidth(PLOT_VIEW_WIDTH);
 
-        canvasWidth = gcSkewTPlot.getCanvas().getWidth();
-        canvasHeight = gcSkewTPlot.getCanvas().getHeight();
+        canvasWidth = PLOT_VIEW_WIDTH;
+        canvasHeight = PLOT_VIEW_HEIGHT;
         plotXOffset = canvasWidth * 0.15;
         plotYOffset = canvasHeight * 0.85;
         plotXMax = canvasWidth * 0.90;
@@ -562,13 +562,15 @@ public class SkewTPlot {
         gcSkewTPlot.setStroke(Color.WHITE);
         gcSkewTPlot.setLineWidth(scaleLineFactor * 0);
         // Upper
-        gcSkewTPlot.fillRect(0, 0, canvasWidth, plotYMax);
+        gcSkewTPlot.fillRect(0, 0, canvasWidth, plotYMax - (scaleLineFactor/2));
         // Lower
         gcSkewTPlot.fillRect(0, plotYOffset, canvasWidth, plotYMax - plotYOffset);
         // Left
-        gcSkewTPlot.fillRect(0, plotYMax, plotXOffset, canvasHeight - plotYMax);
-        // Lower
-        gcSkewTPlot.fillRect(plotXMax, plotYMax, canvasWidth - plotXMax, canvasHeight - plotYMax);
+        gcSkewTPlot.fillRect(0, plotYMax - (scaleLineFactor/2),
+                plotXOffset, canvasHeight - plotYMax);
+        // Right
+        gcSkewTPlot.fillRect(plotXMax, plotYMax - (scaleLineFactor/2),
+                canvasWidth - plotXMax, canvasHeight - plotYMax);
 
         /*
          * Draw axes lines.
