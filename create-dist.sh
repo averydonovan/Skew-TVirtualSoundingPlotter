@@ -5,7 +5,7 @@ echo "Creating package for version $version"
 
 if [ ! -f "./target/SkewTVSP-$version.jar" ]; then
 	echo "Running maven..."
-	mvn package
+	mvn clean compile package
 	echo "...finished"
 fi
 
@@ -19,6 +19,7 @@ echo "\`dirname \"\$0\"\`/bin/java -jar \`dirname \"\$0\"\`/SkewTVSP-$version.ja
 chmod +x ./SkewTVSP-$version/SkewTVSP.sh
 
 if [ "$1" = 'archive' ]; then
-  tar czf SkewTVSP-$version.tar.gz ./SkewTVSP-$version
+	tar czf SkewTVSP-$version.tar.gz SkewTVSP-$version
+	rm -rf ./SkewTVSP-$version
 fi
 

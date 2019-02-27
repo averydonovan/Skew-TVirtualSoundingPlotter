@@ -6,7 +6,7 @@ echo Creating package for version %version%
 
 if not exist "target\SkewTVSP-%version%.jar" (
 echo Running maven...
-call mvn package
+call mvn clean compile package
 echo ...finished
 )
 
