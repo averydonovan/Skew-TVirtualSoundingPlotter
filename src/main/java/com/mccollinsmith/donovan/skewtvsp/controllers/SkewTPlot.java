@@ -564,7 +564,7 @@ public class SkewTPlot {
         // Upper
         gcSkewTPlot.fillRect(0, 0, canvasWidth, plotYMax - (scaleLineFactor/2));
         // Lower
-        gcSkewTPlot.fillRect(0, plotYOffset, canvasWidth, plotYMax - plotYOffset);
+        gcSkewTPlot.fillRect(0, plotYOffset, canvasWidth, plotYOffset - plotYMax);
         // Left
         gcSkewTPlot.fillRect(0, plotYMax - (scaleLineFactor/2),
                 plotXOffset, canvasHeight - plotYMax);
