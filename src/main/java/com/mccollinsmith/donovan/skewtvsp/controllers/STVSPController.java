@@ -32,10 +32,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Properties;
-import java.util.ResourceBundle;
+import java.util.*;
 import javafx.beans.property.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -43,7 +40,9 @@ import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.geometry.Orientation;
 import javafx.scene.Group;
+import javafx.scene.Node;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.control.*;
 import javafx.scene.control.Alert.AlertType;
@@ -53,13 +52,9 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import javafx.stage.FileChooser.ExtensionFilter;
-//import sun.util.logging.resources.logging;
 import javax.imageio.ImageIO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-//import javafx.scene.Node;
-//import javafx.beans.property.ObjectProperty;
-//import javafx.beans.property.SimpleObjectProperty;
 
 /**
  * FXML Controller class for main window.
@@ -193,12 +188,6 @@ public class STVSPController implements Initializable {
         btnSavePlot.disableProperty().bind(isNoSkewTDrawn);
         tblData.disableProperty().bind(isNoSkewTDrawn);
 
-        // Tooltips for buttons and input boxes
-        btnOpenFile.setTooltip(new Tooltip("Open GRIB data file"));
-        btnSavePlot.setTooltip(new Tooltip("Save Skew-T plot to a PNG file"));
-        btnLonLatSearch.setTooltip(new Tooltip(
-                "Plot Skew-T for closest point to\n" + "requested longitude and latitude"));
-
         /*
          * Show blank Skew-T whenever either no Skew-T at all has been plotted yet or if
          * on-screen Skew-T is out-of-date due to situations such as a new file being
@@ -220,16 +209,16 @@ public class STVSPController implements Initializable {
         SkewTPlot.drawBlankSkewT(canvasBlankSkewT.getGraphicsContext2D());
         
         spSkewTTab.widthProperty().addListener((b, o, n) -> doScaleSkewTView());
-        doScaleSkewTView();
 
         // Get current working directory
         currentWorkingDirectory = Paths.get("").toAbsolutePath().toString();
         LOG.debug("CWD is " + currentWorkingDirectory);
 
         doResetWindowTitle();
+        doScaleSkewTView();
         doUpdateStatus("Ready");
     }
-
+    
     /**
      * Appends text to the application name in the window title. Typically shows the
      * name of the data file currently opened.
@@ -575,20 +564,25 @@ public class STVSPController implements Initializable {
      * Scale Skew-T AnchorPane when window width changes.
      */
     public void doScaleSkewTView() {
-        // LOG.debug("Window resize event.");
-        double viewWidth = 0.0;
-        if ((spSkewTTab.getViewportBounds().getWidth() < (spSkewTTab.getWidth() - 15.0))
-            && (spSkewTTab.getViewportBounds().getWidth() > (spSkewTTab.getWidth() - 25.0))
-            && (spSkewTTab.getViewportBounds().getWidth() > 0.01)) {
-            viewWidth = spSkewTTab.getViewportBounds().getWidth();
-        } else {
-            viewWidth = spSkewTTab.getWidth() - 15.0;
+        double scrollBarWidth = 14.0;
+        double viewWidth = 900.0;
+        
+        if (spSkewTTab.getViewportBounds().getWidth() != 0) {
+            Set<Node> scrollPaneNodes = spSkewTTab.lookupAll(".scroll-bar");
+            for (final Node scrollPaneNode : scrollPaneNodes) {
+                if (scrollPaneNode instanceof ScrollBar) {
+                    ScrollBar scrollBar = (ScrollBar) scrollPaneNode;
+                    if (scrollBar.getOrientation() == Orientation.VERTICAL) {
+                        scrollBarWidth = scrollBar.getWidth();
+                    }
+                }
+            }
         }
+
+        viewWidth = spSkewTTab.getWidth() - scrollBarWidth;
+        
         double scale = (viewWidth / apSkewTTab.getWidth());
-        if (scale < 0.01)
-            scale = 1.0;
-        //LOG.debug(apSkewTTab.getWidth() + " " + spSkewTTab.getWidth() + " "
-        //          + spSkewTTab.getViewportBounds().getWidth() + " " + scale);
+        
         apSkewTTab.setScaleX(scale);
         apSkewTTab.setScaleY(scale);
         spSkewTTab.setContent(new Group(apSkewTTab));

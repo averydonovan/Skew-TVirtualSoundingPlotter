@@ -17,6 +17,7 @@
 <?import javafx.scene.control.TableView?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.control.ToolBar?>
+<?import javafx.scene.control.Tooltip?>
 <?import javafx.scene.input.KeyCodeCombination?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.BorderPane?>
@@ -71,8 +72,16 @@
                         </MenuBar>
                         <ToolBar prefHeight="40.0" prefWidth="200.0">
                             <items>
-                                <Button fx:id="btnOpenFile" mnemonicParsing="false" onAction="#doOpenFile" text="Open File" />
-                                <Button fx:id="btnSavePlot" mnemonicParsing="false" onAction="#doSaveSkewT" text="Save Plot" />
+                                <Button fx:id="btnOpenFile" mnemonicParsing="false" onAction="#doOpenFile" text="Open File">
+                                    <tooltip>
+                                        <Tooltip text="Open GRIB data file" />
+                                    </tooltip>            
+                                </Button>
+                                <Button fx:id="btnSavePlot" mnemonicParsing="false" onAction="#doSaveSkewT" text="Save Plot">
+                                    <tooltip>
+                                        <Tooltip text="Save Skew-T plot to a PNG file" />
+                                    </tooltip>
+                                </Button>          
                             </items>
                         </ToolBar>
                     </children>
@@ -147,7 +156,11 @@
                                                 <Font name="Monospaced Regular" size="13.0" />
                                             </font>
                                         </TextField>
-                                        <Button fx:id="btnLonLatSearch" alignment="CENTER" defaultButton="true" mnemonicParsing="false" onAction="#doLonLatSearch" text="Plot Skew-T" GridPane.columnSpan="2" GridPane.halignment="CENTER" GridPane.rowIndex="3" GridPane.valignment="CENTER" />
+                                        <Button fx:id="btnLonLatSearch" alignment="CENTER" defaultButton="true" mnemonicParsing="false" onAction="#doLonLatSearch" text="Plot Skew-T" GridPane.columnSpan="2" GridPane.halignment="CENTER" GridPane.rowIndex="3" GridPane.valignment="CENTER">
+                                            <tooltip>
+                                                <Tooltip text="Plot Skew-T for closest point to\nrequested longitude and latitude" />
+                                            </tooltip>
+                                        </Button>
                                     </children>
                                     <VBox.margin>
                                         <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
@@ -214,16 +227,13 @@
                     <tabs>
                         <Tab text="Skew-T">
                             <content>
-                                <ScrollPane fx:id="spSkewTTab" fitToHeight="true" fitToWidth="true" vbarPolicy="ALWAYS" hbarPolicy="AS_NEEDED">
+                                <ScrollPane fx:id="spSkewTTab" prefViewportWidth="900.0" vbarPolicy="ALWAYS" hbarPolicy="AS_NEEDED">
                                     <content>
-                                        <StackPane fx:id="apSkewTTab" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" scaleX="0.333333333" scaleY="0.333333333">
+                                        <StackPane fx:id="apSkewTTab" prefHeight ="3600.0" prefWidth="2700.00" maxHeight="3600.0" maxWidth="2700.0" scaleX="0.333333333" scaleY="0.333333333">
                                             <children>
                                                 <Canvas fx:id="canvasSkewT" height="3600.0" width="2700.0" />
                                                 <Canvas fx:id="canvasBlankSkewT" height="3600.0" width="2700.0" />
                                             </children>
-                                            <padding>
-                                                <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
-                                            </padding>
                                         </StackPane>
                                     </content>
                                 </ScrollPane>
