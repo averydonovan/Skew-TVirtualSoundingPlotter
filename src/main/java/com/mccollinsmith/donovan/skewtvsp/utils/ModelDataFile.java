@@ -25,6 +25,8 @@
  */
 package com.mccollinsmith.donovan.skewtvsp.utils;
 
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -287,6 +289,34 @@ public class ModelDataFile {
         Array gribVarData = null;
         try {
             gribVarData = gribVar.read();
+        } catch (FileNotFoundException ex) {
+            /*
+             * Error may be caused by an automatically created sidecar file and deleting it and
+             * trying again may allow the GRIB file to be successfully opened.
+             */
+            if ((new File(gribFileName).isFile()) && (new File(gribFileName + ".gbx9").isFile())) {
+                LOG.error("Unable to read {} possibly due to sidecar file", gribFileName);
+                LOG.warn("Attempting to delete {}.gbx9 and then trying to read GRIB file again",
+                        gribFileName);
+
+                try {
+                    File gbx9File = new File(gribFileName + ".gbx9");
+                    gbx9File.delete();
+                    
+                    gribGDS = ucar.nc2.dt.grid.GridDataset.open(gribFileName);
+                    gribVarGDT = gribGDS.findGridByShortName(varName);
+                    gribGCS = gribVarGDT.getCoordinateSystem();
+                    gribFile = NetcdfDataset.openDataset(gribFileName);
+                    gribVar = gribFile.findVariable(varName);
+                    gribVarData = gribVar.read();
+                } catch (IOException ex2) {
+                    LOG.error("{}\n{}", ex2.getLocalizedMessage(), ex2.toString());
+                    throw ex2;
+                }
+            } else {
+                LOG.error("{}\n{}", ex.getLocalizedMessage(), ex.toString());
+                throw ex;
+            }
         } catch (IOException ex) {
             LOG.error("{}\n{}", ex.getLocalizedMessage(), ex.toString());
             throw ex;

@@ -28,23 +28,31 @@ Licensed under the 2-clause BSD license.
 
 ## Requirements
 
+### Important
+
+It is recommended to use the latest 0.3.0 alpha version.
+Despite the "alpha" label, these versions now bundle the necessary Java runtime and they
+contain bug fixes for reading some model output files, as well as other fixes and enhancements.
+
 ### Running
 
-#### Version 0.3.0 and later
-* For Windows: double-click on "SkewTVSP.cmd" inside installation folder 
-
-#### Versions prior to 0.3.0
-* Must have Java 8 SE runtime installed
-* Double-click downloaded JAR file
+* For Windows: double-click on "SkewTVSP.cmd" inside installation folder
+* For Unix-like systems: run `SkewTVSP.sh` inside installation folder
 
 ### Building
 
-* Java 11 Development Kit
-* OpenJFX 11
-* Apache Maven 3
+* [OpenJDK 11](https://adoptopenjdk.net/)
+* [OpenJFX 11 SDK](https://gluonhq.com/products/javafx/)
+* [Apache Maven 3](https://maven.apache.org/)
+* [7-Zip](https://www.7-zip.org/) (only on Windows, optional)
 
 Maven should pull in all required dependencies automatically.
 Simply run `mvn clean compile package` to build and `mvn exec:java` to run.
+
+To create a distribution, run `.\create-dist` on Windows or `./create-dist.sh` on Unix-like
+systems.
+To create an archive file instead of a folder, run `.\create-dist archive` or
+`./create-dist.sh archive`.
 
 ## Citing/Acknowledging
 
