@@ -42,7 +42,7 @@ contain bug fixes for reading some model output files, as well as other fixes an
 ### Building
 
 * [OpenJDK 11](https://adoptopenjdk.net/)
-* [OpenJFX 11 SDK](https://gluonhq.com/products/javafx/)
+* [OpenJFX 11 SDK and jmods](https://gluonhq.com/products/javafx/)
 * [Apache Maven 3](https://maven.apache.org/)
 * [7-Zip](https://www.7-zip.org/) (only on Windows, optional)
 

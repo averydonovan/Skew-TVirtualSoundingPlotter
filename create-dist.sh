@@ -12,7 +12,7 @@ fi
 if [ -d "./SkewTVSP-$version" ]; then
     rm -rf ./SkewTVSP-$version
 fi
-jlink --output ./SkewTVSP-$version --no-header-files --no-man-pages --compress=2 --strip-debug --add-modules java.base,java.datatransfer,java.desktop,java.logging,java.management,java.naming,java.rmi,java.scripting,java.security.jgss,java.sql,java.xml,jdk.unsupported,jdk.unsupported.desktop
+jlink --output ./SkewTVSP-$version --no-header-files --no-man-pages --compress=2 --strip-debug --module-path "$PATH_TO_FX_MODS" --add-modules java.base,java.datatransfer,java.desktop,java.logging,java.management,java.naming,java.rmi,java.scripting,java.security.jgss,java.sql,java.xml,jdk.unsupported,jdk.unsupported.desktop
 
 cp ./target/SkewTVSP-$version.jar ./SkewTVSP-$version/
 cp ./license.txt ./SkewTVSP-$version/
