@@ -34,25 +34,28 @@ It is recommended to use the latest 0.3.0 alpha version.
 Despite the "alpha" label, these versions now bundle the necessary Java runtime and they
 contain bug fixes for reading some model output files, as well as other fixes and enhancements.
 
+Development is only targeting Windows right now due to significant bugs in the Linux version of
+OpenJFX.
+
 ### Running
 
-* For Windows: double-click on "SkewTVSP.cmd" inside installation folder
-* For Unix-like systems: run `SkewTVSP.sh` inside installation folder
+* Windows 7 SP1 or later (including Windows 8, 8.1, 10)
+
+Double-click on "SkewTVSP.cmd" inside installation folder
 
 ### Building
 
+* Windows 7 SP1 or later (including Windows 8, 8.1, 10)
 * [OpenJDK 11](https://adoptopenjdk.net/)
 * [OpenJFX 11 SDK](https://gluonhq.com/products/javafx/)
 * [Apache Maven 3](https://maven.apache.org/)
-* [7-Zip](https://www.7-zip.org/) (only on Windows, optional)
+* [7-Zip](https://www.7-zip.org/)
 
 Maven should pull in all required dependencies automatically.
 Simply run `mvn clean compile package` to build and `mvn exec:java` to run.
 
-To create a distribution, run `.\create-dist` on Windows or `./create-dist.sh` on Unix-like
-systems.
-To create an archive file instead of a folder, run `.\create-dist archive` or
-`./create-dist.sh archive`.
+To create a distribution, run `.\create-dist.cmd` or `.\create-dist.cmd archive` to create a folder
+or an archive file, respectively. 
 
 ## Citing/Acknowledging
 
