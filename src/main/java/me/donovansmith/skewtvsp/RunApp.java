@@ -24,7 +24,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-package com.mccollinsmith.donovan.skewtvsp;
+package me.donovansmith.skewtvsp;
 
 public class RunApp {
 

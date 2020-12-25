@@ -23,10 +23,10 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
-package com.mccollinsmith.donovan.skewtvsp.controllers;
+package me.donovansmith.skewtvsp.controllers;
 
-import com.mccollinsmith.donovan.skewtvsp.utils.AtmosThermoMath;
-import com.mccollinsmith.donovan.skewtvsp.utils.ModelDataFile;
+import me.donovansmith.skewtvsp.utils.AtmosThermoMath;
+import me.donovansmith.skewtvsp.utils.ModelDataFile;
 import java.awt.image.RenderedImage;
 import java.util.ArrayList;
 import java.util.Collections;

@@ -1,17 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
-  <groupId>com.mccollinsmith.donovan</groupId>
+  <groupId>me.donovansmith</groupId>
   <artifactId>SkewTVSP</artifactId>
   <name>Skew-T Virtual Sounding Plotter</name>
-  <version>0.3.0-alpha.2</version>
+  <version>0.3.0-alpha.3</version>
   <url>http://github.com/donovan1983/SkewTVirtualSoundingPlotter/</url>
   <inceptionYear>2016</inceptionYear>
   <developers>
     <developer>
       <name>Donovan Smith</name>
-      <email>donovan@mccollinsmith.com</email>
-      <url>http://donovan.mccollinsmith.com</url>
+      <email>software@donovansmith.me</email>
+      <url>https://donovansmith.me</url>
       <roles>
         <role>Developer</role>
       </roles>
@@ -25,7 +25,7 @@
   </licenses>
   <organization>
     <name>Donovan Smith</name>
-    <url>http://donovan.mccollinsmith.com</url>
+    <url>https://donovansmith.me</url>
   </organization>
   <build>
     <resources>
@@ -37,7 +37,7 @@
     <plugins>
       <plugin>
         <artifactId>maven-shade-plugin</artifactId>
-        <version>3.2.1</version>
+        <version>3.2.4</version>
         <executions>
           <execution>
             <phase>package</phase>
@@ -49,47 +49,43 @@
         <configuration>
           <transformers>
             <transformer>
-              <mainClass>com.mccollinsmith.donovan.skewtvsp.RunApp</mainClass>
+              <mainClass>me.donovansmith.skewtvsp.RunApp</mainClass>
             </transformer>
           </transformers>
         </configuration>
       </plugin>
       <plugin>
         <artifactId>maven-compiler-plugin</artifactId>
-        <version>3.8.0</version>
+        <version>3.8.1</version>
         <configuration>
           <release>${java.version}</release>
         </configuration>
       </plugin>
       <plugin>
-        <groupId>org.codehaus.mojo</groupId>
-        <artifactId>exec-maven-plugin</artifactId>
-        <version>1.6.0</version>
-        <executions>
-          <execution>
-            <goals>
-              <goal>java</goal>
-            </goals>
-          </execution>
-        </executions>
+        <groupId>org.openjfx</groupId>
+        <artifactId>javafx-maven-plugin</artifactId>
+        <version>0.0.5</version>
         <configuration>
-          <mainClass>com.mccollinsmith.donovan.skewtvsp.RunApp</mainClass>
-          <cleanupDaemonThreads>false</cleanupDaemonThreads>
+          <mainClass>me.donovansmith.skewtvsp.SkewTVSP</mainClass>
         </configuration>
       </plugin>
     </plugins>
   </build>
   <repositories>
     <repository>
-      <id>unidata-releases</id>
-      <name>Unidata Releases</name>
-      <url>https://artifacts.unidata.ucar.edu/content/repositories/unidata-releases/</url>
+      <id>unidata-all</id>
+      <name>Unidata All</name>
+      <url>https://artifacts.unidata.ucar.edu/repository/unidata-all/</url>
     </repository>
   </repositories>
   <properties>
+    <maven.compiler.release>${java.version}</maven.compiler.release>
     <maven.compiler.target>${java.version}</maven.compiler.target>
     <java.version>11</java.version>
+    <netcdfJavaVersion>5.4.1</netcdfJavaVersion>
     <maven.compiler.source>${java.version}</maven.compiler.source>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <slf4jVersion>1.7.30</slf4jVersion>
+    <javafx.version>11</javafx.version>
   </properties>
 </project>

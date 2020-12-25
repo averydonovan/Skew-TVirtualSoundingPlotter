@@ -23,9 +23,9 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
-package com.mccollinsmith.donovan.skewtvsp;
+package me.donovansmith.skewtvsp;
 
-import com.mccollinsmith.donovan.skewtvsp.controllers.STVSPController;
+import me.donovansmith.skewtvsp.controllers.STVSPController;
 
 import javafx.application.Application;
 import javafx.scene.Scene;

@@ -23,7 +23,7 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
-package com.mccollinsmith.donovan.skewtvsp.utils;
+package me.donovansmith.skewtvsp.utils;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -38,6 +38,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.dataset.NetcdfDataset;
+import ucar.nc2.dataset.NetcdfDatasets;
 import ucar.nc2.Variable;
 import ucar.nc2.dt.*;
 import ucar.unidata.geoloc.LatLonPoint;
@@ -278,7 +279,7 @@ public class ModelDataFile {
 //        }
 
         try {
-            gribFile = NetcdfDataset.openDataset(gribFileName);
+            gribFile = NetcdfDatasets.openDataset(gribFileName);
         } catch (IOException ex) {
             LOG.error("{}\n{}", ex.getLocalizedMessage(), ex.toString());
             throw ex;
@@ -750,6 +751,8 @@ public class ModelDataFile {
         int initCoordLvl = 0;
 
         if (modelIsGFS3) {
+            varNameIso = "isobaric1";
+        } else if (modelIsRAP) {
             varNameIso = "isobaric1";
         } else if (modelIsNAMGRB2) {
             varNameIso = "isobaric1";

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019, Donovan Smith
+ * Copyright (c) 2020, Donovan Smith
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -25,59 +25,43 @@
  */
 
 module SkewTVirtualSoundingPlotter {
-//    requires grib;
-    requires protobuf.java;
-//    requires jdom;
-    requires jsoup;
-    requires jcip.annotations;
-//    requires jj;
+    requires cdm.core;
+    requires udunits;
+    requires httpservices;
+    requires org.apache.httpcomponents.httpclient;
+    requires commons.logging;
+    requires org.apache.commons.codec;
+    requires org.apache.httpcomponents.httpcore;
+    requires jcommander;
     requires com.google.common;
     requires failureaccess;
     requires listenablefuture;
-//    requires jsr;
-    requires checker.qual;
+    requires org.checkerframework.checker.qual;
     requires error.prone.annotations;
     requires j2objc.annotations;
     requires animal.sniffer.annotations;
-    requires cdm;
-    requires udunits;
-    requires httpservices;
-    requires httpclient;
-    requires commons.logging;
-    requires commons.codec;
-    requires httpmime;
-    requires httpcore;
-    requires joda.time;
-    requires quartz;
-//    requires c3p;
-    requires mchange.commons.java;
-    requires jcommander;
-//    requires aws.java.sdk.s;
-    requires aws.java.sdk.kms;
-    requires aws.java.sdk.core;
-    requires ion.java;
-    requires jackson.dataformat.cbor;
-    requires jmespath.java;
-    requires com.fasterxml.jackson.core;
-    requires com.fasterxml.jackson.annotation;
-    requires com.fasterxml.jackson.databind;
-//    requires netcdf;
-    requires jna;
-    requires slf4j.api;
+    requires com.google.protobuf;
+    requires re2j;
+    requires org.joda.time;
+    requires jdom2;
+    requires jsr305;
+    requires org.slf4j;
     requires logback.classic;
     requires logback.core;
     requires javafx.controlsEmpty;
     requires javafx.controls;
-    requires javafx.fxmlEmpty;
-    requires javafx.fxml;
-    requires javafx.swingEmpty;
-    requires javafx.swing;
     requires javafx.graphicsEmpty;
     requires javafx.graphics;
     requires javafx.baseEmpty;
     requires javafx.base;
-//    requires SkewTVSP;
+    requires javafx.fxmlEmpty;
+    requires javafx.fxml;
+    requires javafx.swingEmpty;
+    requires javafx.swing;
+//    requires SkewTVirtualSoundingPlotter;
     
-    opens com.mccollinsmith.donovan.skewtvsp to javafx.fxml;
-    exports com.mccollinsmith.donovan.skewtvsp;
+//    opens me.donovansmith.skewtvsp to javafx.fxml;
+    opens me.donovansmith.skewtvsp.controllers to javafx.fxml;
+    exports me.donovansmith.skewtvsp;
+    exports me.donovansmith.skewtvsp.controllers;
 }
