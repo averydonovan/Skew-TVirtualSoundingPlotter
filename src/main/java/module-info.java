@@ -59,7 +59,7 @@ module SkewTVirtualSoundingPlotter {
     requires javafx.swingEmpty;
     requires javafx.swing;
 //    requires SkewTVirtualSoundingPlotter;
-    
+
 //    opens me.donovansmith.skewtvsp to javafx.fxml;
     opens me.donovansmith.skewtvsp.controllers to javafx.fxml;
     exports me.donovansmith.skewtvsp;

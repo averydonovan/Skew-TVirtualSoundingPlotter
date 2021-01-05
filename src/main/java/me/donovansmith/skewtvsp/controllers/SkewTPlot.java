@@ -29,6 +29,7 @@ import me.donovansmith.skewtvsp.utils.AtmosThermoMath;
 import me.donovansmith.skewtvsp.utils.ModelDataFile;
 import java.awt.image.RenderedImage;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -117,8 +118,8 @@ public class SkewTPlot {
     private static double canvasHeight = 0;
 
     /**
-     * Factor to scale plotted elements by so that they have the same relative size
-     * at higher resolutions.
+     * Factor to scale plotted elements by so that they have the same relative size at
+     * higher resolutions.
      */
     private static int scaleLineFactor = PLOT_VIEW_SCALE;
 
@@ -136,10 +137,9 @@ public class SkewTPlot {
     private static List<Double> wLevels;
 
     /**
-     * Sets up class fields for plot so that drawing and plotting methods will
-     * render at the proper size to the correct GraphicsContext. Must be called
-     * before calling any drawing or plotting method to avoid unpredictable
-     * behavior.
+     * Sets up class fields for plot so that drawing and plotting methods will render at
+     * the proper size to the correct GraphicsContext. Must be called before calling any
+     * drawing or plotting method to avoid unpredictable behavior.
      *
      * @param gcSkewT     GraphicsContext to use for plotting
      * @param doClearPlot true if plotting area should be cleared, false if not
@@ -187,7 +187,7 @@ public class SkewTPlot {
      * @param curY     Y-coordinate in data grid
      */
     public static void plotSkewT(GraphicsContext gcSkewT, ModelDataFile mdfInUse, int curX,
-            int curY) {
+                                 int curY) {
         initSkewT(gcSkewT, true);
 
         mdfSkewTData = mdfInUse;
@@ -221,8 +221,8 @@ public class SkewTPlot {
     }
 
     /**
-     * Render currently drawn Skew-T plot in high-resolution. Useful for saving plot
-     * to a file or for printing.
+     * Render currently drawn Skew-T plot in high-resolution. Useful for saving plot to a
+     * file or for printing.
      *
      * @return high-resolution plot
      */
@@ -235,20 +235,16 @@ public class SkewTPlot {
          * using the same ModelDataFile and XY-coordinates as the on-screen plot.
          */
         //Canvas canvasHiResPlot = new Canvas();
-
         //scaleLineFactor = PLOT_PRINT_SCALE;
         //canvasHiResPlot.setHeight(PLOT_PRINT_HEIGHT);
         //canvasHiResPlot.setWidth(PLOT_PRINT_WIDTH);
-
         //plotSkewT(canvasHiResPlot.getGraphicsContext2D(), mdfSkewTData, coordX, coordY);
-
         // Create raster image to hold a snapshot of the Canvas.
         WritableImage writableImage = new WritableImage((int) PLOT_VIEW_WIDTH,
-                (int) PLOT_VIEW_HEIGHT);
+                                                        (int) PLOT_VIEW_HEIGHT);
 
         // Take snapshot of plot and save to writableImage
         //canvasHiResPlot.snapshot(null, writableImage);
-        
         gcSkewTPlot.getCanvas().snapshot(null, writableImage);
 
         // Restore original scale factor and GraphicsContext.
@@ -272,13 +268,20 @@ public class SkewTPlot {
         /*
          * Get pressure, temperature, and dew point for each available isobaric level.
          */
-        for (int coordLvl = 0; coordLvl < 50; coordLvl++) {
+ /*for (int coordLvl = 0; coordLvl < 50; coordLvl++) {
             Double curLevel = mdfSkewTData.getLevelFromIndex(coordLvl);
             if (curLevel.intValue() >= 0) {
                 dataPresLevels.add(curLevel);
                 dataTempVals.add(mdfSkewTData.getTempIso(coordX, coordY, coordLvl));
                 dataDewpVals.add(mdfSkewTData.getDewpIso(coordX, coordY, coordLvl));
             }
+        }*/
+        double[][] dataAll = mdfSkewTData.getTempDewpAll(coordX, coordY);
+
+        for (int index = 0; index < dataAll[0].length; index++) {
+            dataPresLevels.add(dataAll[0][index]);
+            dataTempVals.add(dataAll[1][index]);
+            dataDewpVals.add(dataAll[2][index]);
         }
 
         /*
@@ -511,8 +514,8 @@ public class SkewTPlot {
     }
 
     /**
-     * Draws the various grid lines on the plot, including isobaric levels,
-     * temperatures, dry adiabats, saturated adiabats, and mixing ratio lines.
+     * Draws the various grid lines on the plot, including isobaric levels, temperatures,
+     * dry adiabats, saturated adiabats, and mixing ratio lines.
      */
     private static void drawGridLines() {
         /*
@@ -562,15 +565,15 @@ public class SkewTPlot {
         gcSkewTPlot.setStroke(Color.WHITE);
         gcSkewTPlot.setLineWidth(scaleLineFactor * 0);
         // Upper
-        gcSkewTPlot.fillRect(0, 0, canvasWidth, plotYMax - (scaleLineFactor/2));
+        gcSkewTPlot.fillRect(0, 0, canvasWidth, plotYMax - (scaleLineFactor / 2));
         // Lower
         gcSkewTPlot.fillRect(0, plotYOffset, canvasWidth, plotYOffset - plotYMax);
         // Left
-        gcSkewTPlot.fillRect(0, plotYMax - (scaleLineFactor/2),
-                plotXOffset, canvasHeight - plotYMax);
+        gcSkewTPlot.fillRect(0, plotYMax - (scaleLineFactor / 2),
+                             plotXOffset, canvasHeight - plotYMax);
         // Right
-        gcSkewTPlot.fillRect(plotXMax, plotYMax - (scaleLineFactor/2),
-                canvasWidth - plotXMax, canvasHeight - plotYMax);
+        gcSkewTPlot.fillRect(plotXMax, plotYMax - (scaleLineFactor / 2),
+                             canvasWidth - plotXMax, canvasHeight - plotYMax);
 
         /*
          * Draw axes lines.
@@ -629,19 +632,19 @@ public class SkewTPlot {
         /*
          * Compute XY-coordinates for segments of dry adiabat line.
          */
-        int numPoints = (PRES_MAX - PRES_MIN)/10 + 1;
+        int numPoints = (PRES_MAX - PRES_MIN) / 100 + 1;
         int curPoint = 0;
         double[] xVals = new double[numPoints];
         double[] yVals = new double[numPoints];
         double[] results = new double[2];
-        for (int curLevel = PRES_MAX; curLevel >= PRES_MIN; curLevel -= 10) {
+        for (int curLevel = PRES_MAX; curLevel >= PRES_MIN; curLevel -= 100) {
             results = getXYFromTempPres(AtmosThermoMath
                     .calcTempFromPot(tempStep, curLevel), curLevel);
             xVals[curPoint] = results[0];
             yVals[curPoint] = results[1];
             curPoint++;
         }
-        
+
         /*
          * Draw dry adiabat line.
          */
@@ -685,14 +688,14 @@ public class SkewTPlot {
         /*
          * Compute XY-coordinates for segments of saturated adiabat line.
          */
-        int numPoints = (PRES_MAX - PRES_MIN)/100 + 1;
+        int numPoints = (PRES_MAX - PRES_MIN) / 100 + 1;
         int curPoint = 0;
         double[] xVals = new double[numPoints];
         double[] yVals = new double[numPoints];
         double[] results = new double[2];
         for (int curLevel = PRES_MAX; curLevel >= PRES_MIN; curLevel -= 100) {
             results = getXYFromTempPres(AtmosThermoMath
-                                                 .calcTempSatAdiabat(osaTemp, curLevel), curLevel);
+                    .calcTempSatAdiabat(osaTemp, curLevel), curLevel);
             xVals[curPoint] = results[0];
             yVals[curPoint] = results[1];
             curPoint++;
@@ -742,19 +745,19 @@ public class SkewTPlot {
         /*
          * Compute XY-coordinates for segments of mixing ratio line.
          */
-        int numPoints = (PRES_MAX - PRES_MIN)/100 + 1;
+        int numPoints = (PRES_MAX - PRES_MIN) / 100 + 1;
         int curPoint = 0;
         double[] xVals = new double[numPoints];
         double[] yVals = new double[numPoints];
         double[] results = new double[2];
         for (int curLevel = PRES_MAX; curLevel >= PRES_MIN; curLevel -= 100) {
             results = getXYFromTempPres(AtmosThermoMath
-                                        .calcTempAtMixingRatio(wLine, curLevel), curLevel);
+                    .calcTempAtMixingRatio(wLine, curLevel), curLevel);
             xVals[curPoint] = results[0];
             yVals[curPoint] = results[1];
             curPoint++;
         }
-        
+
         /*
          * Draw mixing ratio line.
          */

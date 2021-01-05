@@ -29,6 +29,7 @@ import me.donovansmith.skewtvsp.utils.ModelDataFile;
 import java.awt.image.RenderedImage;
 import java.io.File;
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -88,6 +89,8 @@ public class STVSPController implements Initializable {
     @FXML
     private MenuItem menuFileOpen;
     @FXML
+    private MenuItem menuURLOpen;
+    @FXML
     private MenuItem menuFileClose;
     @FXML
     private MenuItem menuFileSaveSkewT;
@@ -121,7 +124,7 @@ public class STVSPController implements Initializable {
 //    private ComboBox cbVariable;
 //    @FXML
 //    private ComboBox cbLevel;
-    // Data view tab
+    /*// Data view tab
     @FXML
     private TableView<DataEntry> tblData;
     @FXML
@@ -136,7 +139,7 @@ public class STVSPController implements Initializable {
     private TableColumn<DataEntry, String> tcValueUnits;
     // Data pane
     @FXML
-    private TabPane tpDataPane;
+    private TabPane tpDataPane;*/
     // Skew-T tab
     @FXML
     private ScrollPane spSkewTTab;
@@ -186,7 +189,7 @@ public class STVSPController implements Initializable {
         // These are useless when no Skew-T plot has been drawn
         menuFileSaveSkewT.disableProperty().bind(isNoSkewTDrawn);
         btnSavePlot.disableProperty().bind(isNoSkewTDrawn);
-        tblData.disableProperty().bind(isNoSkewTDrawn);
+//        tblData.disableProperty().bind(isNoSkewTDrawn);
 
         /*
          * Show blank Skew-T whenever either no Skew-T at all has been plotted yet or if
@@ -198,16 +201,15 @@ public class STVSPController implements Initializable {
 
         dataList = FXCollections.observableArrayList();
 
-        tcVariable.setCellValueFactory(cellData -> cellData.getValue().varNameProperty());
+        /*tcVariable.setCellValueFactory(cellData -> cellData.getValue().varNameProperty());
         tcLevel.setCellValueFactory(cellData -> cellData.getValue().levelValueProperty());
         tcLevelUnits.setCellValueFactory(cellData -> cellData.getValue().levelUnitsProperty());
         tcValue.setCellValueFactory(cellData -> cellData.getValue().entryValueProperty());
         tcValueUnits.setCellValueFactory(cellData -> cellData.getValue().entryUnitsProperty());
 
-        tblData.setItems(dataList);
-
+        tblData.setItems(dataList);*/
         SkewTPlot.drawBlankSkewT(canvasBlankSkewT.getGraphicsContext2D());
-        
+
         spSkewTTab.widthProperty().addListener((b, o, n) -> doScaleSkewTView());
 
         // Get current working directory
@@ -218,10 +220,10 @@ public class STVSPController implements Initializable {
         doScaleSkewTView();
         doUpdateStatus("Ready");
     }
-    
+
     /**
-     * Appends text to the application name in the window title. Typically shows the
-     * name of the data file currently opened.
+     * Appends text to the application name in the window title. Typically shows the name
+     * of the data file currently opened.
      *
      * @param newTitle text to be appended
      */
@@ -257,7 +259,7 @@ public class STVSPController implements Initializable {
         chooser.setInitialDirectory(curPathAsFile);
         chooser.setInitialFileName(modelFileName);
         ExtensionFilter fileExtsGRIB = new ExtensionFilter("GRIB files", "*.grb", "*.grib",
-                "*.grb2", "*.grib2", "*.pgrb2.*");
+                                                           "*.grb2", "*.grib2", "*.pgrb2.*");
         chooser.getExtensionFilters().addAll(fileExtsGRIB);
         File file = chooser.showOpenDialog(anchorPane.getScene().getWindow());
 
@@ -288,8 +290,8 @@ public class STVSPController implements Initializable {
 
                 List<DataEntry> newData = new ArrayList<>();
                 dataList = FXCollections.observableArrayList(newData);
-                tblData.setItems(dataList);
-                tblData.setPrefSize(apDataTab.getWidth(), apDataTab.getHeight());
+                /*tblData.setItems(dataList);
+                tblData.setPrefSize(apDataTab.getWidth(), apDataTab.getHeight());*/
                 tfLonFound.setText("0.0");
                 tfLatFound.setText("0.0");
 
@@ -331,6 +333,123 @@ public class STVSPController implements Initializable {
     }
 
     /**
+     * Shows a file selection dialog and opens selected data file.
+     *
+     * @param event
+     */
+    @FXML
+    protected void doOpenURL(ActionEvent event) {
+        /*File curPathAsFile = new File(currentWorkingDirectory);
+        FileChooser chooser = new FileChooser();
+        chooser.setInitialDirectory(curPathAsFile);
+        chooser.setInitialFileName(modelFileName);
+        ExtensionFilter fileExtsGRIB = new ExtensionFilter("GRIB files", "*.grb", "*.grib",
+                                                           "*.grb2", "*.grib2", "*.pgrb2.*");
+        chooser.getExtensionFilters().addAll(fileExtsGRIB);
+        File file = chooser.showOpenDialog(anchorPane.getScene().getWindow());*/
+        File file = new File("blah.txt");
+
+        TextInputDialog urlInputDialog = new TextInputDialog();
+        urlInputDialog.setHeaderText("Enter GRIB URL");
+        urlInputDialog.setTitle("Open GRIB URL");
+        urlInputDialog.showAndWait();
+
+        if (urlInputDialog.getResult() == null) {
+            return;
+        }
+
+        try {
+            URL dataURL = new URL(urlInputDialog.getEditor().getText());
+        } catch (IOException ex) {
+            LOG.error("Invalid data URL: {}", ex.getLocalizedMessage());
+            return;
+        }
+
+        /*Alert alertURL = new Alert(AlertType.ERROR);
+        alertURL.setTitle("URL Open");
+        alertURL.setHeaderText("URL");
+        if (urlInputDialog.getEditor().getText() == "") {
+            alertURL.setContentText("Nothing!");
+        } else {
+            alertURL.setContentText(urlInputDialog.getResult());
+        }
+        alertURL.showAndWait();*/
+ /*if (urlInputDialog.getEditor().getText() != "https://doit.now") {
+            return;
+        }*/
+        Task<Void> taskOpenFile = new Task<Void>() {
+            @Override
+            public Void call() throws IOException {
+                try {
+                    updateProgress(20, 100);
+                    updateMessage("Opening data file " + file.getName() + "...");
+                    modelFileName = "cdmremote:https://thredds.ucar.edu/thredds/cdmremote/grib/NCEP/RAP/CONUS_13km/RR_CONUS_13km_20201224_1700.grib2";
+                    //modelFileName = "netcdfsubset:https://thredds.ucar.edu/thredds/ncss/grib/NCEP/RAP/CONUS_13km/RR_CONUS_13km_20201125_0000.grib2/dataset.html";
+                    //modelFileName = "https://thredds.ucar.edu/thredds/dodsC/grib/NCEP/RAP/CONUS_13km/RR_CONUS_13km_20201125_0000.grib2";
+                    modelDataFile = new ModelDataFile(modelFileName);
+                    updateProgress(80, 100);
+                } catch (IOException ex) {
+                    LOG.error("Error when attempting to open {}\n{}", file.getName(),
+                              ex.getLocalizedMessage());
+                    modelDataFile = null;
+                }
+                return null;
+            }
+        };
+
+        taskOpenFile.setOnSucceeded(taskEvent -> {
+            lblStatus.textProperty().unbind();
+
+            if (modelDataFile != null) {
+                doAppendWindowTitle(file.getName());
+                doUpdateStatus("Data file " + file.getName() + " opened");
+                isNoFileOpen.set(false);
+
+                List<DataEntry> newData = new ArrayList<>();
+                dataList = FXCollections.observableArrayList(newData);
+                /*tblData.setItems(dataList);
+                tblData.setPrefSize(apDataTab.getWidth(), apDataTab.getHeight());*/
+                tfLonFound.setText("0.0");
+                tfLatFound.setText("0.0");
+
+                lblAnalTime.setText(modelDataFile.getAnalysisTime().toString());
+                lblValidTime.setText(modelDataFile.getValidTime().toString());
+            } else {
+                doUpdateStatus("Unable to open data file " + file.getName());
+                LOG.error("Unable to open data file {}", file.getName());
+                try {
+                    modelDataFile.close();
+                } catch (IOException ex) {
+                    LOG.error("Error when attempting to close data file\n{}",
+                              ex.getLocalizedMessage());
+                } catch (NullPointerException ex) {
+                    LOG.error("Unable to read data file type\n{}", ex.getLocalizedMessage());
+                }
+                Alert alert = new Alert(AlertType.ERROR);
+                alert.setTitle("File Open Error");
+                alert.setHeaderText("Unable to open file " + file.getName());
+                alert.setContentText("File not found or invalid file format.");
+                alert.showAndWait();
+            }
+
+            pbProgress.progressProperty().unbind();
+            pbProgress.setVisible(false);
+        });
+
+        if (file != null) {
+            modelFileName = file.getAbsolutePath();
+            //currentWorkingDirectory = file.getParent();
+            isNoSkewTDrawn.set(true);
+
+            lblStatus.textProperty().bind(taskOpenFile.messageProperty());
+            pbProgress.progressProperty().bind(taskOpenFile.progressProperty());
+            pbProgress.setVisible(true);
+
+            new Thread(taskOpenFile).start();
+        }
+    }
+
+    /**
      * Closes currently open data file.
      *
      * @param event
@@ -351,8 +470,7 @@ public class STVSPController implements Initializable {
     }
 
     /**
-     * Update displayed data based on user-entered longitude and latitude
-     * coordinates.
+     * Update displayed data based on user-entered longitude and latitude coordinates.
      *
      * @param event
      */
@@ -559,14 +677,14 @@ public class STVSPController implements Initializable {
         // Do nothing
         doScaleSkewTView();
     }
-    
+
     /**
      * Scale Skew-T AnchorPane when window width changes.
      */
     public void doScaleSkewTView() {
         double scrollBarWidth = 14.0;
         double viewWidth = 900.0;
-        
+
         if (spSkewTTab.getViewportBounds().getWidth() != 0) {
             Set<Node> scrollPaneNodes = spSkewTTab.lookupAll(".scroll-bar");
             for (final Node scrollPaneNode : scrollPaneNodes) {
@@ -580,18 +698,18 @@ public class STVSPController implements Initializable {
         }
 
         viewWidth = spSkewTTab.getWidth() - scrollBarWidth;
-        
+
         double scale = (viewWidth / apSkewTTab.getWidth());
-        
+
         apSkewTTab.setScaleX(scale);
         apSkewTTab.setScaleY(scale);
         spSkewTTab.setContent(new Group(apSkewTTab));
     }
 
     /**
-     * Find nearest coordinate point in data file to that entered by user, display
-     * data for found point in tabular format, and plot data for found point in
-     * Skew-T Log-P plot.
+     * Find nearest coordinate point in data file to that entered by user, display data
+     * for found point in tabular format, and plot data for found point in Skew-T Log-P
+     * plot.
      */
     public void doUpdateData() {
         isNoSkewTDrawn.set(true);
@@ -607,71 +725,73 @@ public class STVSPController implements Initializable {
         tfLonFound.setText(String.format("%.6f", foundLonLat[0]));
         tfLatFound.setText(String.format("%.6f", foundLonLat[1]));
 
+        /*double[][] dewpsAll = modelDataFile.getTempDewpAll(coordX, coordY);
+        LOG.debug("Pres: {}\nTemps: {}\nDewps: {}", dewpsAll);*/
         Task<Void> taskUpdateTable = new Task<Void>() {
             @Override
             public Void call() {
                 updateProgress(0, 100);
-                updateMessage("Updating data table...");
+                /*updateMessage("Updating data table...");
 
                 for (int coordLvl = 0; coordLvl < 50; coordLvl++) {
                     double curLevel = modelDataFile.getLevelFromIndex(coordLvl);
                     if ((int) curLevel != -1) {
                         newData.add(new DataEntry("Temperature",
-                                String.format("%d", (int) curLevel / 100), "hPa",
-                                String.format("%f",
-                                              modelDataFile.getTempIso(coordX, coordY, coordLvl)),
-                                "K"));
+                                                  String.format("%d", (int) curLevel / 100), "hPa",
+                                                  String.format("%f",
+                                                                modelDataFile.getTempIso(coordX, coordY, coordLvl)),
+                                                  "K"));
                     }
                 }
                 newData.add(new DataEntry("Temperature", "2", "m above ground",
-                        String.format("%f", modelDataFile.getTemp2m(coordX, coordY)), "K"));
+                                          String.format("%f", modelDataFile.getTemp2m(coordX, coordY)), "K"));
                 updateProgress(30, 100);
 
                 for (int coordLvl = 0; coordLvl < 50; coordLvl++) {
                     double curLevel = modelDataFile.getLevelFromIndex(coordLvl);
                     if ((int) curLevel != -1) {
                         newData.add(new DataEntry("Dew Point",
-                                String.format("%d", (int) curLevel / 100), "hPa",
-                                String.format("%f",
-                                              modelDataFile.getDewpIso(coordX, coordY, coordLvl)),
-                                "K"));
+                                                  String.format("%d", (int) curLevel / 100), "hPa",
+                                                  String.format("%f",
+                                                                modelDataFile.getDewpIso(coordX, coordY, coordLvl)),
+                                                  "K"));
                     }
                 }
                 newData.add(new DataEntry("Dew Point", "2", "m above ground",
-                        String.format("%f", modelDataFile.getDewp2m(coordX, coordY)), "K"));
+                                          String.format("%f", modelDataFile.getDewp2m(coordX, coordY)), "K"));
                 updateProgress(60, 100);
 
                 newData.add(new DataEntry("Surface Pressure", "surface", "surface",
-                        String.format("%d", (int) modelDataFile.getPresSfc(coordX, coordY) / 100),
-                        "hPa"));
+                                          String.format("%d", (int) modelDataFile.getPresSfc(coordX, coordY) / 100),
+                                          "hPa"));
 
                 newData.add(new DataEntry("Mean Sea Level Pressure", "surface", "surface",
-                        String.format("%d", (int) modelDataFile.getMSL(coordX, coordY) / 100),
-                        "hPa"));
+                                          String.format("%d", (int) modelDataFile.getMSL(coordX, coordY) / 100),
+                                          "hPa"));
 
                 newData.add(new DataEntry("Lifted Condensation Level", "surface", "surface",
-                        String.format("%d", (int) modelDataFile.getLCL(coordX, coordY)[0] / 100),
-                        "hPa"));
+                                          String.format("%d", (int) modelDataFile.getLCL(coordX, coordY)[0] / 100),
+                                          "hPa"));
 
                 newData.add(new DataEntry("Convective Available Potential Energy", "surface",
-                        "surface", String.format("%d", (int) modelDataFile.getCAPE(coordX, coordY)),
-                        "J/kg"));
+                                          "surface", String.format("%d", (int) modelDataFile.getCAPE(coordX, coordY)),
+                                          "J/kg"));
                 updateProgress(75, 100);
 
                 newData.add(new DataEntry("Convective Inhibition", "surface", "surface",
-                        String.format("%d", (int) modelDataFile.getCIN(coordX, coordY)), "J/kg"));
+                                          String.format("%d", (int) modelDataFile.getCIN(coordX, coordY)), "J/kg"));
 
                 newData.add(new DataEntry("Lifted Index", "1000-500", "hPa",
-                        String.format("%.1f", modelDataFile.getLFTX(coordX, coordY)), "K"));
+                                          String.format("%.1f", modelDataFile.getLFTX(coordX, coordY)), "K"));
 
                 newData.add(new DataEntry("K-Index", "850-500", "hPa",
-                        String.format("%.0f", modelDataFile.getKIndex(coordX, coordY)), "K"));
+                                          String.format("%.0f", modelDataFile.getKIndex(coordX, coordY)), "K"));
 
                 newData.add(new DataEntry("Total Totals", "850-500", "hPa",
-                        String.format("%.0f", modelDataFile.getTotalTotals(coordX, coordY)), "K"));
+                                          String.format("%.0f", modelDataFile.getTotalTotals(coordX, coordY)), "K"));
 
                 newData.add(new DataEntry("SWEAT", "850-500", "hPa",
-                        String.format("%.0f", modelDataFile.getSWEAT(coordX, coordY)), "(N/A)"));
+                                          String.format("%.0f", modelDataFile.getSWEAT(coordX, coordY)), "(N/A)"));*/
 
                 updateProgress(80, 100);
                 updateMessage("Plotting Skew-T...");
@@ -690,8 +810,8 @@ public class STVSPController implements Initializable {
             pbProgress.setVisible(false);
 
             dataList = FXCollections.observableArrayList(newData);
-            tblData.setItems(dataList);
-            tblData.setPrefSize(apDataTab.getWidth(), apDataTab.getHeight());
+            /*tblData.setItems(dataList);
+            tblData.setPrefSize(apDataTab.getWidth(), apDataTab.getHeight());*/
 
             isNoSkewTDrawn.set(false);
             doUpdateStatus("Data table updated and Skew-T plotted");

@@ -29,7 +29,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane id="AnchorPane" fx:id="anchorPane" minHeight="600.0" minWidth="800.0" prefHeight="600.0" prefWidth="800.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/8.0.171" fx:controller="me.donovansmith.skewtvsp.controllers.STVSPController">
+<AnchorPane id="AnchorPane" fx:id="anchorPane" minHeight="600.0" minWidth="800.0" prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="me.donovansmith.skewtvsp.controllers.STVSPController">
     <children>
         <BorderPane prefHeight="400.0" prefWidth="600.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
             <top>
@@ -42,6 +42,11 @@
                                         <MenuItem fx:id="menuFileOpen" mnemonicParsing="false" onAction="#doOpenFile" text="Open Data File">
                                             <accelerator>
                                                 <KeyCodeCombination alt="UP" code="O" control="DOWN" meta="UP" shift="UP" shortcut="UP" />
+                                            </accelerator>
+                                        </MenuItem>
+                                        <MenuItem fx:id="menuURLOpen" mnemonicParsing="false" onAction="#doOpenURL" text="Open Data URL">
+                                            <accelerator>
+                                                <KeyCodeCombination alt="UP" code="O" control="DOWN" meta="UP" shift="DOWN" shortcut="UP" />
                                             </accelerator>
                                         </MenuItem>
                                         <MenuItem fx:id="menuFileClose" disable="true" mnemonicParsing="false" onAction="#doCloseFile" text="Close Data File">
@@ -75,6 +80,11 @@
                                 <Button fx:id="btnOpenFile" mnemonicParsing="false" onAction="#doOpenFile" text="Open File">
                                     <tooltip>
                                         <Tooltip text="Open GRIB data file" />
+                                    </tooltip>            
+                                </Button>
+                                <Button fx:id="btnOpenURL" mnemonicParsing="false" onAction="#doOpenURL" text="Open URL">
+                                    <tooltip>
+                                        <Tooltip text="Open GRIB data URL" />
                                     </tooltip>            
                                 </Button>
                                 <Button fx:id="btnSavePlot" mnemonicParsing="false" onAction="#doSaveSkewT" text="Save Plot">
@@ -223,10 +233,10 @@
                 </ScrollPane>
             </left>
             <center>
-                <TabPane fx:id="tpDataPane" prefHeight="-1" prefWidth="-1" tabClosingPolicy="UNAVAILABLE" BorderPane.alignment="CENTER">
+                <!--<TabPane fx:id="tpDataPane" prefHeight="-1" prefWidth="-1" tabClosingPolicy="UNAVAILABLE" BorderPane.alignment="CENTER">
                     <tabs>
                         <Tab text="Skew-T">
-                            <content>
+                            <content>-->
                                 <ScrollPane fx:id="spSkewTTab" prefViewportWidth="900.0" vbarPolicy="ALWAYS" hbarPolicy="AS_NEEDED">
                                     <content>
                                         <StackPane fx:id="apSkewTTab" prefHeight ="3600.0" prefWidth="2700.00" maxHeight="3600.0" maxWidth="2700.0" scaleX="0.333333333" scaleY="0.333333333">
@@ -237,9 +247,9 @@
                                         </StackPane>
                                     </content>
                                 </ScrollPane>
-                            </content>
-                        </Tab>
-                        <Tab closable="false" text="Data">
+                            <!--</content>
+                        </Tab>-->
+                        <!--<Tab closable="false" text="Data">
                             <content>
                                 <AnchorPane fx:id="apDataTab" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="-1" prefWidth="-1">
                                     <children>
@@ -255,9 +265,9 @@
                                     </children>
                                 </AnchorPane>
                             </content>
-                        </Tab>
-                    </tabs>
-                </TabPane>
+                        </Tab>-->
+                    <!--</tabs>
+                </TabPane>-->
             </center>
         </BorderPane>
     </children>

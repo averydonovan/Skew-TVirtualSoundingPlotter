@@ -29,8 +29,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Various methods that are useful in atmospheric thermodynamics calculations.
- * All methods use base SI units (e.g. K, Pa, m).
+ * Various methods that are useful in atmospheric thermodynamics calculations. All methods
+ * use base SI units (e.g. K, Pa, m).
  *
  * @author Donovan Smith
  */
@@ -51,7 +51,7 @@ public class AtmosThermoMath {
      * @return TT index
      */
     public static double calcTotalTotals(double temp500, double temp850, double dewp500,
-            double dewp850) {
+                                         double dewp850) {
         double totVt = temp850 - temp500;
         double totCt = dewp850 - dewp500;
         double result = totVt + totCt;
@@ -70,7 +70,7 @@ public class AtmosThermoMath {
      * @return K-index
      */
     public static double calcKIndex(double temp500, double temp700, double temp850, double dewp700,
-            double dewp850) {
+                                    double dewp850) {
         // Need to convert K to C
         temp500 -= C_TO_K;
         temp700 -= C_TO_K;
@@ -124,8 +124,8 @@ public class AtmosThermoMath {
     }
 
     /**
-     * Calculates Severe WEAther Threat (SWEAT) index. Total totals (TT) index must
-     * be provided or calculated using
+     * Calculates Severe WEAther Threat (SWEAT) index. Total totals (TT) index must be
+     * provided or calculated using
      * {@link #calcTotalTotals(double, double, double, double) calcTotalTotals}.
      *
      * @param totalTotals TT index
@@ -138,7 +138,7 @@ public class AtmosThermoMath {
      * @return SWEAT index
      */
     public static double calcSWEAT(double totalTotals, double dewp850, double uGrd500,
-            double vGrd500, double uGrd850, double vGrd850) {
+                                   double vGrd500, double uGrd850, double vGrd850) {
         double[] wind500 = calcWindFromVec(uGrd500, vGrd500);
         double[] wind850 = calcWindFromVec(uGrd850, vGrd850);
         double windSpd500 = wind500[0];
@@ -196,8 +196,8 @@ public class AtmosThermoMath {
     }
 
     /**
-     * Calculate potential temperature of dry air at a given temperature and
-     * isobaric level.
+     * Calculate potential temperature of dry air at a given temperature and isobaric
+     * level.
      *
      * @param temp temperature in K
      * @param pres pressure in Pa
@@ -211,10 +211,10 @@ public class AtmosThermoMath {
 
     /**
      * Calculates wind velocity and speed components from zonal and meridional wind
-     * components. Note that if using the u-component and v-component of wind from
-     * gridded data whose grid is skewed in relation to its central longitude and
-     * latitude lines, there will be an error in the resulting wind direction. Also
-     * note that the wind direction is output in radians.
+     * components. Note that if using the u-component and v-component of wind from gridded
+     * data whose grid is skewed in relation to its central longitude and latitude lines,
+     * there will be an error in the resulting wind direction. Also note that the wind
+     * direction is output in radians.
      *
      * @param uGrd zonal component of wind
      * @param vGrd meridional component of wind
@@ -233,8 +233,7 @@ public class AtmosThermoMath {
      * http://cimss.ssec.wisc.edu/camex3/archive/quicklooks/skewt.pro
      */
     /**
-     * Calculate temperature of moist air at a given mixing ratio and isobaric
-     * level.
+     * Calculate temperature of moist air at a given mixing ratio and isobaric level.
      *
      * @param w mixing ratio in g/kg
      * @param p pressure in Pa
