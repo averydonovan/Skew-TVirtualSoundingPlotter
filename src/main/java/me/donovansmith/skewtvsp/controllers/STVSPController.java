@@ -49,10 +49,12 @@ import javafx.scene.control.*;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.input.KeyCombination;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.GridPane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import javafx.stage.FileChooser.ExtensionFilter;
+import javafx.stage.Window;
 import javax.imageio.ImageIO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -83,6 +85,8 @@ public class STVSPController implements Initializable {
      */
     @FXML
     private AnchorPane anchorPane;
+    @FXML
+    private VBox mainContainer;
     // Menu
     @FXML
     private MenuBar menuBar;
@@ -96,16 +100,31 @@ public class STVSPController implements Initializable {
     private MenuItem menuFileSaveSkewT;
     @FXML
     private MenuItem menuFileExit;
-    // Toolbar
     @FXML
-    private Button btnOpenFile;
+    private MenuItem menuThreddsUcarRAP;
     @FXML
-    private Button btnSavePlot;
+    private MenuItem menuThreddsUcarNamCONUS;
+    @FXML
+    private MenuItem menuThreddsUcarNamAlaska;
+    @FXML
+    private MenuItem menuThreddsUcarGfsAnalysis;
+    @FXML
+    private MenuItem menuThreddsUcarGfsForecast;
     // Data selection pane
     @FXML
     private AnchorPane apDataTab;
     @FXML
     private VBox vbDataSelect;
+    @FXML
+    private MenuButton menuButton;
+    @FXML
+    private GridPane gpDateTimeSelect;
+    @FXML
+    private GridPane gpDateTimeUsed;
+    @FXML
+    private GridPane gpRequestedPoint;
+    @FXML
+    private GridPane gpFoundPoint;
     @FXML
     private Label lblAnalTime;
     @FXML
@@ -155,7 +174,7 @@ public class STVSPController implements Initializable {
     @FXML
     private ProgressBar pbProgress;
 
-    private ObservableList<DataEntry> dataList;
+    private ObservableList menuList;
 
     /**
      * Initializes the controller class.
@@ -184,12 +203,22 @@ public class STVSPController implements Initializable {
         }
 
         menuFileClose.disableProperty().bind(isNoFileOpen);
-        vbDataSelect.disableProperty().bind(isNoFileOpen);
+        //vbDataSelect.disableProperty().bind(isNoFileOpen);
+
+        // Todo: need to bind these to separate variables
+        gpDateTimeSelect.disableProperty().bind(isNoFileOpen);
+        gpDateTimeUsed.disableProperty().bind(isNoFileOpen);
+        gpRequestedPoint.disableProperty().bind(isNoFileOpen);
+        gpFoundPoint.disableProperty().bind(isNoFileOpen);
 
         // These are useless when no Skew-T plot has been drawn
         menuFileSaveSkewT.disableProperty().bind(isNoSkewTDrawn);
-        btnSavePlot.disableProperty().bind(isNoSkewTDrawn);
 //        tblData.disableProperty().bind(isNoSkewTDrawn);
+
+        //cbChooseOption.setItems(optionList);
+        menuList = FXCollections.observableArrayList();
+        //menuButton.setItems(menuList);
+        //menuList.addAll("Open Data File...", new Separator());
 
         /*
          * Show blank Skew-T whenever either no Skew-T at all has been plotted yet or if
@@ -199,15 +228,6 @@ public class STVSPController implements Initializable {
         canvasSkewT.visibleProperty().bind(isNoSkewTDrawn.not());
         canvasBlankSkewT.visibleProperty().bind(isNoSkewTDrawn);
 
-        dataList = FXCollections.observableArrayList();
-
-        /*tcVariable.setCellValueFactory(cellData -> cellData.getValue().varNameProperty());
-        tcLevel.setCellValueFactory(cellData -> cellData.getValue().levelValueProperty());
-        tcLevelUnits.setCellValueFactory(cellData -> cellData.getValue().levelUnitsProperty());
-        tcValue.setCellValueFactory(cellData -> cellData.getValue().entryValueProperty());
-        tcValueUnits.setCellValueFactory(cellData -> cellData.getValue().entryUnitsProperty());
-
-        tblData.setItems(dataList);*/
         SkewTPlot.drawBlankSkewT(canvasBlankSkewT.getGraphicsContext2D());
 
         spSkewTTab.widthProperty().addListener((b, o, n) -> doScaleSkewTView());
@@ -219,6 +239,15 @@ public class STVSPController implements Initializable {
         doResetWindowTitle();
         doScaleSkewTView();
         doUpdateStatus("Ready");
+    }
+
+    /**
+     * Gets primary stage of application.
+     *
+     * @return Main stage
+     */
+    public Window getMainStage() {
+        return mainContainer.getScene().getWindow();
     }
 
     /**
@@ -261,7 +290,7 @@ public class STVSPController implements Initializable {
         ExtensionFilter fileExtsGRIB = new ExtensionFilter("GRIB files", "*.grb", "*.grib",
                                                            "*.grb2", "*.grib2", "*.pgrb2.*");
         chooser.getExtensionFilters().addAll(fileExtsGRIB);
-        File file = chooser.showOpenDialog(anchorPane.getScene().getWindow());
+        File file = chooser.showOpenDialog(getMainStage());
 
         Task<Void> taskOpenFile = new Task<Void>() {
             @Override
@@ -288,10 +317,6 @@ public class STVSPController implements Initializable {
                 doUpdateStatus("Data file " + file.getName() + " opened");
                 isNoFileOpen.set(false);
 
-                List<DataEntry> newData = new ArrayList<>();
-                dataList = FXCollections.observableArrayList(newData);
-                /*tblData.setItems(dataList);
-                tblData.setPrefSize(apDataTab.getWidth(), apDataTab.getHeight());*/
                 tfLonFound.setText("0.0");
                 tfLatFound.setText("0.0");
 
@@ -333,20 +358,12 @@ public class STVSPController implements Initializable {
     }
 
     /**
-     * Shows a file selection dialog and opens selected data file.
+     * Shows an URL entry box and opens selected URL.
      *
      * @param event
      */
     @FXML
     protected void doOpenURL(ActionEvent event) {
-        /*File curPathAsFile = new File(currentWorkingDirectory);
-        FileChooser chooser = new FileChooser();
-        chooser.setInitialDirectory(curPathAsFile);
-        chooser.setInitialFileName(modelFileName);
-        ExtensionFilter fileExtsGRIB = new ExtensionFilter("GRIB files", "*.grb", "*.grib",
-                                                           "*.grb2", "*.grib2", "*.pgrb2.*");
-        chooser.getExtensionFilters().addAll(fileExtsGRIB);
-        File file = chooser.showOpenDialog(anchorPane.getScene().getWindow());*/
         File file = new File("blah.txt");
 
         TextInputDialog urlInputDialog = new TextInputDialog();
@@ -365,18 +382,6 @@ public class STVSPController implements Initializable {
             return;
         }
 
-        /*Alert alertURL = new Alert(AlertType.ERROR);
-        alertURL.setTitle("URL Open");
-        alertURL.setHeaderText("URL");
-        if (urlInputDialog.getEditor().getText() == "") {
-            alertURL.setContentText("Nothing!");
-        } else {
-            alertURL.setContentText(urlInputDialog.getResult());
-        }
-        alertURL.showAndWait();*/
- /*if (urlInputDialog.getEditor().getText() != "https://doit.now") {
-            return;
-        }*/
         Task<Void> taskOpenFile = new Task<Void>() {
             @Override
             public Void call() throws IOException {
@@ -405,10 +410,6 @@ public class STVSPController implements Initializable {
                 doUpdateStatus("Data file " + file.getName() + " opened");
                 isNoFileOpen.set(false);
 
-                List<DataEntry> newData = new ArrayList<>();
-                dataList = FXCollections.observableArrayList(newData);
-                /*tblData.setItems(dataList);
-                tblData.setPrefSize(apDataTab.getWidth(), apDataTab.getHeight());*/
                 tfLonFound.setText("0.0");
                 tfLatFound.setText("0.0");
 
@@ -438,7 +439,6 @@ public class STVSPController implements Initializable {
 
         if (file != null) {
             modelFileName = file.getAbsolutePath();
-            //currentWorkingDirectory = file.getParent();
             isNoSkewTDrawn.set(true);
 
             lblStatus.textProperty().bind(taskOpenFile.messageProperty());
@@ -447,6 +447,70 @@ public class STVSPController implements Initializable {
 
             new Thread(taskOpenFile).start();
         }
+    }
+
+    /**
+     * Connect to UCAR THREDDS server for RAP forecast model data.
+     *
+     * @param event
+     */
+    @FXML
+    protected void doThreddsUcarRAP(ActionEvent event) {
+        doThreddsUCAR("https://thredds.ucar.edu/thredds/catalog/grib/NCEP/RAP/CONUS_13km/catalog.xml",
+                      event);
+    }
+
+    /**
+     * Connect to UCAR THREDDS server for NAM (CONUS) forecast model data.
+     *
+     * @param event
+     */
+    @FXML
+    protected void doThreddsUcarNamCONUS(ActionEvent event) {
+        doThreddsUCAR("https://thredds.ucar.edu/thredds/catalog/grib/NCEP/NAM/CONUS_12km/catalog.xml",
+                      event);
+    }
+
+    /**
+     * Connect to UCAR THREDDS server for NAM (Alaska) forecast model data.
+     *
+     * @param event
+     */
+    @FXML
+    protected void doThreddsUcarNamAlaska(ActionEvent event) {
+        doThreddsUCAR("https://thredds.ucar.edu/thredds/catalog/grib/NCEP/NAM/Alaska_11km/catalog.xml",
+                      event);
+    }
+
+    /**
+     * Connect to UCAR THREDDS server for GFS analysis model data.
+     *
+     * @param event
+     */
+    @FXML
+    protected void doThreddsUcarGfsAnalysis(ActionEvent event) {
+        doThreddsUCAR("https://thredds.ucar.edu/thredds/catalog/grib/NCEP/GFS/Global_0p25deg_ana/catalog.xml",
+                      event);
+    }
+
+    /**
+     * Connect to UCAR THREDDS server for GFS forecast model data.
+     *
+     * @param event
+     */
+    @FXML
+    protected void doThreddsUcarGfsForecast(ActionEvent event) {
+        doThreddsUCAR("https://thredds.ucar.edu/thredds/catalog/grib/NCEP/GFS/Global_0p25deg/catalog.xml",
+                      event);
+    }
+
+    /**
+     * Connect to UCAR THREDDS server.
+     *
+     * @param event
+     */
+    @FXML
+    protected void doThreddsUCAR(String threddsURL, ActionEvent event) {
     }
 
     /**
@@ -697,7 +761,7 @@ public class STVSPController implements Initializable {
             }
         }
 
-        viewWidth = spSkewTTab.getWidth() - scrollBarWidth;
+        viewWidth = spSkewTTab.getWidth() - scrollBarWidth - 1.0;
 
         double scale = (viewWidth / apSkewTTab.getWidth());
 
@@ -714,8 +778,6 @@ public class STVSPController implements Initializable {
     public void doUpdateData() {
         isNoSkewTDrawn.set(true);
 
-        List<DataEntry> newData = new ArrayList<DataEntry>();
-
         double searchLon = Double.parseDouble(tfLonSearch.getText());
         double searchLat = Double.parseDouble(tfLatSearch.getText());
         int[] coords = modelDataFile.getXYCoordsFromLonLat(searchLon, searchLat);
@@ -725,73 +787,10 @@ public class STVSPController implements Initializable {
         tfLonFound.setText(String.format("%.6f", foundLonLat[0]));
         tfLatFound.setText(String.format("%.6f", foundLonLat[1]));
 
-        /*double[][] dewpsAll = modelDataFile.getTempDewpAll(coordX, coordY);
-        LOG.debug("Pres: {}\nTemps: {}\nDewps: {}", dewpsAll);*/
         Task<Void> taskUpdateTable = new Task<Void>() {
             @Override
             public Void call() {
                 updateProgress(0, 100);
-                /*updateMessage("Updating data table...");
-
-                for (int coordLvl = 0; coordLvl < 50; coordLvl++) {
-                    double curLevel = modelDataFile.getLevelFromIndex(coordLvl);
-                    if ((int) curLevel != -1) {
-                        newData.add(new DataEntry("Temperature",
-                                                  String.format("%d", (int) curLevel / 100), "hPa",
-                                                  String.format("%f",
-                                                                modelDataFile.getTempIso(coordX, coordY, coordLvl)),
-                                                  "K"));
-                    }
-                }
-                newData.add(new DataEntry("Temperature", "2", "m above ground",
-                                          String.format("%f", modelDataFile.getTemp2m(coordX, coordY)), "K"));
-                updateProgress(30, 100);
-
-                for (int coordLvl = 0; coordLvl < 50; coordLvl++) {
-                    double curLevel = modelDataFile.getLevelFromIndex(coordLvl);
-                    if ((int) curLevel != -1) {
-                        newData.add(new DataEntry("Dew Point",
-                                                  String.format("%d", (int) curLevel / 100), "hPa",
-                                                  String.format("%f",
-                                                                modelDataFile.getDewpIso(coordX, coordY, coordLvl)),
-                                                  "K"));
-                    }
-                }
-                newData.add(new DataEntry("Dew Point", "2", "m above ground",
-                                          String.format("%f", modelDataFile.getDewp2m(coordX, coordY)), "K"));
-                updateProgress(60, 100);
-
-                newData.add(new DataEntry("Surface Pressure", "surface", "surface",
-                                          String.format("%d", (int) modelDataFile.getPresSfc(coordX, coordY) / 100),
-                                          "hPa"));
-
-                newData.add(new DataEntry("Mean Sea Level Pressure", "surface", "surface",
-                                          String.format("%d", (int) modelDataFile.getMSL(coordX, coordY) / 100),
-                                          "hPa"));
-
-                newData.add(new DataEntry("Lifted Condensation Level", "surface", "surface",
-                                          String.format("%d", (int) modelDataFile.getLCL(coordX, coordY)[0] / 100),
-                                          "hPa"));
-
-                newData.add(new DataEntry("Convective Available Potential Energy", "surface",
-                                          "surface", String.format("%d", (int) modelDataFile.getCAPE(coordX, coordY)),
-                                          "J/kg"));
-                updateProgress(75, 100);
-
-                newData.add(new DataEntry("Convective Inhibition", "surface", "surface",
-                                          String.format("%d", (int) modelDataFile.getCIN(coordX, coordY)), "J/kg"));
-
-                newData.add(new DataEntry("Lifted Index", "1000-500", "hPa",
-                                          String.format("%.1f", modelDataFile.getLFTX(coordX, coordY)), "K"));
-
-                newData.add(new DataEntry("K-Index", "850-500", "hPa",
-                                          String.format("%.0f", modelDataFile.getKIndex(coordX, coordY)), "K"));
-
-                newData.add(new DataEntry("Total Totals", "850-500", "hPa",
-                                          String.format("%.0f", modelDataFile.getTotalTotals(coordX, coordY)), "K"));
-
-                newData.add(new DataEntry("SWEAT", "850-500", "hPa",
-                                          String.format("%.0f", modelDataFile.getSWEAT(coordX, coordY)), "(N/A)"));*/
 
                 updateProgress(80, 100);
                 updateMessage("Plotting Skew-T...");
@@ -809,10 +808,6 @@ public class STVSPController implements Initializable {
             pbProgress.progressProperty().unbind();
             pbProgress.setVisible(false);
 
-            dataList = FXCollections.observableArrayList(newData);
-            /*tblData.setItems(dataList);
-            tblData.setPrefSize(apDataTab.getWidth(), apDataTab.getHeight());*/
-
             isNoSkewTDrawn.set(false);
             doUpdateStatus("Data table updated and Skew-T plotted");
         });
@@ -822,65 +817,5 @@ public class STVSPController implements Initializable {
         pbProgress.setVisible(true);
 
         new Thread(taskUpdateTable).start();
-    }
-
-    /**
-     * Holds tabular data that is displayed in the data tab of the application.
-     */
-    public static class DataEntry {
-
-        private final SimpleStringProperty varName;
-        private final SimpleStringProperty levelValue;
-        private final SimpleStringProperty levelUnits;
-        private final SimpleStringProperty entryValue;
-        private final SimpleStringProperty entryUnits;
-
-        public DataEntry(String vName, String lName, String lUnits, String eValue, String eUnits) {
-            this.varName = new SimpleStringProperty(vName);
-            this.levelValue = new SimpleStringProperty(lName);
-            this.levelUnits = new SimpleStringProperty(lUnits);
-            this.entryValue = new SimpleStringProperty(eValue);
-            this.entryUnits = new SimpleStringProperty(eUnits);
-        }
-
-        public String getVarName() {
-            return this.varName.get();
-        }
-
-        public String getLevelValue() {
-            return this.levelValue.get();
-        }
-
-        public String getLevelUnits() {
-            return this.levelUnits.get();
-        }
-
-        public String getEntryValue() {
-            return this.entryValue.get();
-        }
-
-        public String getEntryUnits() {
-            return this.entryUnits.get();
-        }
-
-        public StringProperty varNameProperty() {
-            return this.varName;
-        }
-
-        public StringProperty levelValueProperty() {
-            return this.levelValue;
-        }
-
-        public StringProperty levelUnitsProperty() {
-            return this.levelUnits;
-        }
-
-        public StringProperty entryValueProperty() {
-            return this.entryValue;
-        }
-
-        public StringProperty entryUnitsProperty() {
-            return this.entryUnits;
-        }
     }
 }
