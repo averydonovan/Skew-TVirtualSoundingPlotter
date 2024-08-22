@@ -1,17 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
-  <groupId>me.donovansmith</groupId>
+  <groupId>com.averydonovan</groupId>
   <artifactId>SkewTVSP</artifactId>
   <name>Skew-T Virtual Sounding Plotter</name>
-  <version>0.3.0-alpha.3</version>
-  <url>http://github.com/donovan1983/SkewTVirtualSoundingPlotter/</url>
+  <version>0.3.0-alpha.4</version>
+  <url>http://github.com/averydonovan/SkewTVirtualSoundingPlotter/</url>
   <inceptionYear>2016</inceptionYear>
   <developers>
     <developer>
-      <name>Donovan Smith</name>
-      <email>software@donovansmith.me</email>
-      <url>https://donovansmith.me</url>
+      <name>Avery Donovan</name>
+      <email>software@averydonovan.com</email>
+      <url>https://averydonovan.com</url>
       <roles>
         <role>Developer</role>
       </roles>
@@ -24,8 +24,8 @@
     </license>
   </licenses>
   <organization>
-    <name>Donovan Smith</name>
-    <url>https://donovansmith.me</url>
+    <name>Avery Donovan</name>
+    <url>https://averydonovan.com</url>
   </organization>
   <build>
     <resources>
@@ -49,7 +49,7 @@
         <configuration>
           <transformers>
             <transformer>
-              <mainClass>me.donovansmith.skewtvsp.RunApp</mainClass>
+              <mainClass>com.averydonovan.skewtvsp.RunApp</mainClass>
             </transformer>
           </transformers>
         </configuration>
@@ -66,7 +66,7 @@
         <artifactId>javafx-maven-plugin</artifactId>
         <version>0.0.5</version>
         <configuration>
-          <mainClass>me.donovansmith.skewtvsp.SkewTVSP</mainClass>
+          <mainClass>com.averydonovan.skewtvsp.SkewTVSP</mainClass>
         </configuration>
       </plugin>
     </plugins>

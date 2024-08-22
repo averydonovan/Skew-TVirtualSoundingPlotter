@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018, Donovan Smith
+ * Copyright (c) 2024, Avery Donovan
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -23,7 +23,7 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
-package me.donovansmith.skewtvsp.utils;
+package com.averydonovan.skewtvsp.utils;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,11 +32,12 @@ import org.slf4j.LoggerFactory;
  * Various methods that are useful in atmospheric thermodynamics calculations. All methods
  * use base SI units (e.g. K, Pa, m).
  *
- * @author Donovan Smith
+ * @author Avery Donovan
  */
 public class AtmosThermoMath {
 
-    private static final Logger LOG = LoggerFactory.getLogger(ModelDataFile.class.getName());
+    private static final Logger LOG =
+            LoggerFactory.getLogger(ModelDataFile.class.getName());
 
     private static final double C_TO_K = 273.15;
 
@@ -51,7 +52,7 @@ public class AtmosThermoMath {
      * @return TT index
      */
     public static double calcTotalTotals(double temp500, double temp850, double dewp500,
-                                         double dewp850) {
+            double dewp850) {
         double totVt = temp850 - temp500;
         double totCt = dewp850 - dewp500;
         double result = totVt + totCt;
@@ -69,8 +70,8 @@ public class AtmosThermoMath {
      *
      * @return K-index
      */
-    public static double calcKIndex(double temp500, double temp700, double temp850, double dewp700,
-                                    double dewp850) {
+    public static double calcKIndex(double temp500, double temp700, double temp850,
+            double dewp700, double dewp850) {
         // Need to convert K to C
         temp500 -= C_TO_K;
         temp700 -= C_TO_K;
@@ -87,7 +88,7 @@ public class AtmosThermoMath {
      *
      * @param temp temperature in K
      * @param pres pressure in Pa
-     * @param rh   relative humidity in %
+     * @param rh relative humidity in %
      *
      * @return dew point in K
      */
@@ -119,7 +120,7 @@ public class AtmosThermoMath {
             pt_l = calcTempFromPot(pt, lcl);
             delta = w(pt_l, lcl) - w_0;
         }
-        double[] result = { lcl, pt_l };
+        double[] result = {lcl, pt_l};
         return result;
     }
 
@@ -129,16 +130,16 @@ public class AtmosThermoMath {
      * {@link #calcTotalTotals(double, double, double, double) calcTotalTotals}.
      *
      * @param totalTotals TT index
-     * @param dewp850     dew point at 850hPa, in K
-     * @param uGrd500     u-component of wind at 500hPa, in m/s
-     * @param vGrd500     v-component of wind at 500hPa, in m/s
-     * @param uGrd850     u-component of wind at 850hPa, in m/s
-     * @param vGrd850     v-component of wind at 850hPa, in m/s
+     * @param dewp850 dew point at 850hPa, in K
+     * @param uGrd500 u-component of wind at 500hPa, in m/s
+     * @param vGrd500 v-component of wind at 500hPa, in m/s
+     * @param uGrd850 u-component of wind at 850hPa, in m/s
+     * @param vGrd850 v-component of wind at 850hPa, in m/s
      *
      * @return SWEAT index
      */
     public static double calcSWEAT(double totalTotals, double dewp850, double uGrd500,
-                                   double vGrd500, double uGrd850, double vGrd850) {
+            double vGrd500, double uGrd850, double vGrd850) {
         double[] wind500 = calcWindFromVec(uGrd500, vGrd500);
         double[] wind850 = calcWindFromVec(uGrd850, vGrd850);
         double windSpd500 = wind500[0];
@@ -186,7 +187,7 @@ public class AtmosThermoMath {
      * Calculate temperature of air from its potential temperature.
      *
      * @param pot_temp potential temperature in K
-     * @param pres     pressure in Pa
+     * @param pres pressure in Pa
      *
      * @return temperature in K
      */
@@ -224,7 +225,7 @@ public class AtmosThermoMath {
     private static double[] calcWindFromVec(double uGrd, double vGrd) {
         double windSpeed = Math.sqrt(Math.pow(uGrd, 2.0) + Math.pow(vGrd, 2.0));
         double windDir = Math.atan2(vGrd, uGrd);
-        double[] results = { windSpeed, windDir };
+        double[] results = {windSpeed, windDir};
         return results;
     }
 
@@ -232,6 +233,7 @@ public class AtmosThermoMath {
      * The following functions are based on IDL code found at:
      * http://cimss.ssec.wisc.edu/camex3/archive/quicklooks/skewt.pro
      */
+
     /**
      * Calculate temperature of moist air at a given mixing ratio and isobaric level.
      *
@@ -244,14 +246,14 @@ public class AtmosThermoMath {
         p = p / 100.0; // Convert Pa to hPa
         double x = Math.log10(w * p / (622.0 + w));
         double result = Math.pow(10.0, 0.0498646455 * x + 2.4082965) - 7.07475
-                        + 38.9114 * Math.pow(Math.pow(10.0, 0.0915 * x) - 1.2035, 2.0);
+                + 38.9114 * Math.pow(Math.pow(10.0, 0.0915 * x) - 1.2035, 2.0);
         return result;
     }
 
     /**
      * Calculate temperature of air when following a saturated adiabat.
      *
-     * @param os   saturated potential temperature in K
+     * @param os saturated potential temperature in K
      * @param pres pressure in Pa
      *
      * @return temperature in K
@@ -263,7 +265,7 @@ public class AtmosThermoMath {
         for (int i = 0; i < 13; i++) {
             d = d / 2.0;
             x = os * Math.exp(-2.6518986 * w(tq, pres) / tq)
-                - tq * Math.pow((100000.0 / pres), (2.0 / 7.0));
+                    - tq * Math.pow((100000.0 / pres), (2.0 / 7.0));
             if (Math.abs(x) < 0.01) {
                 break;
             } else {
@@ -284,7 +286,7 @@ public class AtmosThermoMath {
      */
     public static double calcSatPotTemp(double temp, double pres) {
         double os = temp * Math.pow((100000.0 / pres), (2.0 / 7.0))
-                    / Math.exp(-2.6518986 * (w(temp, pres) / temp));
+                / Math.exp(-2.6518986 * (w(temp, pres) / temp));
         return os;
     }
 

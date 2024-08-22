@@ -26,7 +26,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<VBox fx:id="mainContainer" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="700.0" prefWidth="900.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="me.donovansmith.skewtvsp.controllers.STVSPController">
+<VBox fx:id="mainContainer" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="700.0" prefWidth="900.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.averydonovan.skewtvsp.controllers.STVSPController">
     <children>
         <SplitPane dividerPositions="0.1">
             <items>
@@ -41,12 +41,12 @@
                                                 <KeyCodeCombination alt="UP" code="O" control="DOWN" meta="UP" shift="UP" shortcut="UP" />
                                             </accelerator>
                                         </MenuItem>
-                                        <MenuItem fx:id="menuURLOpen" mnemonicParsing="false" onAction="#doOpenURL" text="Open Data URL">
+                                        <MenuItem fx:id="menuURLOpen" disable="true" mnemonicParsing="false" onAction="#doOpenURL" text="Open Data URL">
                                             <accelerator>
                                                 <KeyCodeCombination alt="UP" code="O" control="DOWN" meta="UP" shift="DOWN" shortcut="UP" />
                                             </accelerator>
                                         </MenuItem>
-                                        <Menu mnemonicParsing="false" text="Connect to THREDDS Server">
+                                        <Menu disable="true" mnemonicParsing="false" text="Connect to THREDDS Server">
                                             <items>
                                                 <MenuItem fx:id="menuThreddsUcarRAP" mnemonicParsing="false" onAction="#doThreddsUcarRAP" text="UCAR RAP" />
                                                 <MenuItem fx:id="menuThreddsUcarNamCONUS" mnemonicParsing="false" onAction="#doThreddsUcarNamCONUS" text="UCAR NAM (CONUS)" />

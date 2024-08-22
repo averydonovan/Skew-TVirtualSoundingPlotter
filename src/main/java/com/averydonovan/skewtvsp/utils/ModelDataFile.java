@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018, Donovan Smith
+ * Copyright (c) 2024, Avery Donovan
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -23,7 +23,7 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
-package me.donovansmith.skewtvsp.utils;
+package com.averydonovan.skewtvsp.utils;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -48,11 +48,12 @@ import ucar.ma2.*;
  * Loads GRIB files, reads in longitudes and latitudes of data points, and provides access
  * to various parameters useful in generating Skew-T plots.
  *
- * @author Donovan Smith
+ * @author Avery Donovan
  */
 public class ModelDataFile {
 
-    private static final Logger LOG = LoggerFactory.getLogger(ModelDataFile.class.getName());
+    private static final Logger LOG =
+            LoggerFactory.getLogger(ModelDataFile.class.getName());
 
     private NetcdfFile gribFile = null;
     private GridCoordSystem gribGCS = null;
@@ -68,11 +69,13 @@ public class ModelDataFile {
     private final String varNamePresSfc = "Pressure_surface";
     private final String varNameMsl = "MSLP_MAPS_System_Reduction_msl";
     private final String varNameMslGFS4 = "MSLP_Eta_model_reduction_msl";
-    private final String varNameMslGRB = "Mean_Sea_Level_Pressure_NAM_Model_Reduction_msl";
+    private final String varNameMslGRB =
+            "Mean_Sea_Level_Pressure_NAM_Model_Reduction_msl";
     private final String varNameLftx = "Surface_Lifted_Index_isobaric_layer";
     private final String varNameLftxGFS4 = "Surface_Lifted_Index_surface";
     private final String varNameLftxGFS3 = "Surface_lifted_index_surface";
-    private final String varNameLftxGRB = "Parcel_lifted_index_to_500_hPa_layer_between_two_pressure_difference_from_ground_layer";
+    private final String varNameLftxGRB =
+            "Parcel_lifted_index_to_500_hPa_layer_between_two_pressure_difference_from_ground_layer";
     private final String varNameLftxHRRR = "Surface_lifted_index_isobaric_layer";
     private final String varNameUGrd = "u-component_of_wind_isobaric";
     private final String varNameVGrd = "v-component_of_wind_isobaric";
@@ -171,8 +174,8 @@ public class ModelDataFile {
          * type of model data file.
          * 
          * Different forecasting model's data files may need slightly different variable
-         * names and or grid dimensions for a variable. Methods that retrieve data
-         * utilize these values to adjust how they retrieve data.
+         * names and or grid dimensions for a variable. Methods that retrieve data utilize
+         * these values to adjust how they retrieve data.
          */
         if (gribFileName.contains("gfs_3_") && gribFileName.endsWith(".grb")) {
             LOG.debug("Detected GFS GRIB1 file");
@@ -209,60 +212,65 @@ public class ModelDataFile {
             modelIsRAP = true;
             modelName = modelNameRAP;
         } else if (gribFileName.contains("rap.") && gribFileName.contains("awp130pgrbf")
-                   && gribFileName.endsWith(".grib2")) {
+                && gribFileName.endsWith(".grib2")) {
             LOG.debug("Detected RAP 130 GRIB2 file");
 
             modelIsRAP = true;
             modelName = modelNameRAP;
         } else if (gribFileName.contains("rap.") && gribFileName.contains("awp252pgrbf")
-                   && gribFileName.endsWith(".grib2")) {
+                && gribFileName.endsWith(".grib2")) {
             LOG.debug("Detected RAP 252 GRIB2 file");
 
             modelIsRAP = true;
             modelName = modelNameRAP;
         } else if (gribFileName.contains("hrrr.") && gribFileName.contains("wrfprsf")
-                   && gribFileName.endsWith(".grib2")) {
+                && gribFileName.endsWith(".grib2")) {
             LOG.debug("Detected HRRR GRIB2 file");
 
             modelIsRAP = true;
             modelIsHRRR = true;
             modelName = modelNameHRRR;
         } else if (gribFileName.contains("nam.") && gribFileName.contains("z.awphys")
-                   && gribFileName.endsWith(".grib2")) {
+                && gribFileName.endsWith(".grib2")) {
             LOG.debug("Detected NAM GRIB2 file");
             modelIsNAMGRB2 = true;
 
             modelIsNAM = true;
             modelName = modelNameNAM;
-        } else if (gribFileName.contains("gfs.") && gribFileName.contains(".pgrb2.0p25")) {
+        } else if (gribFileName.contains("gfs.")
+                && gribFileName.contains(".pgrb2.0p25")) {
             LOG.debug("Detected GFS 0.25 GRIB2 file");
             modelIsGFS4 = true;
 
             modelIsGFS = true;
             modelName = modelNameGFS;
-        } else if (gribFileName.contains("gfs.") && gribFileName.contains(".pgrb2.0p50")) {
+        } else if (gribFileName.contains("gfs.")
+                && gribFileName.contains(".pgrb2.0p50")) {
             LOG.debug("Detected GFS 0.50 GRIB2 file");
             modelIsGFS4 = true;
 
             modelIsGFS = true;
             modelName = modelNameGFS;
-        } else if (gribFileName.contains("gfs.") && gribFileName.contains(".pgrb2.1p00")) {
+        } else if (gribFileName.contains("gfs.")
+                && gribFileName.contains(".pgrb2.1p00")) {
             LOG.debug("Detected GFS 1.00 GRIB2 file");
             modelIsGFS4 = true;
 
             modelIsGFS = true;
             modelName = modelNameGFS;
-        } else if (gribFileName.contains("cdmremote:https://thredds.ucar.edu/thredds/cdmremote/grib/NCEP/RAP/CONUS_13km")) {
+        } else if (gribFileName.contains(
+                "cdmremote:https://thredds.ucar.edu/thredds/cdmremote/grib/NCEP/RAP/CONUS_13km")) {
             LOG.debug("Detected RAP 130 GRIB2 via THREDDS");
 
-            //modelIsRAP = true;
+            // modelIsRAP = true;
             modelName = modelNameRAP;
 
             usingTHREDDS = true;
-        } else if (gribFileName.contains("https://thredds.ucar.edu/thredds") || gribFileName.contains("grib/NCEP/RAP/CONUS_13km")) {
+        } else if (gribFileName.contains("https://thredds.ucar.edu/thredds")
+                || gribFileName.contains("grib/NCEP/RAP/CONUS_13km")) {
             LOG.debug("Detected RAP 130 GRIB2 via THREDDS");
 
-            //modelIsRAP = true;
+            // modelIsRAP = true;
             modelName = modelNameRAP;
 
             usingTHREDDS = true;
@@ -272,13 +280,13 @@ public class ModelDataFile {
         }
 
         /*
-         * Need to retrieve basic data such as grid size from data file and need to use
-         * a variable name that is both shared among the forecasting models' output
-         * files and provides complete information about XY-size and the number of
-         * isobaric levels.
+         * Need to retrieve basic data such as grid size from data file and need to use a
+         * variable name that is both shared among the forecasting models' output files
+         * and provides complete information about XY-size and the number of isobaric
+         * levels.
          */
         String varName = "Temperature_isobaric";
-        //varName = "isobaric";
+        // varName = "isobaric";
 
         GridDataset gribGDS = null;
 
@@ -295,12 +303,12 @@ public class ModelDataFile {
         LOG.debug("Found variable in GDS");
         gribGCS = gribVarGDT.getCoordinateSystem();
         LOG.debug("Got coordinate system");
-//        try {
-//            gribGDS.close();
-//        } catch (IOException ex) {
-//            LOG.error("{}\n{}", ex.getLocalizedMessage(), ex.toString());
-//            throw ex;
-//        }
+        // try {
+        // gribGDS.close();
+        // } catch (IOException ex) {
+        // LOG.error("{}\n{}", ex.getLocalizedMessage(), ex.toString());
+        // throw ex;
+        // }
 
         try {
             gribFile = NetcdfDatasets.openDataset(gribFileName);
@@ -310,48 +318,42 @@ public class ModelDataFile {
         }
         LOG.debug("Opened dataset");
 
-        //varName = "isobaric";
+        // varName = "isobaric";
         Variable gribVar = gribFile.findVariable(varName);
         LOG.debug("Found variable in file");
 
-        //Array gribVarData = null;
+        // Array gribVarData = null;
         int[] gribVarShape = null;
         try {
-            //gribVarData = gribVar.read();
+            // gribVarData = gribVar.read();
             gribVarShape = gribVar.getShape();
             LOG.debug("Read variable from file");
-            //} catch (FileNotFoundException ex) {
+            // } catch (FileNotFoundException ex) {
             /*
-             * Error may be caused by an automatically created sidecar file and deleting it and
-             * trying again may allow the GRIB file to be successfully opened.
+             * Error may be caused by an automatically created sidecar file and deleting
+             * it and trying again may allow the GRIB file to be successfully opened.
              */
- /*    if ((new File(gribFileName).isFile()) && (new File(gribFileName + ".gbx9").isFile())) {
-                LOG.error("Unable to read {} possibly due to sidecar file", gribFileName);
-                LOG.warn("Attempting to delete {}.gbx9 and then trying to read GRIB file again",
-                         gribFileName);
-
-                try {
-                    File gbx9File = new File(gribFileName + ".gbx9");
-                    gbx9File.delete();
-
-                    gribGDS = ucar.nc2.dt.grid.GridDataset.open(gribFileName);
-                    gribVarGDT = gribGDS.findGridByShortName(varName);
-                    gribGCS = gribVarGDT.getCoordinateSystem();
-                    gribFile = NetcdfDatasets.openDataset(gribFileName);
-                    gribVar = gribFile.findVariable(varName);
-                    //gribVarData = gribVar.read();
-                    gribVarShape = gribVar.getShape();
-                } catch (IOException ex2) {
-                    LOG.error("{}\n{}", ex2.getLocalizedMessage(), ex2.toString());
-                    throw ex2;
-                }
-            } else {
-                LOG.error("{}\n{}", ex.getLocalizedMessage(), ex.toString());
-                throw ex;
-            }
-        } catch (IOException ex) {
-            LOG.error("{}\n{}", ex.getLocalizedMessage(), ex.toString());
-            throw ex;*/
+            /*
+             * if ((new File(gribFileName).isFile()) && (new File(gribFileName +
+             * ".gbx9").isFile())) {
+             * LOG.error("Unable to read {} possibly due to sidecar file", gribFileName);
+             * LOG.
+             * warn("Attempting to delete {}.gbx9 and then trying to read GRIB file again"
+             * , gribFileName);
+             * 
+             * try { File gbx9File = new File(gribFileName + ".gbx9"); gbx9File.delete();
+             * 
+             * gribGDS = ucar.nc2.dt.grid.GridDataset.open(gribFileName); gribVarGDT =
+             * gribGDS.findGridByShortName(varName); gribGCS =
+             * gribVarGDT.getCoordinateSystem(); gribFile =
+             * NetcdfDatasets.openDataset(gribFileName); gribVar =
+             * gribFile.findVariable(varName); //gribVarData = gribVar.read();
+             * gribVarShape = gribVar.getShape(); } catch (IOException ex2) {
+             * LOG.error("{}\n{}", ex2.getLocalizedMessage(), ex2.toString()); throw ex2;
+             * } } else { LOG.error("{}\n{}", ex.getLocalizedMessage(), ex.toString());
+             * throw ex; } } catch (IOException ex) { LOG.error("{}\n{}",
+             * ex.getLocalizedMessage(), ex.toString()); throw ex;
+             */
         } catch (Exception ex) {
             LOG.error("{}\n{}", ex.getLocalizedMessage(), ex.toString());
             throw ex;
@@ -363,7 +365,7 @@ public class ModelDataFile {
             throw ex;
         }
 
-        //int[] varShape = gribVarData.getShape();
+        // int[] varShape = gribVarData.getShape();
         int[] varShape = gribFile.findVariable("Temperature_isobaric").getShape();
         LOG.debug("varShape = {}", varShape);
         maxX = varShape[varShape.length - 1];
@@ -422,7 +424,7 @@ public class ModelDataFile {
      */
     public double[] getLonLatFromXYCoords(int coordX, int coordY) {
         LatLonPoint ptLatLon = gribGCS.getLatLon(coordX, coordY);
-        double[] result = { ptLatLon.getLongitude(), ptLatLon.getLatitude() };
+        double[] result = {ptLatLon.getLongitude(), ptLatLon.getLatitude()};
         return result;
     }
 
@@ -491,14 +493,15 @@ public class ModelDataFile {
      * @return temperature in K
      */
     public double[] getTempsAll(int coordX, int coordY) {
-        double[] result = { -1 };
+        double[] result = {-1};
 
-        int[] arrayOrigin = { 0, 0, coordY, coordX };
-        int[] arraySize = { 1, maxLevel, 1, 1 };
+        int[] arrayOrigin = {0, 0, coordY, coordX};
+        int[] arraySize = {1, maxLevel, 1, 1};
 
         try {
             // Successful only if an exception doesn't occur here
-            Array results = gribFile.findVariable(varNameTempIso).read(arrayOrigin, arraySize).reduce();
+            Array results = gribFile.findVariable(varNameTempIso)
+                    .read(arrayOrigin, arraySize).reduce();
             result = (double[]) results.get1DJavaArray(DataType.DOUBLE);
             LOG.debug("Temps: {}", result);
         } catch (IOException | InvalidRangeException | NullPointerException ex) {
@@ -511,8 +514,8 @@ public class ModelDataFile {
     /**
      * Get temperature at a given XY-coordinate and isobaric level index.
      *
-     * @param coordX   x-coordinate in data grid
-     * @param coordY   y-coordinate in data grid
+     * @param coordX x-coordinate in data grid
+     * @param coordY y-coordinate in data grid
      * @param coordLvl index of isobaric level in data grid
      *
      * @return temperature in K
@@ -544,19 +547,23 @@ public class ModelDataFile {
      * @return pressure levels (Pa), temperatures (K), and dewpoints (K)
      */
     public double[][] getTempDewpAll(int coordX, int coordY) {
-        double[][] result = { { -1 }, { -1 }, { -1 } };
+        double[][] result = {{-1}, {-1}, {-1}};
 
-        int[] arrayOrigin = { 0, 0, coordY, coordX };
-        int[] arraySize = { 1, maxLevel, 1, 1 };
+        int[] arrayOrigin = {0, 0, coordY, coordX};
+        int[] arraySize = {1, maxLevel, 1, 1};
 
         double[] allRHs = null;
         double[] allTemps = null;
-        //double[] allDewps = null;
+        // double[] allDewps = null;
 
         try {
             // Successful only if an exception doesn't occur here
-            allRHs = (double[]) gribFile.findVariable(varNameRHIso).read(arrayOrigin, arraySize).reduce().get1DJavaArray(DataType.DOUBLE);
-            allTemps = (double[]) gribFile.findVariable(varNameTempIso).read(arrayOrigin, arraySize).reduce().get1DJavaArray(DataType.DOUBLE);
+            allRHs = (double[]) gribFile.findVariable(varNameRHIso)
+                    .read(arrayOrigin, arraySize).reduce()
+                    .get1DJavaArray(DataType.DOUBLE);
+            allTemps = (double[]) gribFile.findVariable(varNameTempIso)
+                    .read(arrayOrigin, arraySize).reduce()
+                    .get1DJavaArray(DataType.DOUBLE);
         } catch (IOException | InvalidRangeException | NullPointerException ex) {
             LOG.error("{}", ex.getLocalizedMessage());
             return result;
@@ -567,16 +574,18 @@ public class ModelDataFile {
 
         for (int index = 0; index < allRHs.length; index++) {
             allPres[index] = getLevelFromIndex(index);
-            allDewps[index] = AtmosThermoMath.calcDewp(allTemps[index], allPres[index], allRHs[index]);
+            allDewps[index] = AtmosThermoMath.calcDewp(allTemps[index], allPres[index],
+                    allRHs[index]);
         }
 
         result[0] = allPres;
         result[1] = allTemps;
         result[2] = allDewps;
 
-        /*LOG.debug("Pres: {}", result[0]);
-        LOG.debug("Temps: {}", result[1]);
-        LOG.debug("Dewps: {}", result[2]);*/
+        /*
+         * LOG.debug("Pres: {}", result[0]); LOG.debug("Temps: {}", result[1]);
+         * LOG.debug("Dewps: {}", result[2]);
+         */
         return result;
     }
 
@@ -585,8 +594,8 @@ public class ModelDataFile {
      * files from NOAA forecasting models output relative humidity, not dew point, for the
      * various isobaric levels so this method converts that to dew point.
      *
-     * @param coordX   x-coordinate in data grid
-     * @param coordY   y-coordinate in data grid
+     * @param coordX x-coordinate in data grid
+     * @param coordY y-coordinate in data grid
      * @param coordLvl index of isobaric level in data grid
      *
      * @return dew point in K
@@ -761,8 +770,8 @@ public class ModelDataFile {
         double curDewp500 = getDewpIso(coordX, coordY, getIndexFromLevel(50000));
         double curDewp850 = getDewpIso(coordX, coordY, getIndexFromLevel(85000));
 
-        double result = AtmosThermoMath.calcTotalTotals(curTemp500, curTemp850, curDewp500,
-                                                        curDewp850);
+        double result = AtmosThermoMath.calcTotalTotals(curTemp500, curTemp850,
+                curDewp500, curDewp850);
 
         return result;
     }
@@ -782,8 +791,8 @@ public class ModelDataFile {
         double curDewp700 = getDewpIso(coordX, coordY, getIndexFromLevel(70000));
         double curDewp850 = getDewpIso(coordX, coordY, getIndexFromLevel(85000));
 
-        double result = AtmosThermoMath.calcKIndex(curTemp500, curTemp700, curTemp850, curDewp700,
-                                                   curDewp850);
+        double result = AtmosThermoMath.calcKIndex(curTemp500, curTemp700, curTemp850,
+                curDewp700, curDewp850);
 
         return result;
     }
@@ -799,14 +808,18 @@ public class ModelDataFile {
     public double getSWEAT(int coordX, int coordY) {
         double curTotalTotals = getTotalTotals(coordX, coordY);
 
-        double uGrd500 = getValFromVar(varNameUGrd, coordX, coordY, getIndexFromLevel(50000), 4);
-        double uGrd850 = getValFromVar(varNameUGrd, coordX, coordY, getIndexFromLevel(85000), 4);
-        double vGrd500 = getValFromVar(varNameVGrd, coordX, coordY, getIndexFromLevel(50000), 4);
-        double vGrd850 = getValFromVar(varNameVGrd, coordX, coordY, getIndexFromLevel(85000), 4);
+        double uGrd500 =
+                getValFromVar(varNameUGrd, coordX, coordY, getIndexFromLevel(50000), 4);
+        double uGrd850 =
+                getValFromVar(varNameUGrd, coordX, coordY, getIndexFromLevel(85000), 4);
+        double vGrd500 =
+                getValFromVar(varNameVGrd, coordX, coordY, getIndexFromLevel(50000), 4);
+        double vGrd850 =
+                getValFromVar(varNameVGrd, coordX, coordY, getIndexFromLevel(85000), 4);
         double curDewp850 = getDewpIso(coordX, coordY, getIndexFromLevel(85000));
 
-        double result = AtmosThermoMath.calcSWEAT(curTotalTotals, curDewp850, uGrd500, vGrd500,
-                                                  uGrd850, vGrd850);
+        double result = AtmosThermoMath.calcSWEAT(curTotalTotals, curDewp850, uGrd500,
+                vGrd500, uGrd850, vGrd850);
 
         return result;
     }
@@ -891,7 +904,7 @@ public class ModelDataFile {
                     // GRIB2 files use Pa
                     isoLevels.put((double) (curLevel), coordLvl);
                 } else if (curLevel >= 100 && curLevel <= 1000 && (curLevel % 25) == 0
-                           && modelIsGRB) {
+                        && modelIsGRB) {
                     // GRIB1 files use hPa, must convert to Pa
                     isoLevels.put((double) (curLevel * 100), coordLvl);
                 }
@@ -906,9 +919,9 @@ public class ModelDataFile {
      * Retrieve a given variable's value at a particular XY-coordinate.
      *
      * @param varName name of variable to retrieve
-     * @param coordX  x-coordinate in data grid
-     * @param coordY  y-coordinate in data grid
-     * @param varDim  expected dimensions of grid for variable
+     * @param coordX x-coordinate in data grid
+     * @param coordY y-coordinate in data grid
+     * @param varDim expected dimensions of grid for variable
      *
      * @return value of variable at XY-coordinate, -99999 if not found
      */
@@ -920,15 +933,16 @@ public class ModelDataFile {
      * Retrieve a given variable's value at a particular XY-coordinate and isobaric level
      * index.
      *
-     * @param varName  name of variable to retrieve
-     * @param coordX   x-coordinate in data grid
-     * @param coordY   y-coordinate in data grid
+     * @param varName name of variable to retrieve
+     * @param coordX x-coordinate in data grid
+     * @param coordY y-coordinate in data grid
      * @param coordLvl index of isobaric level in data grid
-     * @param varDim   expected dimensions of grid for variable
+     * @param varDim expected dimensions of grid for variable
      *
      * @return value of variable at XY-coordinate, -99999 if not found
      */
-    private double getValFromVar(String varName, int coordX, int coordY, int coordLvl, int varDim) {
+    private double getValFromVar(String varName, int coordX, int coordY, int coordLvl,
+            int varDim) {
         final double errorVal = -99999;
         double result = errorVal;
 
@@ -937,16 +951,16 @@ public class ModelDataFile {
 
         switch (varDim) {
             case 2:
-                arrayOrigin = new int[] { coordY, coordX };
-                arraySize = new int[] { 1, 1 };
+                arrayOrigin = new int[] {coordY, coordX};
+                arraySize = new int[] {1, 1};
                 break;
             case 3:
-                arrayOrigin = new int[] { coordLvl, coordY, coordX };
-                arraySize = new int[] { 1, 1, 1 };
+                arrayOrigin = new int[] {coordLvl, coordY, coordX};
+                arraySize = new int[] {1, 1, 1};
                 break;
             case 4:
-                arrayOrigin = new int[] { 0, coordLvl, coordY, coordX };
-                arraySize = new int[] { 1, 1, 1, 1 };
+                arrayOrigin = new int[] {0, coordLvl, coordY, coordX};
+                arraySize = new int[] {1, 1, 1, 1};
                 break;
             default:
                 LOG.error("Invalid array dimension specified.");
@@ -960,9 +974,9 @@ public class ModelDataFile {
         } catch (IOException | InvalidRangeException | NullPointerException ex) {
             /*
              * These exceptions almost invariably point to programmer error. Make sure the
-             * variable name and the dimensions are correct for the particular type of data
-             * file. Use the UCAR Unidata Tools UI to inspect the data file you are trying
-             * to read to verify.
+             * variable name and the dimensions are correct for the particular type of
+             * data file. Use the UCAR Unidata Tools UI to inspect the data file you are
+             * trying to read to verify.
              */
             LOG.error("Can't read variable: {}\n{}", varName, ex.getLocalizedMessage());
             return errorVal;

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018, Donovan Smith
+ * Copyright (c) 2024, Avery Donovan
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -23,10 +23,10 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
-package me.donovansmith.skewtvsp.controllers;
+package com.averydonovan.skewtvsp.controllers;
 
-import me.donovansmith.skewtvsp.utils.AtmosThermoMath;
-import me.donovansmith.skewtvsp.utils.ModelDataFile;
+import com.averydonovan.skewtvsp.utils.AtmosThermoMath;
+import com.averydonovan.skewtvsp.utils.ModelDataFile;
 import java.awt.image.RenderedImage;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -51,11 +51,12 @@ import org.slf4j.LoggerFactory;
 
 /**
  *
- * @author Donovan Smith
+ * @author Avery Donovan
  */
 public class SkewTPlot {
 
-    private static final Logger LOG = LoggerFactory.getLogger(ModelDataFile.class.getName());
+    private static final Logger LOG =
+            LoggerFactory.getLogger(ModelDataFile.class.getName());
 
     /*
      * Various useful constants.
@@ -83,9 +84,9 @@ public class SkewTPlot {
     private static final int PLOT_VIEW_WIDTH = 900 * 3;
     private static final int PLOT_VIEW_HEIGHT = 1200 * 3;
     private static final int PLOT_VIEW_SCALE = 3;
-    //private static final int PLOT_PRINT_SCALE = 3;
-    //private static final int PLOT_PRINT_WIDTH = PLOT_VIEW_WIDTH * PLOT_PRINT_SCALE;
-    //private static final int PLOT_PRINT_HEIGHT = PLOT_VIEW_HEIGHT * PLOT_PRINT_SCALE;
+    // private static final int PLOT_PRINT_SCALE = 3;
+    // private static final int PLOT_PRINT_WIDTH = PLOT_VIEW_WIDTH * PLOT_PRINT_SCALE;
+    // private static final int PLOT_PRINT_HEIGHT = PLOT_VIEW_HEIGHT * PLOT_PRINT_SCALE;
 
     /**
      * ModelDataFile currently in use.
@@ -141,7 +142,7 @@ public class SkewTPlot {
      * the proper size to the correct GraphicsContext. Must be called before calling any
      * drawing or plotting method to avoid unpredictable behavior.
      *
-     * @param gcSkewT     GraphicsContext to use for plotting
+     * @param gcSkewT GraphicsContext to use for plotting
      * @param doClearPlot true if plotting area should be cleared, false if not
      */
     public static void initSkewT(GraphicsContext gcSkewT, boolean doClearPlot) {
@@ -153,9 +154,8 @@ public class SkewTPlot {
         tempSteps = IntStream.rangeClosed(TEMP_MIN_C / 10, TEMP_MAX_C / 10)
                 .mapToDouble(i -> (i * 10) + C_TO_K).boxed().collect(Collectors.toList());
 
-        wLevels = Stream.of(0.1, 0.5, 1.0, 1.5, 2.0, 3.0, 4.0, 6.0, 8.0, 10.0, 12.0, 15.0, 20.0,
-                            25.0, 30.0, 35.0, 40.0, 45.0)
-                .collect(Collectors.toList());
+        wLevels = Stream.of(0.1, 0.5, 1.0, 1.5, 2.0, 3.0, 4.0, 6.0, 8.0, 10.0, 12.0, 15.0,
+                20.0, 25.0, 30.0, 35.0, 40.0, 45.0).collect(Collectors.toList());
 
         gcSkewTPlot.getCanvas().setHeight(PLOT_VIEW_HEIGHT);
         gcSkewTPlot.getCanvas().setWidth(PLOT_VIEW_WIDTH);
@@ -181,13 +181,13 @@ public class SkewTPlot {
     /**
      * Plot a Skew-T diagram at given XY-coordinates.
      *
-     * @param gcSkewT  GraphicsContext to use for plotting
+     * @param gcSkewT GraphicsContext to use for plotting
      * @param mdfInUse ModelDataFile to obtain data from
-     * @param curX     X-coordinate in data grid
-     * @param curY     Y-coordinate in data grid
+     * @param curX X-coordinate in data grid
+     * @param curY Y-coordinate in data grid
      */
-    public static void plotSkewT(GraphicsContext gcSkewT, ModelDataFile mdfInUse, int curX,
-                                 int curY) {
+    public static void plotSkewT(GraphicsContext gcSkewT, ModelDataFile mdfInUse,
+            int curX, int curY) {
         initSkewT(gcSkewT, true);
 
         mdfSkewTData = mdfInUse;
@@ -228,28 +228,29 @@ public class SkewTPlot {
      */
     public static RenderedImage getHiResPlot() {
         // Save viewed GraphicsContext so it can be restored later
-        //GraphicsContext gcViewPlot = gcSkewTPlot;
+        // GraphicsContext gcViewPlot = gcSkewTPlot;
 
         /*
          * Create a new Canvas at high-resolution to render plot to and then plot to it
          * using the same ModelDataFile and XY-coordinates as the on-screen plot.
          */
-        //Canvas canvasHiResPlot = new Canvas();
-        //scaleLineFactor = PLOT_PRINT_SCALE;
-        //canvasHiResPlot.setHeight(PLOT_PRINT_HEIGHT);
-        //canvasHiResPlot.setWidth(PLOT_PRINT_WIDTH);
-        //plotSkewT(canvasHiResPlot.getGraphicsContext2D(), mdfSkewTData, coordX, coordY);
+        // Canvas canvasHiResPlot = new Canvas();
+        // scaleLineFactor = PLOT_PRINT_SCALE;
+        // canvasHiResPlot.setHeight(PLOT_PRINT_HEIGHT);
+        // canvasHiResPlot.setWidth(PLOT_PRINT_WIDTH);
+        // plotSkewT(canvasHiResPlot.getGraphicsContext2D(), mdfSkewTData, coordX,
+        // coordY);
         // Create raster image to hold a snapshot of the Canvas.
-        WritableImage writableImage = new WritableImage((int) PLOT_VIEW_WIDTH,
-                                                        (int) PLOT_VIEW_HEIGHT);
+        WritableImage writableImage =
+                new WritableImage((int) PLOT_VIEW_WIDTH, (int) PLOT_VIEW_HEIGHT);
 
         // Take snapshot of plot and save to writableImage
-        //canvasHiResPlot.snapshot(null, writableImage);
+        // canvasHiResPlot.snapshot(null, writableImage);
         gcSkewTPlot.getCanvas().snapshot(null, writableImage);
 
         // Restore original scale factor and GraphicsContext.
-        //scaleLineFactor = PLOT_VIEW_SCALE;
-        //initSkewT(gcViewPlot, false);
+        // scaleLineFactor = PLOT_VIEW_SCALE;
+        // initSkewT(gcViewPlot, false);
 
         /*
          * Convert WriteableImage to RenderedImage and return it.
@@ -268,14 +269,13 @@ public class SkewTPlot {
         /*
          * Get pressure, temperature, and dew point for each available isobaric level.
          */
- /*for (int coordLvl = 0; coordLvl < 50; coordLvl++) {
-            Double curLevel = mdfSkewTData.getLevelFromIndex(coordLvl);
-            if (curLevel.intValue() >= 0) {
-                dataPresLevels.add(curLevel);
-                dataTempVals.add(mdfSkewTData.getTempIso(coordX, coordY, coordLvl));
-                dataDewpVals.add(mdfSkewTData.getDewpIso(coordX, coordY, coordLvl));
-            }
-        }*/
+        /*
+         * for (int coordLvl = 0; coordLvl < 50; coordLvl++) { Double curLevel =
+         * mdfSkewTData.getLevelFromIndex(coordLvl); if (curLevel.intValue() >= 0) {
+         * dataPresLevels.add(curLevel); dataTempVals.add(mdfSkewTData.getTempIso(coordX,
+         * coordY, coordLvl)); dataDewpVals.add(mdfSkewTData.getDewpIso(coordX, coordY,
+         * coordLvl)); } }
+         */
         double[][] dataAll = mdfSkewTData.getTempDewpAll(coordX, coordY);
 
         for (int index = 0; index < dataAll[0].length; index++) {
@@ -294,9 +294,9 @@ public class SkewTPlot {
         int presSurfIndex = dataPresLevels.indexOf(presSurf);
 
         /*
-         * Add surface (really, 2m) temperature and dew point to temperature and dew
-         * point lists at the appropriate place so that lists are ordered from lowest to
-         * highest isobaric level.
+         * Add surface (really, 2m) temperature and dew point to temperature and dew point
+         * lists at the appropriate place so that lists are ordered from lowest to highest
+         * isobaric level.
          */
         dataTempVals.add(presSurfIndex, mdfSkewTData.getTemp2m(coordX, coordY));
         dataDewpVals.add(presSurfIndex, mdfSkewTData.getDewp2m(coordX, coordY));
@@ -306,10 +306,10 @@ public class SkewTPlot {
         List<Double> yValsList = new ArrayList<>();
 
         for (int count = 0; count < dataPresLevels.size(); count++) {
-            double[] resultsTemp = getXYFromTempPres(dataTempVals.get(count),
-                                                     dataPresLevels.get(count));
-            double[] resultsDewp = getXYFromTempPres(dataDewpVals.get(count),
-                                                     dataPresLevels.get(count));
+            double[] resultsTemp =
+                    getXYFromTempPres(dataTempVals.get(count), dataPresLevels.get(count));
+            double[] resultsDewp =
+                    getXYFromTempPres(dataDewpVals.get(count), dataPresLevels.get(count));
 
             xTempValsList.add(resultsTemp[0]);
             xDewpValsList.add(resultsDewp[0]);
@@ -317,8 +317,10 @@ public class SkewTPlot {
         }
 
         // Convert lists to arrays for use with JavaFX drawing methods.
-        double[] xTempVals = xTempValsList.stream().parallel().mapToDouble(d -> d).toArray();
-        double[] xDewpVals = xDewpValsList.stream().parallel().mapToDouble(d -> d).toArray();
+        double[] xTempVals =
+                xTempValsList.stream().parallel().mapToDouble(d -> d).toArray();
+        double[] xDewpVals =
+                xDewpValsList.stream().parallel().mapToDouble(d -> d).toArray();
         double[] yVals = yValsList.stream().parallel().mapToDouble(d -> d).toArray();
 
         /*
@@ -364,20 +366,20 @@ public class SkewTPlot {
         double xAxisModelName = canvasWidth / 2;
 
         double[] plotLonLat = mdfSkewTData.getLonLatFromXYCoords(coordX, coordY);
-        String plotLocation = String.format("Longitude, Latitude: %.6f, %.6f", plotLonLat[0],
-                                            plotLonLat[1]);
+        String plotLocation = String.format("Longitude, Latitude: %.6f, %.6f",
+                plotLonLat[0], plotLonLat[1]);
 
         gcSkewTPlot.fillText(plotLocation, xAxisLocation, yAxisLocation);
 
         gcSkewTPlot.setFont(Font.font("sans-serif", FontWeight.NORMAL, 9 * plotAvgStep));
 
         String plotTime = "Analysis: " + mdfSkewTData.getAnalysisTime().toString() + "   "
-                          + "Valid: " + mdfSkewTData.getValidTime().toString();
+                + "Valid: " + mdfSkewTData.getValidTime().toString();
 
         gcSkewTPlot.fillText(plotTime, xAxisTime, yAxisTime);
 
         gcSkewTPlot.setFont(Font.font("sans-serif", FontWeight.NORMAL, FontPosture.ITALIC,
-                                      7 * plotAvgStep));
+                7 * plotAvgStep));
 
         String plotModelName = "Source: " + mdfSkewTData.getModelName();
 
@@ -406,32 +408,29 @@ public class SkewTPlot {
         double xAxisIndices = canvasWidth / 2;
 
         String plotIndices1 = String.format("Temperature 2m: %.1f C",
-                                            mdfSkewTData.getTemp2m(coordX, coordY) - C_TO_K)
-                              + "     "
-                              + String.format("Dew Point 2m: %.1f C",
-                                              mdfSkewTData.getDewp2m(coordX, coordY) - C_TO_K)
-                              + "     "
-                              + String.format("Pressure Sfc: %.0f hPa",
-                                              mdfSkewTData.getPresSfc(coordX, coordY) / HPA_TO_PA);
+                mdfSkewTData.getTemp2m(coordX, coordY) - C_TO_K)
+                + "     "
+                + String.format("Dew Point 2m: %.1f C",
+                        mdfSkewTData.getDewp2m(coordX, coordY) - C_TO_K)
+                + "     " + String.format("Pressure Sfc: %.0f hPa",
+                        mdfSkewTData.getPresSfc(coordX, coordY) / HPA_TO_PA);
         String plotIndices2 = String.format("LCL: %.0f hPa",
-                                            mdfSkewTData.getLCL(coordX, coordY)[0] / HPA_TO_PA)
-                              + "     "
-                              + String.format("MSL: %.0f hPa",
-                                              mdfSkewTData.getMSL(coordX, coordY) / HPA_TO_PA)
-                              + "     "
-                              + String.format("CAPE: %.0f J/kg",
-                                              mdfSkewTData.getCAPE(coordX, coordY))
-                              + "     " + String.format("CIN: %.0f J/kg",
-                                                        mdfSkewTData.getCIN(coordX, coordY));
+                mdfSkewTData.getLCL(coordX, coordY)[0] / HPA_TO_PA)
+                + "     "
+                + String.format("MSL: %.0f hPa",
+                        mdfSkewTData.getMSL(coordX, coordY) / HPA_TO_PA)
+                + "     "
+                + String.format("CAPE: %.0f J/kg", mdfSkewTData.getCAPE(coordX, coordY))
+                + "     "
+                + String.format("CIN: %.0f J/kg", mdfSkewTData.getCIN(coordX, coordY));
         String plotIndices3 = String.format("Lifted Index: %.1f",
-                                            mdfSkewTData.getLFTX(coordX, coordY))
-                              + "     " + String.format("K-Index: %.0f",
-                                                        mdfSkewTData.getKIndex(coordX, coordY))
-                              + "     "
-                              + String.format("Total Totals: %.0f",
-                                              mdfSkewTData.getTotalTotals(coordX, coordY))
-                              + "     "
-                              + String.format("SWEAT: %.0f", mdfSkewTData.getSWEAT(coordX, coordY));
+                mdfSkewTData.getLFTX(coordX, coordY)) + "     "
+                + String.format("K-Index: %.0f", mdfSkewTData.getKIndex(coordX, coordY))
+                + "     "
+                + String.format("Total Totals: %.0f",
+                        mdfSkewTData.getTotalTotals(coordX, coordY))
+                + "     "
+                + String.format("SWEAT: %.0f", mdfSkewTData.getSWEAT(coordX, coordY));
 
         gcSkewTPlot.setFont(Font.font("sans-serif", FontWeight.NORMAL, 8 * plotAvgStep));
 
@@ -463,7 +462,7 @@ public class SkewTPlot {
         // Draw temperature ticks
         tempSteps.stream().mapToDouble(i -> getXFromTempY(i, getYFromPres(PRES_BASE)))
                 .forEach(d -> gcSkewTPlot.strokeLine(d, plotYOffset, d,
-                                                     plotYOffset + (3 * plotAvgStep)));
+                        plotYOffset + (3 * plotAvgStep)));
 
         /*
          * Draw isobaric level and temperature labels.
@@ -478,7 +477,7 @@ public class SkewTPlot {
         // Draw isobaric level labels
         presLevels.stream().mapToDouble(i -> i)
                 .forEach(d -> gcSkewTPlot.fillText(String.format("%.0f", d / HPA_TO_PA),
-                                                   plotXOffset - 4 * plotAvgStep, getYFromPres(d)));
+                        plotXOffset - 4 * plotAvgStep, getYFromPres(d)));
 
         gcSkewTPlot.setTextAlign(TextAlignment.CENTER);
         gcSkewTPlot.setTextBaseline(VPos.TOP);
@@ -486,8 +485,8 @@ public class SkewTPlot {
         // Draw temperature labels
         tempSteps.stream().mapToDouble(i -> i)
                 .forEach(d -> gcSkewTPlot.fillText(String.format("%.0f", d - C_TO_K),
-                                                   getXFromTempY(d, getYFromPres(PRES_BASE)),
-                                                   plotYOffset + 4 * plotAvgStep));
+                        getXFromTempY(d, getYFromPres(PRES_BASE)),
+                        plotYOffset + 4 * plotAvgStep));
 
         /*
          * Draw axes labels.
@@ -504,8 +503,8 @@ public class SkewTPlot {
         // Draw Y-axis label
         gcSkewTPlot.save();
         Rotate r = new Rotate(-90, yAxisLabelX, yAxisLabelY);
-        gcSkewTPlot.setTransform(r.getMxx(), r.getMyx(), r.getMxy(), r.getMyy(), r.getTx(),
-                                 r.getTy());
+        gcSkewTPlot.setTransform(r.getMxx(), r.getMyx(), r.getMxy(), r.getMyy(),
+                r.getTx(), r.getTy());
         gcSkewTPlot.fillText("Pressure (hPa)", yAxisLabelX, yAxisLabelY);
         gcSkewTPlot.restore();
 
@@ -531,13 +530,15 @@ public class SkewTPlot {
          */
         // 10 K between steps, for skewed temperatures and dry adiabats
         List<Double> tempsBy10 = IntStream
-                .rangeClosed((TEMP_MIN_C - (TEMP_MAX_C - TEMP_MIN_C)) / 10, TEMP_MAX_C / 10)
+                .rangeClosed((TEMP_MIN_C - (TEMP_MAX_C - TEMP_MIN_C)) / 10,
+                        TEMP_MAX_C / 10)
                 .parallel().mapToDouble(i -> (i * 10) + C_TO_K).boxed()
                 .collect(Collectors.toList());
         // 5 K between steps, for saturated adiabats
         List<Double> tempsBy5 = IntStream
                 .rangeClosed((TEMP_MIN_C - (TEMP_MAX_C - TEMP_MIN_C)) / 5, TEMP_MAX_C / 5)
-                .parallel().mapToDouble(i -> (i * 5) + C_TO_K).boxed().collect(Collectors.toList());
+                .parallel().mapToDouble(i -> (i * 5) + C_TO_K).boxed()
+                .collect(Collectors.toList());
 
         /*
          * Draw grid lines.
@@ -569,11 +570,11 @@ public class SkewTPlot {
         // Lower
         gcSkewTPlot.fillRect(0, plotYOffset, canvasWidth, plotYOffset - plotYMax);
         // Left
-        gcSkewTPlot.fillRect(0, plotYMax - (scaleLineFactor / 2),
-                             plotXOffset, canvasHeight - plotYMax);
+        gcSkewTPlot.fillRect(0, plotYMax - (scaleLineFactor / 2), plotXOffset,
+                canvasHeight - plotYMax);
         // Right
         gcSkewTPlot.fillRect(plotXMax, plotYMax - (scaleLineFactor / 2),
-                             canvasWidth - plotXMax, canvasHeight - plotYMax);
+                canvasWidth - plotXMax, canvasHeight - plotYMax);
 
         /*
          * Draw axes lines.
@@ -626,7 +627,8 @@ public class SkewTPlot {
         double x2 = getXFromTempY(AtmosThermoMath.calcTempFromPot(tempStep, 20000), y2);
 
         double labelY = getYFromPres(21000);
-        double labelX = getXFromTempY(AtmosThermoMath.calcTempFromPot(tempStep, 21000), labelY)
+        double labelX =
+                getXFromTempY(AtmosThermoMath.calcTempFromPot(tempStep, 21000), labelY)
                         + (1.5 * plotAvgStep);
 
         /*
@@ -638,8 +640,8 @@ public class SkewTPlot {
         double[] yVals = new double[numPoints];
         double[] results = new double[2];
         for (int curLevel = PRES_MAX; curLevel >= PRES_MIN; curLevel -= 100) {
-            results = getXYFromTempPres(AtmosThermoMath
-                    .calcTempFromPot(tempStep, curLevel), curLevel);
+            results = getXYFromTempPres(
+                    AtmosThermoMath.calcTempFromPot(tempStep, curLevel), curLevel);
             xVals[curPoint] = results[0];
             yVals[curPoint] = results[1];
             curPoint++;
@@ -661,9 +663,10 @@ public class SkewTPlot {
         gcSkewTPlot.setFont(Font.font("sans-serif", FontWeight.BOLD, 5.0 * plotAvgStep));
 
         gcSkewTPlot.save();
-        Rotate r = new Rotate(-Math.toDegrees(Math.atan((y1 - y2) / (x2 - x1))), labelX, labelY);
-        gcSkewTPlot.setTransform(r.getMxx(), r.getMyx(), r.getMxy(), r.getMyy(), r.getTx(),
-                                 r.getTy());
+        Rotate r = new Rotate(-Math.toDegrees(Math.atan((y1 - y2) / (x2 - x1))), labelX,
+                labelY);
+        gcSkewTPlot.setTransform(r.getMxx(), r.getMyx(), r.getMxy(), r.getMyy(),
+                r.getTx(), r.getTy());
         gcSkewTPlot.fillText(String.format("%.0f C", tempStep - C_TO_K), labelX, labelY);
         gcSkewTPlot.restore();
     }
@@ -682,7 +685,8 @@ public class SkewTPlot {
         double x2 = getXFromTempY(AtmosThermoMath.calcTempSatAdiabat(osaTemp, 26000), y2);
 
         double labelY = getYFromPres(27000);
-        double labelX = getXFromTempY(AtmosThermoMath.calcTempSatAdiabat(osaTemp, 27000), labelY)
+        double labelX =
+                getXFromTempY(AtmosThermoMath.calcTempSatAdiabat(osaTemp, 27000), labelY)
                         + (1.5 * plotAvgStep);
 
         /*
@@ -694,8 +698,8 @@ public class SkewTPlot {
         double[] yVals = new double[numPoints];
         double[] results = new double[2];
         for (int curLevel = PRES_MAX; curLevel >= PRES_MIN; curLevel -= 100) {
-            results = getXYFromTempPres(AtmosThermoMath
-                    .calcTempSatAdiabat(osaTemp, curLevel), curLevel);
+            results = getXYFromTempPres(
+                    AtmosThermoMath.calcTempSatAdiabat(osaTemp, curLevel), curLevel);
             xVals[curPoint] = results[0];
             yVals[curPoint] = results[1];
             curPoint++;
@@ -719,9 +723,10 @@ public class SkewTPlot {
         gcSkewTPlot.setFont(Font.font("sans-serif", FontWeight.BOLD, 5.0 * plotAvgStep));
 
         gcSkewTPlot.save();
-        Rotate r = new Rotate(-Math.toDegrees(Math.atan((y1 - y2) / (x2 - x1))), labelX, labelY);
-        gcSkewTPlot.setTransform(r.getMxx(), r.getMyx(), r.getMxy(), r.getMyy(), r.getTx(),
-                                 r.getTy());
+        Rotate r = new Rotate(-Math.toDegrees(Math.atan((y1 - y2) / (x2 - x1))), labelX,
+                labelY);
+        gcSkewTPlot.setTransform(r.getMxx(), r.getMyx(), r.getMxy(), r.getMyy(),
+                r.getTx(), r.getTy());
         gcSkewTPlot.fillText(String.format("%.0f C", osTemp - C_TO_K), labelX, labelY);
         gcSkewTPlot.restore();
     }
@@ -735,11 +740,14 @@ public class SkewTPlot {
         // Draw mixing ratio lines at predetermined intervals
         double y1 = getYFromPres(75000);
         double y2 = getYFromPres(73000);
-        double x1 = getXFromTempY(AtmosThermoMath.calcTempAtMixingRatio(wLine, 75000), y1);
-        double x2 = getXFromTempY(AtmosThermoMath.calcTempAtMixingRatio(wLine, 73000), y2);
+        double x1 =
+                getXFromTempY(AtmosThermoMath.calcTempAtMixingRatio(wLine, 75000), y1);
+        double x2 =
+                getXFromTempY(AtmosThermoMath.calcTempAtMixingRatio(wLine, 73000), y2);
 
         double labelY = getYFromPres(74000);
-        double labelX = getXFromTempY(AtmosThermoMath.calcTempAtMixingRatio(wLine, 74000), labelY)
+        double labelX =
+                getXFromTempY(AtmosThermoMath.calcTempAtMixingRatio(wLine, 74000), labelY)
                         - (1.5 * plotAvgStep);
 
         /*
@@ -751,8 +759,8 @@ public class SkewTPlot {
         double[] yVals = new double[numPoints];
         double[] results = new double[2];
         for (int curLevel = PRES_MAX; curLevel >= PRES_MIN; curLevel -= 100) {
-            results = getXYFromTempPres(AtmosThermoMath
-                    .calcTempAtMixingRatio(wLine, curLevel), curLevel);
+            results = getXYFromTempPres(
+                    AtmosThermoMath.calcTempAtMixingRatio(wLine, curLevel), curLevel);
             xVals[curPoint] = results[0];
             yVals[curPoint] = results[1];
             curPoint++;
@@ -776,9 +784,10 @@ public class SkewTPlot {
         gcSkewTPlot.setFont(Font.font("sans-serif", FontWeight.BOLD, 4.0 * plotAvgStep));
 
         gcSkewTPlot.save();
-        Rotate r = new Rotate(-Math.toDegrees(Math.atan((y1 - y2) / (x2 - x1))), labelX, labelY);
-        gcSkewTPlot.setTransform(r.getMxx(), r.getMyx(), r.getMxy(), r.getMyy(), r.getTx(),
-                                 r.getTy());
+        Rotate r = new Rotate(-Math.toDegrees(Math.atan((y1 - y2) / (x2 - x1))), labelX,
+                labelY);
+        gcSkewTPlot.setTransform(r.getMxx(), r.getMyx(), r.getMxy(), r.getMyy(),
+                r.getTx(), r.getTy());
         gcSkewTPlot.fillText(String.format("%.1f g/kg", wLine), labelX, labelY);
         gcSkewTPlot.restore();
     }
@@ -794,7 +803,7 @@ public class SkewTPlot {
     private static double[] getXYFromTempPres(double temp, double pres) {
         double y = getYFromPres(pres);
         double x = getXFromTempY(temp, y);
-        double[] results = { x, y };
+        double[] results = {x, y};
         return results;
     }
 
@@ -816,7 +825,7 @@ public class SkewTPlot {
      * Get X-coordinate for a given temperature and already-computed Y-coordinate.
      *
      * @param temp temperature in K
-     * @param y    Y-coordinate
+     * @param y Y-coordinate
      *
      * @return X-coordinate
      */

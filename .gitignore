@@ -1,5 +1,7 @@
 /target/
 /data/
+/.vscode/
+/.settings/
 /*.gbx9
 /*.ncx3
 /*.grb2
@@ -8,6 +10,7 @@
 .DS_Store
 /slf4j-jdk14-1.7.21.jar
 /SkewTVSP-*/
+/dist/
 SkewTVSP-*.zip
 Thumbs.db
 *.tar.gz

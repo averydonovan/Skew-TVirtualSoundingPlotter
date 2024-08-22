@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018, Donovan Smith
+ * Copyright (c) 2024, Avery Donovan
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -23,45 +23,11 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
-package me.donovansmith.skewtvsp;
+package com.averydonovan.skewtvsp;
 
-import me.donovansmith.skewtvsp.controllers.STVSPController;
+public class RunApp {
 
-import javafx.application.Application;
-import javafx.scene.Scene;
-import javafx.stage.Stage;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import static javafx.application.Application.launch;
-
-/**
- * Main class for application. Loads main window from FXML file.
- *
- * @author Donovan Smith
- */
-public class SkewTVSP extends Application {
-
-    private static final Logger LOG = LoggerFactory.getLogger(SkewTVSP.class.getName());
-
-    @Override
-    public void start(Stage primaryStage) throws Exception {
-        Parent root = FXMLLoader.load(getClass().getResource("/fxml/STVSP.fxml"));
-
-        Scene scene = new Scene(root, 1149, 700);
-
-        primaryStage.titleProperty().bind(STVSPController.windowTitle);
-        primaryStage.setScene(scene);
-        primaryStage.show();
-    }
-
-    public static void main(String args[]) {
-        if (System.getProperty("os.name").contains("OS X")) {
-            System.setProperty("com.apple.mrj.application.apple.menu.about.name",
-                               "Skew-T Virtual Sounding Plotter");
-        }
-
-        launch(args);
+    public static void main(String[] args) {
+        SkewTVSP.main(args);
     }
 }

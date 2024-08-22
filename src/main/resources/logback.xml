@@ -6,8 +6,6 @@
     </encoder>
   </appender>
   
-  <!--<logger name="com.mccollinsmith.donovan.skewtmultitool" level="TRACE"/>-->
-
   <root level="debug">
     <appender-ref ref="STDOUT" />
   </root>

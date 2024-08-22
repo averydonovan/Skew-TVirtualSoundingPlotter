@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018, Donovan Smith
+ * Copyright (c) 2024, Avery Donovan
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -23,9 +23,9 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
-package me.donovansmith.skewtvsp.controllers;
+package com.averydonovan.skewtvsp.controllers;
 
-import me.donovansmith.skewtvsp.utils.ModelDataFile;
+import com.averydonovan.skewtvsp.utils.ModelDataFile;
 import java.awt.image.RenderedImage;
 import java.io.File;
 import java.io.IOException;
@@ -62,11 +62,12 @@ import org.slf4j.LoggerFactory;
 /**
  * FXML Controller class for main window.
  *
- * @author Donovan Smith
+ * @author Avery Donovan
  */
 public class STVSPController implements Initializable {
 
-    private static final Logger LOG = LoggerFactory.getLogger(ModelDataFile.class.getName());
+    private static final Logger LOG =
+            LoggerFactory.getLogger(ModelDataFile.class.getName());
 
     public String modelFileName = "rap_252_20160524_0000_000.grb2";
     public ModelDataFile modelDataFile = null;
@@ -139,26 +140,27 @@ public class STVSPController implements Initializable {
     private TextField tfLonFound;
     @FXML
     private TextField tfLatFound;
-//    @FXML
-//    private ComboBox cbVariable;
-//    @FXML
-//    private ComboBox cbLevel;
-    /*// Data view tab
-    @FXML
-    private TableView<DataEntry> tblData;
-    @FXML
-    private TableColumn<DataEntry, String> tcVariable;
-    @FXML
-    private TableColumn<DataEntry, String> tcLevel;
-    @FXML
-    private TableColumn<DataEntry, String> tcLevelUnits;
-    @FXML
-    private TableColumn<DataEntry, String> tcValue;
-    @FXML
-    private TableColumn<DataEntry, String> tcValueUnits;
-    // Data pane
-    @FXML
-    private TabPane tpDataPane;*/
+    // @FXML
+    // private ComboBox cbVariable;
+    // @FXML
+    // private ComboBox cbLevel;
+    /*
+     * // Data view tab
+     * 
+     * @FXML private TableView<DataEntry> tblData;
+     * 
+     * @FXML private TableColumn<DataEntry, String> tcVariable;
+     * 
+     * @FXML private TableColumn<DataEntry, String> tcLevel;
+     * 
+     * @FXML private TableColumn<DataEntry, String> tcLevelUnits;
+     * 
+     * @FXML private TableColumn<DataEntry, String> tcValue;
+     * 
+     * @FXML private TableColumn<DataEntry, String> tcValueUnits; // Data pane
+     * 
+     * @FXML private TabPane tpDataPane;
+     */
     // Skew-T tab
     @FXML
     private ScrollPane spSkewTTab;
@@ -186,15 +188,16 @@ public class STVSPController implements Initializable {
     public void initialize(URL url, ResourceBundle rb) {
         try {
             Properties versionProps = new Properties();
-            versionProps
-                    .load(getClass().getClassLoader().getResourceAsStream("version.properties"));
+            versionProps.load(getClass().getClassLoader()
+                    .getResourceAsStream("version.properties"));
             applicationName = versionProps.getProperty("name");
         } catch (IOException ex) {
             LOG.error("Failed to load version properties file.");
         }
 
         if (System.getProperty("os.name").contains("OS X")) {
-            System.setProperty("com.apple.mrj.application.apple.menu.about.name", applicationName);
+            System.setProperty("com.apple.mrj.application.apple.menu.about.name",
+                    applicationName);
             menuBar.setUseSystemMenuBar(true);
             menuFileOpen.setAccelerator(KeyCombination.keyCombination("Meta+O"));
             menuFileClose.setAccelerator(KeyCombination.keyCombination("Meta+W"));
@@ -203,7 +206,7 @@ public class STVSPController implements Initializable {
         }
 
         menuFileClose.disableProperty().bind(isNoFileOpen);
-        //vbDataSelect.disableProperty().bind(isNoFileOpen);
+        // vbDataSelect.disableProperty().bind(isNoFileOpen);
 
         // Todo: need to bind these to separate variables
         gpDateTimeSelect.disableProperty().bind(isNoFileOpen);
@@ -213,12 +216,12 @@ public class STVSPController implements Initializable {
 
         // These are useless when no Skew-T plot has been drawn
         menuFileSaveSkewT.disableProperty().bind(isNoSkewTDrawn);
-//        tblData.disableProperty().bind(isNoSkewTDrawn);
+        // tblData.disableProperty().bind(isNoSkewTDrawn);
 
-        //cbChooseOption.setItems(optionList);
+        // cbChooseOption.setItems(optionList);
         menuList = FXCollections.observableArrayList();
-        //menuButton.setItems(menuList);
-        //menuList.addAll("Open Data File...", new Separator());
+        // menuButton.setItems(menuList);
+        // menuList.addAll("Open Data File...", new Separator());
 
         /*
          * Show blank Skew-T whenever either no Skew-T at all has been plotted yet or if
@@ -287,8 +290,8 @@ public class STVSPController implements Initializable {
         FileChooser chooser = new FileChooser();
         chooser.setInitialDirectory(curPathAsFile);
         chooser.setInitialFileName(modelFileName);
-        ExtensionFilter fileExtsGRIB = new ExtensionFilter("GRIB files", "*.grb", "*.grib",
-                                                           "*.grb2", "*.grib2", "*.pgrb2.*");
+        ExtensionFilter fileExtsGRIB = new ExtensionFilter("GRIB files", "*.grb",
+                "*.grib", "*.grb2", "*.grib2", "*.pgrb2.*");
         chooser.getExtensionFilters().addAll(fileExtsGRIB);
         File file = chooser.showOpenDialog(getMainStage());
 
@@ -302,7 +305,7 @@ public class STVSPController implements Initializable {
                     updateProgress(80, 100);
                 } catch (IOException ex) {
                     LOG.error("Error when attempting to open {}\n{}", file.getName(),
-                              ex.getLocalizedMessage());
+                            ex.getLocalizedMessage());
                     modelDataFile = null;
                 }
                 return null;
@@ -329,9 +332,10 @@ public class STVSPController implements Initializable {
                     modelDataFile.close();
                 } catch (IOException ex) {
                     LOG.error("Error when attempting to close data file\n{}",
-                              ex.getLocalizedMessage());
+                            ex.getLocalizedMessage());
                 } catch (NullPointerException ex) {
-                    LOG.error("Unable to read data file type\n{}", ex.getLocalizedMessage());
+                    LOG.error("Unable to read data file type\n{}",
+                            ex.getLocalizedMessage());
                 }
                 Alert alert = new Alert(AlertType.ERROR);
                 alert.setTitle("File Open Error");
@@ -388,14 +392,17 @@ public class STVSPController implements Initializable {
                 try {
                     updateProgress(20, 100);
                     updateMessage("Opening data file " + file.getName() + "...");
-                    modelFileName = "cdmremote:https://thredds.ucar.edu/thredds/cdmremote/grib/NCEP/RAP/CONUS_13km/RR_CONUS_13km_20201224_1700.grib2";
-                    //modelFileName = "netcdfsubset:https://thredds.ucar.edu/thredds/ncss/grib/NCEP/RAP/CONUS_13km/RR_CONUS_13km_20201125_0000.grib2/dataset.html";
-                    //modelFileName = "https://thredds.ucar.edu/thredds/dodsC/grib/NCEP/RAP/CONUS_13km/RR_CONUS_13km_20201125_0000.grib2";
+                    modelFileName =
+                            "cdmremote:https://thredds.ucar.edu/thredds/cdmremote/grib/NCEP/RAP/CONUS_13km/RR_CONUS_13km_20201224_1700.grib2";
+                    // modelFileName =
+                    // "netcdfsubset:https://thredds.ucar.edu/thredds/ncss/grib/NCEP/RAP/CONUS_13km/RR_CONUS_13km_20201125_0000.grib2/dataset.html";
+                    // modelFileName =
+                    // "https://thredds.ucar.edu/thredds/dodsC/grib/NCEP/RAP/CONUS_13km/RR_CONUS_13km_20201125_0000.grib2";
                     modelDataFile = new ModelDataFile(modelFileName);
                     updateProgress(80, 100);
                 } catch (IOException ex) {
                     LOG.error("Error when attempting to open {}\n{}", file.getName(),
-                              ex.getLocalizedMessage());
+                            ex.getLocalizedMessage());
                     modelDataFile = null;
                 }
                 return null;
@@ -422,9 +429,10 @@ public class STVSPController implements Initializable {
                     modelDataFile.close();
                 } catch (IOException ex) {
                     LOG.error("Error when attempting to close data file\n{}",
-                              ex.getLocalizedMessage());
+                            ex.getLocalizedMessage());
                 } catch (NullPointerException ex) {
-                    LOG.error("Unable to read data file type\n{}", ex.getLocalizedMessage());
+                    LOG.error("Unable to read data file type\n{}",
+                            ex.getLocalizedMessage());
                 }
                 Alert alert = new Alert(AlertType.ERROR);
                 alert.setTitle("File Open Error");
@@ -456,8 +464,9 @@ public class STVSPController implements Initializable {
      */
     @FXML
     protected void doThreddsUcarRAP(ActionEvent event) {
-        doThreddsUCAR("https://thredds.ucar.edu/thredds/catalog/grib/NCEP/RAP/CONUS_13km/catalog.xml",
-                      event);
+        doThreddsUCAR(
+                "https://thredds.ucar.edu/thredds/catalog/grib/NCEP/RAP/CONUS_13km/catalog.xml",
+                event);
     }
 
     /**
@@ -467,8 +476,9 @@ public class STVSPController implements Initializable {
      */
     @FXML
     protected void doThreddsUcarNamCONUS(ActionEvent event) {
-        doThreddsUCAR("https://thredds.ucar.edu/thredds/catalog/grib/NCEP/NAM/CONUS_12km/catalog.xml",
-                      event);
+        doThreddsUCAR(
+                "https://thredds.ucar.edu/thredds/catalog/grib/NCEP/NAM/CONUS_12km/catalog.xml",
+                event);
     }
 
     /**
@@ -478,8 +488,9 @@ public class STVSPController implements Initializable {
      */
     @FXML
     protected void doThreddsUcarNamAlaska(ActionEvent event) {
-        doThreddsUCAR("https://thredds.ucar.edu/thredds/catalog/grib/NCEP/NAM/Alaska_11km/catalog.xml",
-                      event);
+        doThreddsUCAR(
+                "https://thredds.ucar.edu/thredds/catalog/grib/NCEP/NAM/Alaska_11km/catalog.xml",
+                event);
     }
 
     /**
@@ -489,8 +500,9 @@ public class STVSPController implements Initializable {
      */
     @FXML
     protected void doThreddsUcarGfsAnalysis(ActionEvent event) {
-        doThreddsUCAR("https://thredds.ucar.edu/thredds/catalog/grib/NCEP/GFS/Global_0p25deg_ana/catalog.xml",
-                      event);
+        doThreddsUCAR(
+                "https://thredds.ucar.edu/thredds/catalog/grib/NCEP/GFS/Global_0p25deg_ana/catalog.xml",
+                event);
     }
 
     /**
@@ -500,8 +512,9 @@ public class STVSPController implements Initializable {
      */
     @FXML
     protected void doThreddsUcarGfsForecast(ActionEvent event) {
-        doThreddsUCAR("https://thredds.ucar.edu/thredds/catalog/grib/NCEP/GFS/Global_0p25deg/catalog.xml",
-                      event);
+        doThreddsUCAR(
+                "https://thredds.ucar.edu/thredds/catalog/grib/NCEP/GFS/Global_0p25deg/catalog.xml",
+                event);
     }
 
     /**
@@ -510,8 +523,7 @@ public class STVSPController implements Initializable {
      * @param event
      */
     @FXML
-    protected void doThreddsUCAR(String threddsURL, ActionEvent event) {
-    }
+    protected void doThreddsUCAR(String threddsURL, ActionEvent event) {}
 
     /**
      * Closes currently open data file.
@@ -600,8 +612,8 @@ public class STVSPController implements Initializable {
         }
 
         /*
-         * If both longitude and latitude are valid, plot data and update data. If
-         * either or both are invalid, display error message.
+         * If both longitude and latitude are valid, plot data and update data. If either
+         * or both are invalid, display error message.
          */
         if (lonIsValid == true && latIsValid == true) {
             doUpdateData();
@@ -628,8 +640,8 @@ public class STVSPController implements Initializable {
     protected void doHelpAbout(ActionEvent event) {
         try {
             Properties versionProps = new Properties();
-            versionProps
-                    .load(getClass().getClassLoader().getResourceAsStream("version.properties"));
+            versionProps.load(getClass().getClassLoader()
+                    .getResourceAsStream("version.properties"));
 
             String propVers = versionProps.getProperty("version");
             String propAuthor = versionProps.getProperty("author");
@@ -648,8 +660,8 @@ public class STVSPController implements Initializable {
             alert.setTitle("About");
             alert.setHeaderText(applicationName + " v" + propVers);
             alert.setContentText("Copright " + propYears + " " + propAuthor + "\n\n"
-                                 + "Licensed under the " + propLicense + "." + "\n\n"
-                                 + "Makes use of the UCAR/Unidata NetCDF-Java library.");
+                    + "Licensed under the " + propLicense + "." + "\n\n"
+                    + "Makes use of the UCAR/Unidata NetCDF-Java library.");
             alert.showAndWait();
         } catch (IOException ex) {
             LOG.error("Failed to load version properties file.");
@@ -672,9 +684,10 @@ public class STVSPController implements Initializable {
          * String plotLocation = String.format("Longitude, Latitude: %.6f, %.6f",
          * plotLonLat[0], plotLonLat[1]);
          */
-        String initFileName = "skewt" + "_" + lblAnalTime.getText().replaceAll("[^a-zA-Z0-9]", "")
-                              + "_" + lblValidTime.getText().replaceAll("[^a-zA-Z0-9]", "") + "_"
-                              + tfLonFound.getText() + "_" + tfLatFound.getText() + ".png";
+        String initFileName =
+                "skewt" + "_" + lblAnalTime.getText().replaceAll("[^a-zA-Z0-9]", "") + "_"
+                        + lblValidTime.getText().replaceAll("[^a-zA-Z0-9]", "") + "_"
+                        + tfLonFound.getText() + "_" + tfLatFound.getText() + ".png";
 
         FileChooser chooser = new FileChooser();
         chooser.setInitialDirectory(curPathAsFile);
@@ -795,8 +808,8 @@ public class STVSPController implements Initializable {
                 updateProgress(80, 100);
                 updateMessage("Plotting Skew-T...");
 
-                SkewTPlot.plotSkewT(canvasSkewT.getGraphicsContext2D(), modelDataFile, coordX,
-                                    coordY);
+                SkewTPlot.plotSkewT(canvasSkewT.getGraphicsContext2D(), modelDataFile,
+                        coordX, coordY);
                 updateProgress(100, 100);
 
                 return null;

@@ -1,34 +1,34 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <groupId>me.donovansmith</groupId>
+    <groupId>com.averydonovan</groupId>
     <artifactId>SkewTVSP</artifactId>
-    <version>0.3.0-alpha.3</version>
+    <version>0.3.0-alpha.4</version>
     <packaging>jar</packaging>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <java.version>11</java.version>
-        <netcdfJavaVersion>5.4.1</netcdfJavaVersion>
-        <slf4jVersion>1.7.30</slf4jVersion>
-        <javafx.version>11</javafx.version>
+        <java.version>21</java.version>
+        <javafx.version>21.0.4</javafx.version>
+        <javafx.maven.plugin.version>0.0.8</javafx.maven.plugin.version>
+        <netcdfJavaVersion>5.6.0</netcdfJavaVersion>
+        <slf4jVersion>2.0.16</slf4jVersion>
+        <logbackClassicVersion>1.4.6</logbackClassicVersion>
         <maven.compiler.source>${java.version}</maven.compiler.source>
         <maven.compiler.target>${java.version}</maven.compiler.target>
         <maven.compiler.release>${java.version}</maven.compiler.release>
     </properties>
     <name>Skew-T Virtual Sounding Plotter</name>
     <inceptionYear>2016</inceptionYear>
-    <url>http://github.com/donovan1983/SkewTVirtualSoundingPlotter/</url>
+    <url>http://github.com/averydonovan/SkewTVirtualSoundingPlotter/</url>
     <organization>
-        <name>Donovan Smith</name>
-        <url>https://donovansmith.me</url>
+        <name>Avery Donovan</name>
+        <url>https://averydonovan.com</url>
     </organization>
     <developers>
         <developer>
-            <name>Donovan Smith</name>
-            <email>software@donovansmith.me</email>
-            <url>https://donovansmith.me</url>
+            <name>Avery Donovan</name>
+            <email>software@averydonovan.com</email>
+            <url>https://averydonovan.com</url>
             <roles>
                 <role>Developer</role>
             </roles>
@@ -111,7 +111,7 @@
         <dependency>
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-classic</artifactId>
-            <version>1.2.3</version>
+            <version>${logbackClassicVersion}</version>
         </dependency>
         <!--<dependency> <groupId>de.erichseifert.gral</groupId> <artifactId>gral-core</artifactId> 
         <version>0.11</version> <scope>compile</scope> </dependency> -->
@@ -164,7 +164,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.8.1</version>
+                <version>3.10.1</version>
                 <configuration>
                     <release>${java.version}</release>
                 </configuration>
@@ -188,7 +188,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-assembly-plugin</artifactId>
-                <version>3.3.0</version>
+                <version>3.4.1</version>
                 <configuration>
                     <descriptorRefs>
                         <descriptorRef>jar-with-dependencies</descriptorRef>
@@ -196,7 +196,7 @@
                     <archive>
                         <manifest>
                             <addClasspath>true</addClasspath>
-                            <mainClass>me.donovansmith.skewtvsp.RunApp</mainClass>
+                            <mainClass>com.averydonovan.skewtvsp.RunApp</mainClass>
                         </manifest>
                     </archive>
                 </configuration>
@@ -208,17 +208,17 @@
                             <goal>single</goal>
                         </goals>
                     </execution>
-                </executions>            
+                </executions>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
-                <version>3.2.0</version>
+                <version>3.2.2</version>
                 <configuration>
                     <archive>
                         <manifest>
                             <addClasspath>true</addClasspath>
-                            <mainClass>me.donovansmith.skewtvsp.RunApp</mainClass>
+                            <mainClass>com.averydonovan.skewtvsp.RunApp</mainClass>
                         </manifest>
                     </archive>
                 </configuration>
@@ -246,12 +246,20 @@
             <plugin>
                 <groupId>org.openjfx</groupId>
                 <artifactId>javafx-maven-plugin</artifactId>
-                <version>0.0.5</version>
+                <version>${javafx.maven.plugin.version}</version>
                 <configuration>
                     <!--<release>${maven.compiler.release}</release>
                     <jlinkImageName>SkewTVirtualSoundingPlotter</jlinkImageName>
                     <launcher>launcher</launcher>-->
-                    <mainClass>me.donovansmith.skewtvsp.SkewTVSP</mainClass>
+                    <!--<mainClass>me.donovansmith.skewtvsp.SkewTVSP</mainClass>-->
+                    <mainClass>com.averydonovan.skewtvsp.RunApp</mainClass>
+                    <!--<stripDebug>true</stripDebug>-->
+                    <!--<compress>2</compress>-->
+                    <!--<noHeaderFiles>true</noHeaderFiles>-->
+                    <!--<noManPages>true</noManPages>-->
+                    <launcher>SkewTVSP</launcher>
+                    <jlinkImageName>SkewTVSP</jlinkImageName>
+                    <jlinkVerbose>true</jlinkVerbose>
                 </configuration>
             </plugin>
         </plugins>

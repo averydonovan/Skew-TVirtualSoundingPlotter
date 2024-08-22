@@ -1,0 +1,6 @@
+--app-version "0.3.0"
+--name SkewTVSP
+--description "Skew-T Virtual Sounding Plotter"
+--vendor "Avery Donovan"
+--copyright "Copyright (c) 2024, Avery Donovan"
+--main-class com.averydonovan.skewtvsp.RunApp
