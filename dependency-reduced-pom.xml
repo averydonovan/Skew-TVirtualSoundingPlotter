@@ -4,7 +4,7 @@
   <groupId>com.averydonovan</groupId>
   <artifactId>SkewTVSP</artifactId>
   <name>Skew-T Virtual Sounding Plotter</name>
-  <version>0.3.0-alpha.4</version>
+  <version>0.3.0-alpha.5</version>
   <url>http://github.com/averydonovan/SkewTVirtualSoundingPlotter/</url>
   <inceptionYear>2016</inceptionYear>
   <developers>

@@ -26,9 +26,9 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<VBox fx:id="mainContainer" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="700.0" prefWidth="900.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.averydonovan.skewtvsp.controllers.STVSPController">
+<VBox fx:id="mainContainer" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="1000.0" prefWidth="1200.0" xmlns="http://javafx.com/javafx/21.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.averydonovan.skewtvsp.controllers.STVSPController">
     <children>
-        <SplitPane dividerPositions="0.1">
+        <SplitPane dividerPositions="0.1" VBox.vgrow="ALWAYS">
             <items>
                 <AnchorPane maxHeight="1.7976931348623157E308" SplitPane.resizableWithParent="false">
                     <children>
@@ -215,7 +215,7 @@
                 </ScrollPane>
             </items>
         </SplitPane>
-        <HBox alignment="BOTTOM_CENTER" maxWidth="1.7976931348623157E308" spacing="5.0">
+        <HBox alignment="BOTTOM_CENTER" fillHeight="false" maxHeight="28.0" maxWidth="1.7976931348623157E308" spacing="5.0">
             <children>
                 <Label fx:id="lblStatus" maxWidth="1.7976931348623157E308" minWidth="400.0" prefWidth="600.0" text="Label" HBox.hgrow="ALWAYS" />
                 <ProgressBar fx:id="pbProgress" maxWidth="200.0" minWidth="200.0" prefWidth="200.0" progress="0.0" visible="false" />

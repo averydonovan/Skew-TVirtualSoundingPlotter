@@ -694,7 +694,7 @@ public class STVSPController implements Initializable {
         chooser.setInitialFileName(initFileName);
         ExtensionFilter fileExtsPNG = new ExtensionFilter("PNG images", "*.png", "*.PNG");
         chooser.getExtensionFilters().addAll(fileExtsPNG);
-        File file = chooser.showSaveDialog(anchorPane.getScene().getWindow());
+        File file = chooser.showSaveDialog(getMainStage());
 
         // Only try to save plot if a location and filename was chosen
         if (file != null) {

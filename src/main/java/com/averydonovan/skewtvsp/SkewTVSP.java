@@ -35,6 +35,7 @@ import javafx.scene.Parent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import static javafx.application.Application.launch;
+import javafx.stage.Screen;
 
 /**
  * Main class for application. Loads main window from FXML file.
@@ -48,8 +49,12 @@ public class SkewTVSP extends Application {
     @Override
     public void start(Stage primaryStage) throws Exception {
         Parent root = FXMLLoader.load(getClass().getResource("/fxml/STVSP.fxml"));
-
-        Scene scene = new Scene(root, 1149, 700);
+        
+        int screenHeight = (int) (Screen.getPrimary().getBounds().getHeight()*10)/11;
+        int screenWidth = (screenHeight*9)/12 + 220;
+    
+        //Scene scene = new Scene(root, 1100, 1000);
+        Scene scene = new Scene(root, screenWidth, screenHeight);
 
         primaryStage.titleProperty().bind(STVSPController.windowTitle);
         primaryStage.setScene(scene);
