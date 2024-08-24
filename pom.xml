@@ -3,11 +3,11 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.averydonovan</groupId>
     <artifactId>SkewTVSP</artifactId>
-    <version>0.3.0-alpha.5</version>
+    <version>0.3.0-alpha.6</version>
     <packaging>jar</packaging>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <java.version>21</java.version>
+        <java.version>17</java.version>
         <javafx.version>21.0.4</javafx.version>
         <javafx.maven.plugin.version>0.0.8</javafx.maven.plugin.version>
         <netcdfJavaVersion>5.6.0</netcdfJavaVersion>
@@ -243,6 +243,11 @@
                     </execution>
                 </executions>
             </plugin>-->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-help-plugin</artifactId>
+                <version>3.5.0</version>
+            </plugin>
             <plugin>
                 <groupId>org.openjfx</groupId>
                 <artifactId>javafx-maven-plugin</artifactId>

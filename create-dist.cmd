@@ -1,13 +1,12 @@
 @echo off
 
-call mvn org.apache.maven.plugins:maven-help-plugin:3.1.1:evaluate -Dexpression=project.version -DforceStdout -q > version.tmp
+call mvn help:evaluate -Dexpression=project.version -q -DforceStdout > version.tmp
 set /P version= < version.tmp
 echo Creating package for version %version%
 
 echo Running maven...
 call mvn clean compile package
 echo ...finished
-)
 
 if not exist "dist" mkdir dist
 cd dist
@@ -16,6 +15,7 @@ if exist "SkewTVSP-%version%" rmdir /s /q SkewTVSP-%version%
 if exist "temp-dist" rmdir /s /q temp-dist
 mkdir temp-dist
 copy ..\target\SkewTVSP-%version%-jar-with-dependencies.jar temp-dist\
+copy ..\license.txt temp-dist\
 
 echo Running jpackage...
 

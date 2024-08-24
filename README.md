@@ -42,19 +42,30 @@ It is recommended to use the latest 0.3.0 alpha version.
 Despite the "alpha" label, these versions now bundle the necessary Java runtime and they
 contain bug fixes for reading some model output files, as well as other fixes and enhancements.
 
-Development is only targeting Windows for now. 
+Development is mainly targeting Windows for now.
+Support for Linux is only being tested on Debian 12 on Windows Subsystem for Linux.
+Building may work on other Unix-like systems (e.g. macOS or FreeBSD) but isn't being tested.
 
 ### Running
 
-* Windows 10 or later
+#### Windows
+
+* Windows 10 (64-bit) or later
 
 Double-click on "SkewTVSP.exe" inside installation folder.
 
+#### Linux
+
+* Recent Linux x86_64 distribution
+
+Run `bin/SkewTVSP` inside installation folder. 
+
 ### Building
 
+#### Windows
+
 * Windows 10 or later
-* [OpenJDK 21](https://adoptopenjdk.net/)
-* [OpenJFX 21 SDK](https://gluonhq.com/products/javafx/)
+* [OpenJDK 21](https://adoptium.net/temurin/releases/)
 * [Apache Maven 3](https://maven.apache.org/)
 * [7-Zip](https://www.7-zip.org/) (if creating archive for distribution)
 * [WiX v3](https://wixtoolset.org/docs/wix3/) (if creating Windows installer)
@@ -64,7 +75,19 @@ Simply run `mvn clean compile package` to build and `mvn javafx:run` to run.
 
 To create a distribution, run `.\create-dist.cmd`, `.\create-dist.cmd archive`,
 or `.\create-dist.cmd installer`
-to create a folder, archive file, or installer, respectively. 
+to create a folder, archive file, or installer, respectively.
+
+#### Linux
+
+* [OpenJDK 17 or later](https://adoptopenjdk.net/)
+* [Apache Maven 3](https://maven.apache.org/)
+* xmllint (can be found in libxml2-utils package in Debian-based distributions)
+
+Maven should pull in all required dependencies automatically.
+Simply run `mvn clean compile package` to build and `mvn javafx:run` to run.
+
+To create a distribution, run `./create-dist.sh` or `./create-dist.sh archive`
+to create a folder or archive, respectively.
 
 ## Citing/Acknowledging
 
