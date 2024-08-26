@@ -47,5 +47,9 @@ Any value defined here will override the pom.xml file value but is only applicab
         <org-netbeans-modules-editor-indent.text.x-java.CodeStyle.project.alignMultilineTernaryOp>true</org-netbeans-modules-editor-indent.text.x-java.CodeStyle.project.alignMultilineTernaryOp>
         <org-netbeans-modules-editor-indent.text.x-java.CodeStyle.project.spaceWithinBraces>true</org-netbeans-modules-editor-indent.text.x-java.CodeStyle.project.spaceWithinBraces>
         <org-netbeans-modules-editor-indent.text.x-java.CodeStyle.project.spaceBeforeArrayInitLeftBrace>true</org-netbeans-modules-editor-indent.text.x-java.CodeStyle.project.spaceBeforeArrayInitLeftBrace>
+        <org-netbeans-modules-editor-indent.text.x-java.CodeStyle.project.wrapThrowsKeyword>WRAP_IF_LONG</org-netbeans-modules-editor-indent.text.x-java.CodeStyle.project.wrapThrowsKeyword>
+        <org-netbeans-modules-editor-indent.text.x-java.CodeStyle.project.wrapTryResources>WRAP_IF_LONG</org-netbeans-modules-editor-indent.text.x-java.CodeStyle.project.wrapTryResources>
+        <org-netbeans-modules-editor-indent.text.x-java.CodeStyle.project.wrapDisjunctiveCatchTypes>WRAP_IF_LONG</org-netbeans-modules-editor-indent.text.x-java.CodeStyle.project.wrapDisjunctiveCatchTypes>
+        <org-netbeans-modules-editor-indent.text.x-java.CodeStyle.project.wrapAfterDotInChainedMethodCalls>false</org-netbeans-modules-editor-indent.text.x-java.CodeStyle.project.wrapAfterDotInChainedMethodCalls>
     </properties>
 </project-shared-configuration>

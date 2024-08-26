@@ -51,7 +51,7 @@ public class SkewTVSP extends Application {
         Parent root = FXMLLoader.load(getClass().getResource("/fxml/STVSP.fxml"));
         
         int screenHeight = (int) (Screen.getPrimary().getBounds().getHeight()*10)/11;
-        int screenWidth = (screenHeight*9)/12 + 220;
+        int screenWidth = (screenHeight*9)/12 + 240;
     
         //Scene scene = new Scene(root, 1100, 1000);
         Scene scene = new Scene(root, screenWidth, screenHeight);

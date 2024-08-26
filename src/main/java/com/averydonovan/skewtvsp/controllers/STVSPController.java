@@ -80,6 +80,7 @@ public class STVSPController implements Initializable {
     public static StringProperty windowTitle = new SimpleStringProperty(applicationName);
     public BooleanProperty isNoFileOpen = new SimpleBooleanProperty(true);
     public BooleanProperty isNoSkewTDrawn = new SimpleBooleanProperty(true);
+    public BooleanProperty isPlottingUnavailable = new SimpleBooleanProperty(true);
 
     /*
      * GUI widgets that are accessed from this controller
@@ -126,6 +127,12 @@ public class STVSPController implements Initializable {
     private GridPane gpRequestedPoint;
     @FXML
     private GridPane gpFoundPoint;
+    @FXML
+    private DatePicker dpAnalDate;
+    @FXML
+    private ChoiceBox cbAnalTime;
+    @FXML
+    private ChoiceBox cbValidTime;
     @FXML
     private Label lblAnalTime;
     @FXML
@@ -217,6 +224,10 @@ public class STVSPController implements Initializable {
         // These are useless when no Skew-T plot has been drawn
         menuFileSaveSkewT.disableProperty().bind(isNoSkewTDrawn);
         // tblData.disableProperty().bind(isNoSkewTDrawn);
+        
+        // Activate only when plotting actually available
+        btnLonLatSearch.disableProperty().bind(isPlottingUnavailable);
+        btnLonLatSearch.defaultButtonProperty().bind(isPlottingUnavailable.not());
 
         // cbChooseOption.setItems(optionList);
         menuList = FXCollections.observableArrayList();
@@ -319,6 +330,7 @@ public class STVSPController implements Initializable {
                 doAppendWindowTitle(file.getName());
                 doUpdateStatus("Data file " + file.getName() + " opened");
                 isNoFileOpen.set(false);
+                isPlottingUnavailable.set(false);
 
                 tfLonFound.setText("0.0");
                 tfLatFound.setText("0.0");
@@ -349,6 +361,9 @@ public class STVSPController implements Initializable {
         });
 
         if (file != null) {
+            if (!isNoFileOpen.get()) {
+                doCloseFile(event);
+            }
             modelFileName = file.getAbsolutePath();
             currentWorkingDirectory = file.getParent();
             isNoSkewTDrawn.set(true);
@@ -535,6 +550,7 @@ public class STVSPController implements Initializable {
         try {
             modelDataFile.close();
             doResetWindowTitle();
+            isPlottingUnavailable.set(true);
             isNoFileOpen.set(true);
         } catch (IOException ex) {
             Alert alert = new Alert(AlertType.ERROR);
@@ -784,11 +800,18 @@ public class STVSPController implements Initializable {
     }
 
     /**
-     * Find nearest coordinate point in data file to that entered by user, display data
-     * for found point in tabular format, and plot data for found point in Skew-T Log-P
-     * plot.
+     * Find nearest coordinate point in data file to that entered by user and plot data
+     * for found point in Skew-T Log-P plot.
      */
     public void doUpdateData() {
+        if (isPlottingUnavailable.get()) {
+            return;
+        }
+        boolean searchButtonFocused = btnLonLatSearch.isFocused();
+        if (searchButtonFocused) {
+            tfLonSearch.requestFocus();
+        }
+        isPlottingUnavailable.set(true);
         isNoSkewTDrawn.set(true);
 
         double searchLon = Double.parseDouble(tfLonSearch.getText());
@@ -800,7 +823,7 @@ public class STVSPController implements Initializable {
         tfLonFound.setText(String.format("%.6f", foundLonLat[0]));
         tfLatFound.setText(String.format("%.6f", foundLonLat[1]));
 
-        Task<Void> taskUpdateTable = new Task<Void>() {
+        Task<Void> taskUpdatePlot = new Task<Void>() {
             @Override
             public Void call() {
                 updateProgress(0, 100);
@@ -816,19 +839,23 @@ public class STVSPController implements Initializable {
             }
         };
 
-        taskUpdateTable.setOnSucceeded(event -> {
+        taskUpdatePlot.setOnSucceeded(event -> {
             lblStatus.textProperty().unbind();
             pbProgress.progressProperty().unbind();
             pbProgress.setVisible(false);
 
             isNoSkewTDrawn.set(false);
-            doUpdateStatus("Data table updated and Skew-T plotted");
+            isPlottingUnavailable.set(false);
+            if (searchButtonFocused) {
+                btnLonLatSearch.requestFocus();
+            }
+            doUpdateStatus("Skew-T plotted");
         });
 
-        lblStatus.textProperty().bind(taskUpdateTable.messageProperty());
-        pbProgress.progressProperty().bind(taskUpdateTable.progressProperty());
+        lblStatus.textProperty().bind(taskUpdatePlot.messageProperty());
+        pbProgress.progressProperty().bind(taskUpdatePlot.progressProperty());
         pbProgress.setVisible(true);
 
-        new Thread(taskUpdateTable).start();
+        new Thread(taskUpdatePlot).start();
     }
 }
